@@ -200,3 +200,22 @@
 .w-panel { font-size: .58em; }
 .anatomia .salida br { display: none; }
 .w-svg .w-tag.nodo-t { font-size: 15px; }
+
+/* ---------- Diapositivas explicativas «En pocas palabras» (interactivo/explicaciones.js) ---------- */
+.reveal section.explicacion-slide::before { content: "↓ En pocas palabras"; position: absolute; top: -6px; right: 0; font-family: 'Outfit'; font-weight: 800;
+  font-size: .46em; letter-spacing: .08em; padding: .35em .9em; border-radius: 999px; color: #fff; text-transform: uppercase; background: var(--celeste); z-index: 5; }
+.reveal .explicacion-slide .exp-kicker { font-family: 'Outfit'; font-weight: 800; font-size: .48em; letter-spacing: .14em; text-transform: uppercase; color: var(--celeste); margin: 0 0 .1em; }
+.reveal .explicacion-slide h2 { border-left-color: var(--celeste); }
+.reveal .explicacion-slide .exp-cuerpo { font-size: .86em; line-height: 1.5; max-width: 1380px; background: var(--papel); border-left: 8px solid var(--celeste);
+  border-radius: 0 18px 18px 0; padding: .7em 1.1em; box-shadow: var(--sombra); text-align: left; }
+.reveal .explicacion-slide .exp-cuerpo p { margin: 0 0 .65em; }
+.reveal .explicacion-slide .exp-cuerpo p:last-child, .reveal .explicacion-slide .exp-cuerpo ul:last-child, .reveal .explicacion-slide .exp-cuerpo ol:last-child { margin-bottom: 0; }
+.reveal .explicacion-slide .exp-cuerpo ul, .reveal .explicacion-slide .exp-cuerpo ol { margin: 0 0 .65em 1.1em; }
+.reveal .explicacion-slide .exp-cuerpo li { margin: .18em 0; }
+.reveal .explicacion-slide .exp-cuerpo code { font-size: .9em; background: #eef2f6; padding: 0 .25em; border-radius: 5px; }
+.reveal .ir-explicacion { position: absolute; right: 0; bottom: 8px; z-index: 6; font-family: 'Outfit'; font-weight: 700; font-size: .42em; letter-spacing: .04em;
+  padding: .35em .9em; border-radius: 999px; border: 2px solid var(--celeste); background: #fff; color: var(--celeste); cursor: pointer; opacity: .8; }
+.reveal .ir-explicacion:hover { opacity: 1; background: var(--celeste); color: #fff; }
+.reveal.print-pdf .ir-explicacion, .reveal.overview .ir-explicacion { display: none; }
+/* El menú lateral lista solo las diapositivas principales */
+.slide-menu-items .slide-menu-item-vertical { display: none; }
