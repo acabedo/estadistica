@@ -1475,20 +1475,35 @@
       const fin = +c.dataset.hasta; d3.select(c).transition().duration(1400).ease(d3.easeCubicOut).tween("t", () => { const i = d3.interpolateNumber(0, fin); return t => { c.textContent = Math.round(i(t)); }; });
     });
   }
+  // Construye los componentes de una diapositiva (solo la primera vez)
+  function construir(slide) {
+    if (!slide) return;
+    slide.querySelectorAll(".w[data-w]").forEach(el => {
+      const fn = W[el.dataset.w]; if (!fn || el._w) return;
+      try { el._w = fn(el) || {}; } catch (e) { el._w = {}; console.error("[curso] Error en el componente", el.dataset.w, e); el.innerHTML = `<p class="pequeno">No se pudo cargar «${el.dataset.w}».</p>`; }
+    });
+  }
+  // Prepara las diapositivas vecinas cuando el navegador queda libre
+  const enReposo = window.requestIdleCallback || (f => setTimeout(f, 200));
+  function vecinas(R) {
+    const ss = R.getSlides(), i = ss.indexOf(R.getCurrentSlide());
+    enReposo(() => [1, -1, 2].forEach(d => construir(ss[i + d])));
+  }
   function iniciar() {
     if (!window.CURSO) { console.warn("[curso] Faltan los datos (interactivo/datos_curso.js)"); return; }
-    document.querySelectorAll(".w[data-w]").forEach(el => {
-      const fn = W[el.dataset.w]; if (!fn || el._w) return;
-      try { el._w = fn(el) || {}; } catch (e) { console.error("[curso] Error en el componente", el.dataset.w, e); el.innerHTML = `<p class="pequeno">No se pudo cargar «${el.dataset.w}».</p>`; }
-    });
     document.querySelectorAll(".practica input[type=checkbox], .reto input[type=checkbox]").forEach(c => { c.disabled = false; });
     document.querySelectorAll(".giro > div").forEach(c => c.addEventListener("click", () => c.classList.toggle("on")));
     anatomias();
     const R = window.Reveal;
     if (R) {
-      const entrar = s => { if (!s) return; s.querySelectorAll(".w").forEach(el => el._w && el._w.enter && el._w.enter()); contadores(s); };
-      R.on("slidechanged", e => { entrar(e.currentSlide); window.dispatchEvent(new Event("resize")); });
+      // En lugar de construir los ~70 componentes al cargar (lento en móvil y tableta),
+      // se construyen al llegar a cada diapositiva y se adelantan las vecinas.
+      const entrar = s => { if (!s) return; construir(s); s.querySelectorAll(".w").forEach(el => el._w && el._w.enter && el._w.enter()); contadores(s); };
+      R.on("slidechanged", e => { entrar(e.currentSlide); window.dispatchEvent(new Event("resize")); vecinas(R); });
       entrar(R.getCurrentSlide());
+      vecinas(R);
+    } else {
+      document.querySelectorAll("section").forEach(construir);
     }
   }
   if (window.Reveal && window.Reveal.isReady && window.Reveal.isReady()) iniciar();
