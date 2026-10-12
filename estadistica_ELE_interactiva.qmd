@@ -1,0 +1,2029 @@
+---
+pagetitle: "Estadística básica con R para la investigación en ELE"
+author: "Adrián Cabedo Nebot"
+lang: es
+format:
+  revealjs:
+    theme: simple
+    css: estilo_interactivo.css
+    width: 1600
+    height: 900
+    margin: 0.05
+    slide-number: c/t
+    hash: true
+    chalkboard:
+      buttons: true
+      theme: whiteboard
+      boardmarker-width: 4
+    menu:
+      side: left
+      width: wide
+    scrollable: true
+    code-copy: true
+    code-line-numbers: false
+    code-overflow: wrap
+    highlight-style: arrow
+    footer: "Estadística con R para ELE · Máster en ELE · Universitat de Barcelona"
+    transition: fade
+    background-transition: fade
+    progress: true
+    fig-dpi: 150
+    fig-width: 9
+    fig-height: 5.2
+    include-after-body: interactivo/incluir.html
+resources:
+  - interactivo/
+  - img/
+  - datos/
+execute:
+  warning: false
+  message: false
+  echo: true
+---
+
+```{r}
+#| include: false
+library(tidyverse)
+library(rpart)
+library(rpart.plot)
+library(plotly)
+theme_set(theme_minimal(base_size = 17))
+pal <- c("#1D3557", "#E63946", "#2A9D8F", "#F4A261")
+ele <- read_csv("datos/ele.csv") |>
+  mutate(nivel = factor(nivel, levels = c("A2", "B1", "B2", "C1")))
+errores <- read_csv("datos/errores.csv")
+frec <- read_csv("datos/frecuencias.csv")
+source("interactivo/preparar_datos.R")   # datos para los componentes interactivos
+fmt <- function(x, d = 2) format(round(x, d), nsmall = d, decimal.mark = ",", big.mark = ".")
+```
+
+## {#inicio .hero background-image="img/portada.jpg" background-size="cover" background-color="#0d1b2a" data-menu-title="Portada"}
+
+::: hero-panel
+[Máster en ELE · Universitat de Barcelona · 23 de octubre de 2026]{.kicker}
+
+<h1>Estadística básica con R para la investigación en ELE</h1>
+
+De los datos del aula a las pruebas estadísticas, **paso a paso y en directo**.
+
+::: kpis
+<div><span class="contador" data-hasta="240">240</span>aprendientes</div>
+<div><span class="contador" data-hasta="5">5</span>sesiones</div>
+<div><span class="contador" data-hasta="40">40</span>gráficos interactivos</div>
+:::
+
+::: chips
+<span>Adrián Cabedo Nebot · Universitat de València</span>
+<span>Coordinación: Dra. Carolina Figueras</span>
+:::
+:::
+
+::: notes
+Bienvenida. Preguntar quién ha usado R, SPSS o Excel para analizar datos. Avisar de que todo el código se puede copiar con el botón de la esquina de cada bloque.
+:::
+
+## Mapa del curso {data-menu-title="Mapa del curso"}
+
+::: hub
+<a href="#/s1" style="--c:#1D3557"><span class="n">1</span><span class="t">R y estadística descriptiva</span><span class="d">Objetos, tablas, media, mediana, desviación típica y resúmenes por grupos.</span></a>
+<a href="#/s2" style="--c:#E63946"><span class="n">2</span><span class="t">Visualización</span><span class="d">Gramática de gráficos, motion charts, gráficos interactivos y mapas de calor.</span></a>
+<a href="#/s3" style="--c:#2A9D8F"><span class="n">3</span><span class="t">Inferencia</span><span class="d">Intervalos de confianza, valor p, potencia, prueba t, Wilcoxon y correlación.</span></a>
+<a href="#/s4" style="--c:#F4A261"><span class="n">4</span><span class="t">Chi cuadrado y ANOVA</span><span class="d">Tablas de contingencia, residuos, F, Tukey e interacciones.</span></a>
+<a href="#/s5" style="--c:#457B9D"><span class="n">5</span><span class="t">Corpus y modelos</span><span class="d">Log-likelihood, log-ratio, palabras clave y regresión lineal y logística.</span></a>
+<a href="#/arboles" class="destacada" style="--c:#E63946"><span class="n">🌳</span><span class="t">Árboles de decisión</span><span class="d">Gini, el mejor corte, poda, sobreajuste, matriz de confusión y árboles de regresión.</span></a>
+:::
+
+::: pequeno
+Pulsa una tarjeta para saltar a la sección. Tecla **M**: menú · **Esc**: vista general · **C**: pizarra.
+:::
+
+## ¿Por qué estadística en un máster de ELE?
+
+::: giro
+<div><div class="in"><div class="fr">¿Funciona mejor este método didáctico que aquel?</div><div class="re">Prueba <b>t</b> (2 grupos) o <b>ANOVA</b> (3 o más) · Sesiones 3 y 4</div></div></div>
+<div><div class="in"><div class="fr">¿Los aprendientes sinohablantes cometen más errores de <i>ser/estar</i>?</div><div class="re">Recuentos → <b>Wilcoxon</b> o <b>Kruskal-Wallis</b> · Sesiones 3 y 4</div></div></div>
+<div><div class="in"><div class="fr">¿Influye una estancia en España en el uso del subjuntivo?</div><div class="re">Dos categóricas → <b>χ²</b>; muchos predictores → <b>logística</b> o <b>árbol</b> · Sesiones 4 y 5</div></div></div>
+<div><div class="in"><div class="fr">¿Qué palabras sobreusan los aprendientes frente a los nativos?</div><div class="re">Dos corpus → <b>log-likelihood</b> + <b>log-ratio</b> · Sesión 5</div></div></div>
+:::
+
+::: idea
+La estadística no sustituye a la interpretación lingüística: la **apoya** y la hace **replicable**. (Pasa el ratón o pulsa cada pregunta.)
+:::
+
+## Cómo trabajaremos: copia → resultado → explica
+
+::: metodo
+<div><span class="num">①</span><span class="t">Copia y ejecuta</span><p>Cada bloque de código lleva un <b>Paso</b> numerado y un botón para copiarlo.</p><p>Pégalo en tu script de RStudio y ejecútalo con <code>Ctrl/Cmd + Enter</code>.</p></div>
+<div><span class="num">②</span><span class="t">Tu resultado</span><p>Comprueba que tu salida o tu gráfico coincide con el de la diapositiva.</p><p>Si no coincide, revisa el paso anterior: el código es <b>acumulativo</b>.</p></div>
+<div><span class="num">③</span><span class="t">Lo explicamos</span><p>Una diapositiva <b>interactiva</b> con los mismos datos para entender qué significa ese resultado.</p><p>Movemos deslizadores, simulamos y vemos qué cambia.</p></div>
+:::
+
+::: pequeno
+Las cintas de colores de la esquina superior derecha indican en qué fase estamos.
+:::
+
+## Prepara tu espacio de trabajo {.copia}
+
+::: columns
+::: {.column width="48%"}
+**Opción A · RStudio en el aula**
+
+- Abrir RStudio → *File → New Project*
+- Copiar la carpeta `datos/` dentro del proyecto
+
+**Opción B · posit.cloud** (sin instalar nada)
+
+- <https://posit.cloud> → *New Project → New RStudio Project*
+- Subir `ele.csv`, `errores.csv` y `frecuencias.csv` a una carpeta `datos/`
+:::
+::: {.column width="52%"}
+```{r}
+#| eval: false
+#| filename: "Paso 0 · Instalar los paquetes (solo una vez)"
+install.packages(c("tidyverse", "rpart", "rpart.plot",
+                   "pheatmap", "plotly", "DT"))
+```
+
+```{r}
+#| eval: false
+#| filename: "Paso 1 · Cargarlos (en cada sesión)"
+library(tidyverse)
+library(rpart)
+library(rpart.plot)
+library(plotly)
+```
+:::
+:::
+
+## Nuestros datos: 240 aprendientes de ELE {.resultado}
+
+```{r}
+#| echo: false
+DT::datatable(ele, rownames = FALSE, filter = "top",
+              options = list(pageLength = 8, dom = "tip", autoWidth = TRUE))
+```
+
+::: pequeno
+Datos **simulados** con fines docentes, con patrones plausibles en ELE. Filtra y ordena la tabla.
+:::
+
+## Las variables
+
+| Variable | Qué mide | Tipo |
+|:--|:--|:--|
+| `L1` | Lengua materna (árabe, chino, inglés, italiano) | Categórica nominal |
+| `nivel` | Nivel MCER (A2–C1) | Categórica ordinal |
+| `estancia` | ¿Ha vivido en un país hispanohablante? | Categórica binaria |
+| `horas` | Horas de instrucción | Numérica continua |
+| `nota_dele` | Nota en una prueba tipo DELE (0–100) | Numérica continua |
+| `err_ser_estar` | Errores de *ser/estar* en una redacción | Numérica discreta (recuento) |
+| `subjuntivo` | Uso del subjuntivo en un contexto obligatorio | Categórica binaria |
+
+
+## {#s1 .hero background-image="img/s1_descriptiva.jpg" background-size="cover" background-color="#0d1b2a" data-menu-title="Sesión 1 · Descriptiva"}
+
+::: hero-panel
+[Sesión 1 · 60 minutos]{.kicker}
+
+<h1>R y estadística descriptiva</h1>
+
+::: pregunta
+¿Cómo es un aprendiente «típico»… y cuánto se parecen entre sí?
+:::
+
+::: chips
+<span>RStudio y posit.cloud</span><span>Objetos y vectores</span><span>Cargar un .csv</span><span>Media, mediana, moda</span><span>DE y cuartiles</span><span>Resúmenes por grupos</span>
+:::
+:::
+
+## Población y muestra
+
+::: {.w data-w="muestra"}
+:::
+
+::: notes
+Extraer una muestra de 30 y comparar su media con la real (línea roja). Pulsar «+25 muestras»: las medias forman una campana alrededor de la media real. Cambiar n a 5 y a 120 y repetir: con n grande, las medias se agrupan más. Es la intuición del error estándar de la sesión 3.
+:::
+
+## Tipos de variables
+
+::: {.tarjetas style="--cols:4"}
+<div><span class="t">Nominal</span>Categorías sin orden<br><b>L1</b>, estancia<p class="pequeno">→ moda, frecuencias, barras</p></div>
+<div><span class="t">Ordinal</span>Categorías con orden<br><b>nivel MCER</b><p class="pequeno">→ mediana, barras</p></div>
+<div><span class="t">Discreta</span>Recuentos enteros<br><b>n.º de errores</b><p class="pequeno">→ mediana, boxplot</p></div>
+<div><span class="t">Continua</span>Medidas con decimales<br><b>nota, horas</b><p class="pequeno">→ media, DE, histograma</p></div>
+:::
+
+::: idea
+El **tipo de variable** decide qué estadístico, qué gráfico y qué prueba usamos. Lo veremos en el árbol para elegir la prueba de la sesión 3.
+:::
+
+## R y RStudio
+
+::: columns
+::: {.column width="45%"}
+**R** es el lenguaje: el motor
+
+- Gratuito y de código abierto
+- Miles de paquetes
+- Reproducible: el código **documenta** el análisis
+
+**RStudio** es el entorno: el salpicadero
+:::
+::: {.column width="55%"}
+::: {.tarjetas style="--cols:2"}
+<div><span class="t">① Script</span>Escribimos y guardamos el código</div>
+<div><span class="t">③ Entorno</span>Los objetos que vamos creando</div>
+<div><span class="t">② Consola</span>Aquí se ejecuta y aparecen los resultados</div>
+<div><span class="t">④ Archivos · Gráficos · Ayuda</span>Todo lo demás</div>
+:::
+
+`Ctrl + Enter` (`Cmd + Enter` en Mac) ejecuta la línea del script.
+:::
+:::
+
+## R como calculadora y objetos {.copia}
+
+::: columns
+::: {.column width="50%"}
+```{r}
+#| filename: "Paso 1 · Calcular"
+3 + 4
+(85 + 72 + 90) / 3
+sqrt(144)
+```
+:::
+::: {.column width="50%"}
+```{r}
+#| filename: "Paso 2 · Guardar en objetos"
+nota_ana <- 78
+nota_li  <- 64
+media_dos <- (nota_ana + nota_li) / 2
+media_dos
+```
+:::
+:::
+
+::: idea
+`<-` significa «guarda en». Todo lo que va tras `#` es un **comentario**: R no lo ejecuta.
+:::
+
+## Vectores y funciones {.copia}
+
+```{r}
+#| filename: "Paso 3 · Un vector es una lista de valores"
+notas <- c(78, 64, 90, 55, 71, 83)
+L1s   <- c("inglés", "chino", "italiano", "árabe", "chino", "inglés")
+length(notas)
+notas[2]
+notas > 70
+mean(notas)        # una función: nombre(argumentos)
+```
+
+## Cargar nuestros datos {.copia}
+
+```{r}
+#| eval: false
+#| filename: "Paso 4 · Leer el archivo"
+ele <- read_csv("datos/ele.csv")
+```
+
+```{r}
+#| filename: "Paso 5 · Echar un vistazo"
+glimpse(ele)
+```
+
+::: pequeno
+También: `View(ele)` (como una hoja de cálculo), `head(ele)`, `nrow(ele)`, `names(ele)`. Con `ele$nota_dele` seleccionamos una columna.
+:::
+
+## Tendencia central {.copia}
+
+```{r}
+#| filename: "Paso 6 · Media, mediana y moda"
+mean(ele$nota_dele)
+median(ele$nota_dele)
+table(ele$L1)   # la moda: la categoría más frecuente
+```
+
+## La media persigue a los extremos {.explica}
+
+```{r}
+#| eval: false
+#| filename: "Prueba esto en R"
+tiempos <- c(12, 14, 13, 15, 14, 95)   # un estudiante se distrajo
+mean(tiempos); median(tiempos)
+```
+
+::: {.w data-w="media-mediana"}
+:::
+
+::: notes
+Mover el sexto valor de 14 a 120. La media sube sin parar; la mediana se queda en 14. Mensaje: con datos asimétricos o valores extremos, la mediana representa mejor lo típico.
+:::
+
+## Cómo se calcula cada medida
+
+Notas de 5 aprendientes: **55, 62, 70, 71, 92**
+
+| Medida | Cálculo | Resultado |
+|:--|:--|--:|
+| Media | (55 + 62 + 70 + 71 + 92) / 5 | 70 |
+| Mediana | valor central de los datos **ordenados** | 70 |
+| Moda | valor más repetido | — (no hay) |
+| Rango | 92 − 55 | 37 |
+
+::: idea
+**Media** → numéricas simétricas · **Mediana** → asimétricas u ordinales · **Moda** → nominales (L1)
+:::
+
+## Dispersión: ¿cuánto varían los datos?
+
+::: {.w data-w="dispersion"}
+:::
+
+::: notes
+Las dos curvas tienen media 70. Subir la DE del grupo B: la curva se aplana y los puntos se separan. Bajar la del A: todos se parecen. La media sola no describe un grupo: siempre acompañarla de una medida de dispersión.
+:::
+
+## Medidas de dispersión {.copia}
+
+```{r}
+#| filename: "Paso 7 · Rango, DE, RIC y cuartiles"
+range(ele$nota_dele)
+sd(ele$nota_dele)        # desviación típica
+IQR(ele$nota_dele)       # rango intercuartílico
+quantile(ele$nota_dele)
+```
+
+## La desviación típica, paso a paso {.explica}
+
+::: {.w data-w="de-pasos"}
+:::
+
+::: notes
+Avanzar paso a paso. En el paso 3 se ven literalmente cuadrados: por eso se llama «suma de cuadrados». El cuadrado del 92 domina: la DE también es sensible a los extremos. Paso 5: la franja de ±1 DE.
+:::
+
+## Cuartiles y percentiles {.explica}
+
+::: {.w data-w="cuartiles"}
+:::
+
+::: notes
+Cada punto es un aprendiente. Mover el percentil: la parte sombreada contiene ese porcentaje de personas. Pulsar Q1, mediana y Q3 y ver cómo se forma la caja del boxplot, que usaremos en la sesión 2.
+:::
+
+## `summary()` y frecuencias {.copia}
+
+::: columns
+::: {.column width="55%"}
+```{r}
+#| filename: "Paso 8 · Todo de una vez"
+summary(ele[, c("horas", "nota_dele",
+                "err_ser_estar")])
+```
+:::
+::: {.column width="45%"}
+```{r}
+#| filename: "Paso 9 · Frecuencias"
+table(ele$nivel)
+prop.table(table(ele$nivel)) |>
+  round(2)
+```
+:::
+:::
+
+## Resumir por grupos con `dplyr` {.copia}
+
+```{r}
+#| filename: "Paso 10 · group_by() + summarise()"
+ele |>
+  group_by(L1) |>
+  summarise(n = n(),
+            media = mean(nota_dele),
+            de = sd(nota_dele))
+```
+
+`|>` es la **tubería**: «y después…».
+
+## Explora cualquier resumen por grupos {.explica}
+
+::: {.w data-w="resumen-grupos"}
+:::
+
+::: notes
+El código de la derecha se reescribe al cambiar los menús: es exactamente lo que tendrían que escribir en R. Preguntar: ¿qué grupo tiene más horas? ¿Mejora la nota con el nivel? ¿Se cumple lo de que los italianos cometen menos errores de ser/estar?
+:::
+
+## Filtrar, seleccionar y crear columnas {.copia}
+
+```{r}
+#| filename: "Paso 11 · filter() · select() · mutate()"
+ele |>
+  filter(nivel == "C1", estancia == "sí") |>
+  select(id, L1, nota_dele) |>
+  mutate(aprobado = nota_dele >= 60) |>
+  head(4)
+```
+
+## Práctica 1 (20 min) {.reto-s background-gradient="linear-gradient(135deg, #2A9D8F 0%, #1D3557 100%)"}
+
+::: practica
+- [ ] Crea un proyecto en RStudio o en posit.cloud y carga `ele.csv`.
+- [ ] ¿Cuántos aprendientes hay de cada L1? ¿Y de cada nivel?
+- [ ] Calcula la media, la mediana y la DE de `horas`.
+- [ ] Calcula la nota media del DELE **por nivel**. ¿Aumenta con el nivel?
+- [ ] ¿Qué porcentaje usa bien el subjuntivo en cada L1?
+
+<details><summary>Pista para la 5</summary>`count(L1, subjuntivo)` y después `group_by(L1) |> mutate(pct = 100 * n / sum(n))`</details>
+:::
+
+## Práctica 1: soluciones {.copia}
+
+```{r}
+#| eval: false
+#| filename: "Soluciones de la práctica 1"
+ele <- read_csv("datos/ele.csv")
+table(ele$L1); table(ele$nivel)
+mean(ele$horas); median(ele$horas); sd(ele$horas)
+ele |> group_by(nivel) |> summarise(media = mean(nota_dele))
+ele |> count(L1, subjuntivo) |>
+  group_by(L1) |> mutate(pct = 100 * n / sum(n))
+```
+
+
+## {#s2 .hero background-image="img/s2_visualizacion.jpg" background-size="cover" background-color="#0d1b2a" data-menu-title="Sesión 2 · Visualización"}
+
+::: hero-panel
+[Sesión 2 · 60 minutos]{.kicker}
+
+<h1>Visualización de datos</h1>
+
+::: pregunta
+¿Qué nos cuentan los datos antes de hacer ninguna prueba?
+:::
+
+::: chips
+<span>Anscombe</span><span>Gramática de gráficos</span><span>Histogramas, cajas y violines</span><span>Motion charts</span><span>Gráficos interactivos</span><span>Mapas de calor</span>
+:::
+:::
+
+## ¿Por qué visualizar? El cuarteto de Anscombe
+
+::: {.w data-w="anscombe"}
+:::
+
+::: notes
+Pulsar «Animar»: los puntos cambian por completo, pero las medias, la varianza, la correlación y la recta no cambian. Si solo miramos números, nos engañan. Visualizar siempre antes de analizar.
+:::
+
+## La gramática de gráficos, capa a capa {.explica}
+
+::: {.w data-w="capas"}
+:::
+
+::: notes
+Ir añadiendo capas. Cada clic añade una línea de código (resaltada) y una capa al gráfico. Datos + estética (aes) + geometría + facetas + etiquetas. Al final, pedir que copien el código completo de la izquierda y lo ejecuten.
+:::
+
+## Histograma: una variable numérica {.copia}
+
+[Paso 1 · Histograma]{.paso-et}
+
+```{r}
+#| output-location: column
+#| fig-width: 7
+#| fig-height: 5
+ggplot(ele, aes(x = nota_dele)) +
+  geom_histogram(binwidth = 5,
+                 fill = "#1D3557",
+                 colour = "white") +
+  labs(x = "Nota DELE",
+       y = "Número de aprendientes")
+```
+
+## ¿Qué anchura de barra? {.explica}
+
+::: {.w data-w="histograma"}
+:::
+
+::: notes
+Bajar binwidth a 1: ruido. Subirlo a 20: se pierde la forma. Cambiar a «horas» y probar de nuevo. El código se actualiza: pueden copiar el valor que prefieran.
+:::
+
+## Distribuciones por grupos {.copia}
+
+::: {.panel-tabset}
+
+### Densidad
+
+```{r}
+#| output-location: column
+#| fig-width: 7
+#| fig-height: 4.6
+ggplot(ele, aes(x = nota_dele,
+                fill = estancia)) +
+  geom_density(alpha = .6) +
+  scale_fill_manual(
+    values = c("#1D3557", "#E63946"))
+```
+
+### Boxplot
+
+```{r}
+#| output-location: column
+#| fig-width: 7
+#| fig-height: 4.6
+ggplot(ele, aes(x = L1, y = nota_dele,
+                fill = L1)) +
+  geom_boxplot(show.legend = FALSE) +
+  scale_fill_manual(values = c(
+    "#1D3557", "#E63946",
+    "#2A9D8F", "#F4A261"))
+```
+
+### Violín + puntos
+
+```{r}
+#| output-location: column
+#| fig-width: 7
+#| fig-height: 4.6
+ggplot(ele, aes(x = nivel,
+                y = nota_dele)) +
+  geom_violin(fill = "#A8DADC") +
+  geom_jitter(width = .1, alpha = .4,
+              colour = "#1D3557")
+```
+
+:::
+
+## Puntos, cajas y violines {.explica}
+
+::: {.w data-w="geoms"}
+:::
+
+::: notes
+Activar y desactivar capas. La caja resume (mediana, Q1, Q3, bigotes hasta 1,5 × RIC); el violín muestra la forma; los puntos, a cada persona. Con pocos datos, mostrar siempre los puntos.
+:::
+
+## Barras, dispersión y facetas {.copia}
+
+::: {.panel-tabset}
+
+### Barras
+
+```{r}
+#| output-location: column
+#| fig-width: 7
+#| fig-height: 4.6
+ggplot(ele, aes(x = L1,
+                fill = subjuntivo)) +
+  geom_bar(position = "fill") +
+  labs(y = "Proporción") +
+  scale_fill_manual(
+    values = c("#2A9D8F", "#E63946"))
+```
+
+### Dispersión
+
+```{r}
+#| output-location: column
+#| fig-width: 7
+#| fig-height: 4.6
+ggplot(ele, aes(x = horas,
+                y = nota_dele)) +
+  geom_point(alpha = .5,
+             colour = "#1D3557") +
+  geom_smooth(method = "lm",
+              colour = "#E63946")
+```
+
+### Facetas
+
+```{r}
+#| output-location: column
+#| fig-width: 7
+#| fig-height: 4.6
+ggplot(ele, aes(horas, nota_dele,
+                colour = estancia)) +
+  geom_point(alpha = .6) +
+  facet_wrap(~ L1, nrow = 2)
+```
+
+:::
+
+## Convierte tu gráfico en interactivo {.copia}
+
+```{r}
+#| filename: "Paso 1 · Guarda el gráfico en un objeto"
+p <- ggplot(ele, aes(horas, nota_dele, colour = L1,
+                     text = paste("Aprendiente", id))) +
+  geom_point(alpha = .7) +
+  scale_colour_manual(values = c("#1D3557", "#E63946", "#2A9D8F", "#F4A261"))
+```
+
+```{r}
+#| eval: false
+#| filename: "Paso 2 · Una sola función: ggplotly()"
+ggplotly(p)
+```
+
+## Tu resultado: un gráfico que se puede explorar {.resultado}
+
+```{r}
+#| echo: false
+ggplotly(p, height = 640, width = 1450) |>
+  layout(font = list(size = 16), legend = list(orientation = "h", y = 1.08))
+```
+
+::: pequeno
+Pasa el ratón por un punto · arrastra para hacer zoom · doble clic para volver · clic en la leyenda para ocultar una L1.
+:::
+
+## Motion chart: los datos en movimiento {.copia}
+
+::: columns
+::: {.column width="45%"}
+```{r}
+#| filename: "Paso 1 · Medias por nivel y L1"
+resumen <- ele |>
+  group_by(nivel, L1) |>
+  summarise(horas = mean(horas),
+            nota = mean(nota_dele),
+            n = n(), .groups = "drop")
+head(resumen, 4)
+```
+:::
+::: {.column width="55%"}
+```{r}
+#| output: false
+#| filename: "Paso 2 · Una burbuja por L1; el «tiempo» es el nivel"
+motion <- plot_ly(resumen, x = ~horas, y = ~nota,
+    size = ~n, color = ~L1, frame = ~nivel, ids = ~L1,
+    type = "scatter", mode = "markers",
+    colors = c("#1D3557", "#E63946", "#2A9D8F", "#F4A261"),
+    sizes = c(20, 70), marker = list(sizemode = "diameter")) |>
+  layout(xaxis = list(range = c(80, 420), title = "Horas medias"),
+         yaxis = list(range = c(40, 85), title = "Nota media")) |>
+  animation_opts(frame = 1300, transition = 900, redraw = FALSE)
+motion
+```
+:::
+:::
+
+## Tu resultado: el motion chart {.resultado}
+
+```{r}
+#| echo: false
+motion |> layout(height = 660, width = 1450, font = list(size = 16)) |>
+  animation_slider(currentvalue = list(prefix = "Nivel MCER: ", font = list(size = 22, color = "#E63946")))
+```
+
+## Cómo leer el motion chart {.explica}
+
+::: {.tarjetas style="--cols:4"}
+<div><span class="t">Cada burbuja</span>Una lengua materna</div>
+<div><span class="t">Posición</span>Horas medias (x) y nota media (y) de ese grupo</div>
+<div><span class="t">Tamaño</span>Cuántos aprendientes hay en ese grupo</div>
+<div><span class="t">Movimiento</span>Qué cambia al pasar de A2 a C1</div>
+:::
+
+::: clave
+- Todas las burbujas avanzan **hacia arriba y a la derecha**: más nivel → más horas y más nota.
+- El **orden** se mantiene: inglés e italiano van por delante; chino y árabe, por detrás, con las mismas horas.
+- Un motion chart responde a la pregunta **«¿cómo cambia la relación?»**, no solo «¿cuál es la relación?».
+:::
+
+::: notes
+Volver a la diapositiva anterior y pulsar Play. Pausar en B1 y en C1. Pedir que describan con palabras el movimiento de la burbuja del chino frente a la del italiano.
+:::
+
+## ¿Qué gráfico elijo? {.explica}
+
+::: {.w data-w="elige-grafico"}
+:::
+
+::: notes
+Combinar tipos de variable y ver el gráfico recomendado, una vista previa con nuestros datos y el código de ggplot listo para copiar.
+:::
+
+## Mapas de calor {.copia}
+
+::: {.panel-tabset}
+
+### Recuentos
+
+```{r}
+#| output-location: column
+#| fig-width: 7.5
+#| fig-height: 4.4
+ggplot(errores, aes(x = tipo, y = L1,
+                    fill = n)) +
+  geom_tile(colour = "white") +
+  geom_text(aes(label = n),
+            colour = "white", size = 6) +
+  scale_fill_gradient(low = "#A8DADC",
+                      high = "#1D3557") +
+  labs(x = NULL, y = NULL)
+```
+
+### Porcentaje por fila
+
+```{r}
+#| output-location: column
+#| fig-width: 7.5
+#| fig-height: 4.4
+errores |>
+  group_by(L1) |>
+  mutate(pct = 100 * n / sum(n)) |>
+  ggplot(aes(tipo, L1, fill = pct)) +
+  geom_tile(colour = "white") +
+  geom_text(aes(label = round(pct)),
+            colour = "white", size = 6) +
+  scale_fill_gradient(low = "#A8DADC",
+                      high = "#E63946") +
+  labs(x = NULL, y = NULL)
+```
+
+### Con agrupación (pheatmap)
+
+```{r}
+#| output-location: column
+#| fig-width: 7.5
+#| fig-height: 4.4
+m <- xtabs(n ~ L1 + tipo, errores)
+pheatmap::pheatmap(
+  prop.table(m, 1),
+  display_numbers = TRUE,
+  color = colorRampPalette(
+    c("white", "#E63946"))(50))
+```
+
+:::
+
+## Leer un mapa de calor {.explica}
+
+::: {.w data-w="heatmap"}
+:::
+
+::: notes
+Recuentos: el chino parece tener más de todo porque hay más textos. Porcentaje por fila: perfiles. Residuos: dónde hay más (verde) o menos (rojo) de lo esperado si la L1 no influyera en el tipo de error. Lo más llamativo: artículos en chino (lenguas sin artículos). Pasar el ratón por las celdas.
+:::
+
+## Buenas prácticas visuales
+
+::: {.tarjetas style="--cols:3"}
+<div><span class="t">Un mensaje</span>Un gráfico = una idea. Ponla en el título.</div>
+<div><span class="t">Etiquetas</span>Ejes con nombre y unidades: `labs()`.</div>
+<div><span class="t">Color accesible</span>Evita rojo y verde juntos como único código.</div>
+<div><span class="t">Muestra los datos</span>Con pocos datos, puntos mejor que barras.</div>
+<div><span class="t">Nada de tartas ni 3D</span>Comparamos peor ángulos y volúmenes que longitudes.</div>
+<div><span class="t">Guarda en alta resolución</span>`ggsave("fig.png", width = 8, height = 5, dpi = 300)`</div>
+:::
+
+## Práctica 2 (20 min) {.reto-s background-gradient="linear-gradient(135deg, #2A9D8F 0%, #1D3557 100%)"}
+
+::: practica
+- [ ] Haz un histograma de `horas`.
+- [ ] Haz un boxplot de `err_ser_estar` por `L1`. ¿Qué grupo comete más errores?
+- [ ] Relaciona `horas` y `nota_dele` en un gráfico de dispersión coloreado por `nivel`.
+- [ ] Conviértelo en interactivo con `ggplotly()`.
+- [ ] Haz un motion chart de `err_ser_estar` medio frente a `horas` medias, con `frame = ~nivel`.
+- [ ] Construye el mapa de calor de `errores.csv` y guárdalo con `ggsave()`.
+:::
+
+## Práctica 2: soluciones {.copia}
+
+```{r}
+#| eval: false
+#| filename: "Soluciones de la práctica 2"
+ggplot(ele, aes(horas)) + geom_histogram(binwidth = 25)
+ggplot(ele, aes(L1, err_ser_estar)) + geom_boxplot()
+p2 <- ggplot(ele, aes(horas, nota_dele, colour = nivel)) + geom_point()
+ggplotly(p2)
+ele |> group_by(nivel, L1) |>
+  summarise(h = mean(horas), e = mean(err_ser_estar), n = n()) |>
+  plot_ly(x = ~h, y = ~e, size = ~n, color = ~L1, frame = ~nivel, ids = ~L1,
+          type = "scatter", mode = "markers")
+p3 <- ggplot(errores, aes(tipo, L1, fill = n)) + geom_tile()
+ggsave("mapa_calor.png", p3, width = 8, height = 4)
+```
+
+
+## {#s3 .hero background-image="img/s3_inferencia.jpg" background-size="cover" background-color="#0d1b2a" data-menu-title="Sesión 3 · Inferencia"}
+
+::: hero-panel
+[Sesión 3 · 60 minutos]{.kicker}
+
+<h1>Estadística inferencial</h1>
+
+::: pregunta
+¿Influye la estancia en el extranjero en la nota? ¿Y cómo lo sabemos con solo 240 personas?
+:::
+
+::: chips
+<span>Distribución normal</span><span>Distribución muestral</span><span>Intervalos de confianza</span><span>Valor p y potencia</span><span>Árbol para elegir la prueba</span><span>t · Wilcoxon · correlación</span>
+:::
+:::
+
+## Descriptiva frente a inferencial
+
+::: {.tarjetas style="--cols:2"}
+<div><span class="t">Descriptiva</span>¿Qué pasa <b>en mi muestra</b>?<p><i>La nota media de mis 240 aprendientes es `r fmt(mean(ele$nota_dele), 1)`.</i></p></div>
+<div><span class="t">Inferencial</span>¿Qué puedo decir <b>de la población</b>?<p><i>La nota media de los aprendientes está, con un 95 % de confianza, entre `r fmt(t.test(ele$nota_dele)$conf.int[1], 1)` y `r fmt(t.test(ele$nota_dele)$conf.int[2], 1)`.</i></p></div>
+:::
+
+## La distribución normal {.explica}
+
+::: {.w data-w="normal"}
+:::
+
+::: notes
+Mover la media y la DE. El porcentaje dentro de ±1,96 DE es siempre el 95 %. Activar «superponer las notas reales»: nuestras notas se parecen bastante a una normal.
+:::
+
+## ¿Son normales mis datos? {.copia}
+
+::: {.panel-tabset}
+
+### Gráficos
+
+```{r}
+#| output-location: column
+#| fig-width: 7
+#| fig-height: 4.6
+par(mfrow = c(1, 2))
+hist(ele$nota_dele, col = "#A8DADC",
+     main = "Histograma")
+qqnorm(ele$nota_dele)
+qqline(ele$nota_dele, col = "red")
+```
+
+### Shapiro-Wilk
+
+```{r}
+shapiro.test(ele$nota_dele)
+shapiro.test(ele$err_ser_estar)
+```
+
+- p > 0,05 → no hay evidencia contra la normalidad
+- p < 0,05 → los datos **no** son normales (los recuentos rara vez lo son)
+
+:::
+
+## De la muestra a la población {.explica}
+
+::: {.w data-w="muestral"}
+:::
+
+::: notes
+Pulsar «1 muestra» varias veces: cada muestra deja caer su media abajo. Luego «+1000»: aparece la campana (distribución muestral). La DE de esa campana es el error estándar. Cambiar n: con n = 4 la campana es ancha; con n = 100, estrecha. Comprobar que el EE teórico σ/√n coincide con la simulación.
+:::
+
+## Error estándar e intervalo de confianza {.copia}
+
+```{r}
+#| filename: "Paso 1 · El IC del 95 % a mano"
+x <- ele$nota_dele
+ee <- sd(x) / sqrt(length(x))       # error estándar
+c(media = mean(x), inf = mean(x) - 1.96 * ee, sup = mean(x) + 1.96 * ee)
+```
+
+```{r}
+#| filename: "Paso 2 · Lo mismo con t.test()"
+t.test(ele$nota_dele)$conf.int
+```
+
+## Qué significa un IC del 95 % {.explica}
+
+::: {.w data-w="ic"}
+:::
+
+::: notes
+Cada barra es el intervalo de una muestra distinta. Las rojas no contienen la media real. Pulsar «Nuevas 50 muestras» varias veces: suelen fallar 2 o 3 (el 5 %). Bajar la confianza al 80 %: los intervalos son más estrechos pero fallan más. Subir n: más estrechos sin fallar más. El 95 % se refiere al método, no a un intervalo concreto.
+:::
+
+## La lógica del contraste de hipótesis
+
+::: {.tarjetas style="--cols:2"}
+<div><span class="t">H₀ · hipótesis nula</span>No hay diferencia o no hay relación<p><i>La estancia no influye en la nota.</i></p></div>
+<div><span class="t">H₁ · hipótesis alternativa</span>Sí la hay<p><i>Quienes han hecho una estancia obtienen otra nota.</i></p></div>
+:::
+
+<div class="grande">p = P(datos tan extremos | H₀ cierta)</div>
+
+::: idea
+El valor p **no** es la probabilidad de que H₀ sea cierta, ni mide la **importancia** del efecto.
+:::
+
+## El valor p, visualmente {.explica}
+
+::: {.w data-w="valor-p"}
+:::
+
+::: notes
+Mover t: cuanto más lejos del centro, menor el área roja (p). Las líneas naranjas son los valores críticos: si t los supera, p < 0,05. Pulsar «Nuestro t (estancia)»: es el que obtendremos dentro de unos minutos con t.test. Cambiar a unilateral: p se divide entre dos.
+:::
+
+## Errores tipo I y II, y potencia {.explica}
+
+|  | H₀ es verdadera | H₀ es falsa |
+|:--|:--:|:--:|
+| **Rechazo H₀** | Error tipo I (α) «falsa alarma» | ✔ Potencia (1 − β) |
+| **No rechazo H₀** | ✔ Acierto | Error tipo II (β) «se me escapa» |
+
+::: {.w data-w="potencia"}
+:::
+
+::: notes
+La curva azul es el mundo en el que H₀ es cierta; la verde, el mundo con un efecto real. Bajar α a 0,01: menos falsas alarmas, pero más β. Subir n: las curvas se separan y la potencia aumenta. Con d = 0,5 hacen falta unos 64 por grupo para un 80 %.
+:::
+
+## Tamaño del efecto {.explica}
+
+| Medida | Prueba | Pequeño | Mediano | Grande |
+|:--|:--|:--:|:--:|:--:|
+| *d* de Cohen | t | 0,2 | 0,5 | 0,8 |
+| *r* | correlación | 0,1 | 0,3 | 0,5 |
+| V de Cramér | χ² | 0,1 | 0,3 | 0,5 |
+| η² | ANOVA | 0,01 | 0,06 | 0,14 |
+
+::: {.w data-w="cohen-d"}
+:::
+
+## Árbol de decisión: ¿qué prueba uso? {#elegir-prueba .explica}
+
+::: {.w data-w="elige-prueba"}
+:::
+
+::: notes
+Este es el primer árbol de decisión del curso: no lo aprende R, lo construimos nosotros con preguntas. Recorrerlo en voz alta con una pregunta real: «¿Difiere la nota según la estancia?» → numérica → grupos → 2 → independientes → normal → t de Welch. También se puede pulsar cualquier nodo del diagrama. Al final del curso veremos árboles que R construye solo a partir de los datos.
+:::
+
+## Prueba t: ficha
+
+::: {.tarjetas style="--cols:2"}
+<div><span class="t">¿Qué pregunta responde?</span>¿Difieren las <b>medias</b> de una variable numérica entre <b>2 grupos</b>?<br><i>¿Sacan más nota quienes han hecho una estancia?</i></div>
+<div><span class="t">Hipótesis</span>H₀: μ₁ = μ₂<br>H₁: μ₁ ≠ μ₂</div>
+<div><span class="t">Supuestos</span><ul><li>Variable numérica</li><li>Aproximadamente <b>normal</b> en cada grupo (o n > 30)</li><li>Observaciones <b>independientes</b></li><li>R usa por defecto la versión de <b>Welch</b></li></ul></div>
+<div><span class="t">Estadístico</span>t = (x̄₁ − x̄₂) / EE = <b>señal / ruido</b><br>|t| grande → p pequeño</div>
+:::
+
+## La idea de t: señal frente a ruido {.explica}
+
+::: {.w data-w="senal-ruido"}
+:::
+
+::: notes
+Misma diferencia de medias (7 puntos) con poco y con mucho ruido: el t cambia por completo. Subir n también hace crecer t. Llevar la diferencia a 0: t cerca de 0 y p grande.
+:::
+
+## Prueba t: ¿influye la estancia en la nota? {.copia}
+
+```{r}
+#| filename: "Paso 1 · Descriptivos por grupo"
+ele |> group_by(estancia) |>
+  summarise(n = n(), media = mean(nota_dele), de = sd(nota_dele))
+```
+
+```{r}
+#| eval: false
+#| filename: "Paso 2 · La prueba"
+t.test(nota_dele ~ estancia, data = ele)
+```
+
+```{r}
+#| include: false
+tt <- t.test(nota_dele ~ estancia, data = ele)
+```
+
+## Tu resultado, pieza a pieza {.resultado}
+
+::: anatomia
+::: salida
+[Welch Two Sample t-test]{.an data-exp="<b>Welch</b>: la versión de la prueba t que no exige varianzas iguales en los dos grupos. Es la que R usa por defecto."}\
+\
+data:  nota_dele by estancia\
+[t = `r round(tt$statistic, 4)`]{.an data-exp="<b>t</b>: la diferencia entre las medias medida en unidades de error estándar. Es negativa porque R resta «no − sí». Lo que importa es su tamaño: |t| ≈ 3."}, [df = `r round(tt$parameter, 1)`]{.an data-exp="<b>Grados de libertad</b>: con Welch no son un número entero. Se informan entre paréntesis: t(207,3)."}, [p-value = `r signif(tt$p.value, 4)`]{.an data-exp="<b>Valor p</b>: si la estancia no influyera, obtener una diferencia así de grande ocurriría solo 2 veces de cada 1000. Es menor que 0,05 → rechazamos H₀."}\
+alternative hypothesis: true difference in means between group no and group sí is not equal to 0\
+[95 percent confidence interval:\
+ `r round(tt$conf.int[1], 6)` `r round(tt$conf.int[2], 6)`]{.an data-exp="<b>IC 95 % de la diferencia</b> (no − sí): entre 1,8 y 8,4 puntos a favor de la estancia. <b>No incluye el 0</b>: coherente con p < 0,05."}\
+sample estimates:\
+[mean in group no mean in group sí\
+        `r round(tt$estimate[1], 5)`         `r round(tt$estimate[2], 5)`]{.an data-exp="<b>Medias de cada grupo</b>: sin estancia y con estancia. La diferencia es de unos 5 puntos."}
+:::
+::: an-panel
+Pasa el ratón por las partes resaltadas de la salida o pulsa el botón para recorrerla.
+:::
+:::
+
+## Muestras relacionadas y *d* de Cohen {.copia}
+
+::: columns
+::: {.column width="50%"}
+```{r}
+#| filename: "Paso 3 · Pretest y postest"
+set.seed(2)
+pre  <- round(rnorm(20, 60, 10))
+post <- pre + round(rnorm(20, 5, 6))
+t.test(post, pre, paired = TRUE)$p.value
+```
+
+- **Independientes**: personas distintas (estancia sí/no)
+- **Relacionadas**: las mismas personas, dos veces
+:::
+::: {.column width="50%"}
+```{r}
+#| filename: "Paso 4 · Tamaño del efecto"
+d_cohen <- function(x, y) {
+  sp <- sqrt(((length(x) - 1) * var(x) +
+              (length(y) - 1) * var(y)) /
+             (length(x) + length(y) - 2))
+  (mean(x) - mean(y)) / sp
+}
+with(ele, d_cohen(nota_dele[estancia == "sí"],
+                  nota_dele[estancia == "no"]))
+```
+:::
+:::
+
+## Wilcoxon: comparar rangos {.explica}
+
+::: {.w data-w="wilcoxon"}
+:::
+
+::: notes
+Ocho personas sin estancia y ocho con estancia; hay un valor extremo (12). Pulsar «Ordenar»: todos pasan a una sola fila y reciben su rango. Wilcoxon compara la suma de rangos de cada grupo, no las medias: el 12 pesa igual que si fuera 7.
+:::
+
+## Wilcoxon en R {.copia}
+
+```{r}
+#| filename: "Paso 5 · Datos no normales: errores de ser/estar"
+wilcox.test(err_ser_estar ~ estancia, data = ele)
+```
+
+::: {.tarjetas style="--cols:2"}
+<div><span class="t">Cuándo usarla</span>Datos no normales, ordinales o recuentos; muestras pequeñas; valores extremos.</div>
+<div><span class="t">Qué compara</span>Si un grupo tiende a tener valores más altos (los rangos), no las medias.</div>
+:::
+
+## Correlación {.explica}
+
+::: {.w data-w="correlacion"}
+:::
+
+::: notes
+Mover r de −1 a 1. Con r = 0,5 solo se comparte un 25 % de la varianza. Activar el atípico: Pearson cae mucho, Spearman resiste. Correlación no implica causalidad.
+:::
+
+## Correlación en R {.copia}
+
+```{r}
+#| filename: "Paso 6 · Horas y nota"
+cor.test(ele$horas, ele$nota_dele)
+```
+
+::: pequeno
+Para datos no normales u ordinales: `method = "spearman"`.
+:::
+
+## Práctica 3 (20 min) {.reto-s background-gradient="linear-gradient(135deg, #2A9D8F 0%, #1D3557 100%)"}
+
+::: practica
+- [ ] Comprueba con un gráfico Q-Q y con `shapiro.test()` si `horas` es normal.
+- [ ] Calcula el IC 95 % de la nota media del DELE.
+- [ ] Recorre el [árbol para elegir la prueba](#/elegir-prueba): ¿difiere la nota entre L1 **inglés** y **chino**? Filtra y usa `t.test()`.
+- [ ] Calcula la *d* de Cohen de esa diferencia.
+- [ ] ¿Se relacionan `horas` y `err_ser_estar`? Usa Spearman.
+:::
+
+## Práctica 3: soluciones {.copia}
+
+```{r}
+#| eval: false
+#| filename: "Soluciones de la práctica 3"
+qqnorm(ele$horas); qqline(ele$horas); shapiro.test(ele$horas)
+t.test(ele$nota_dele)$conf.int
+dos <- ele |> filter(L1 %in% c("inglés", "chino"))
+t.test(nota_dele ~ L1, data = dos)
+with(dos, d_cohen(nota_dele[L1 == "inglés"], nota_dele[L1 == "chino"]))
+cor.test(ele$horas, ele$err_ser_estar, method = "spearman")
+```
+
+
+## {#s4 .hero background-image="img/s4_chi_anova.jpg" background-size="cover" background-color="#0d1b2a" data-menu-title="Sesión 4 · Chi cuadrado y ANOVA"}
+
+::: hero-panel
+[Sesión 4 · 60 minutos]{.kicker}
+
+<h1>Chi cuadrado y ANOVA</h1>
+
+::: pregunta
+¿Depende el uso del subjuntivo de la estancia? ¿Difiere la nota según la lengua materna?
+:::
+
+::: chips
+<span>Tablas de contingencia</span><span>Observadas y esperadas</span><span>Residuos</span><span>V de Cramér</span><span>ANOVA y F</span><span>Tukey</span><span>Interacciones</span>
+:::
+:::
+
+## Tabla de contingencia {.copia}
+
+```{r}
+#| filename: "Paso 1 · Cruzar dos categóricas"
+tab <- table(ele$estancia, ele$subjuntivo)
+tab
+prop.table(tab, 1) |> round(2)
+```
+
+## Chi cuadrado: ficha
+
+::: {.tarjetas style="--cols:2"}
+<div><span class="t">¿Qué pregunta responde?</span>¿Están <b>asociadas</b> dos variables <b>categóricas</b>?<br><i>¿Depende el uso del subjuntivo de la estancia?</i></div>
+<div><span class="t">Hipótesis</span>H₀: las variables son independientes<br>H₁: están asociadas</div>
+<div><span class="t">Supuestos</span><ul><li>Recuentos (no porcentajes ni medias)</li><li>Cada persona en <b>una sola</b> celda</li><li>Esperadas ≥ 5 (si no, <b>Fisher</b>)</li></ul></div>
+<div><span class="t">Estadístico</span>χ² = Σ (O − E)² / E<br>esperada = total fila × total columna / total<br>Efecto: <b>V de Cramér</b></div>
+:::
+
+## Observadas, esperadas y residuos {.explica}
+
+::: {.w data-w="chi-mosaico"}
+:::
+
+::: notes
+Observadas: la anchura de cada columna es el número de personas; la altura, el reparto. Pulsar Esperadas: las dos columnas se igualan (eso es la independencia). La diferencia entre ambas imágenes es lo que mide χ². Residuos: las cuatro celdas superan |1,96|.
+:::
+
+## χ² paso a paso {.copia}
+
+```{r}
+#| filename: "Paso 2 · Esperadas y contribuciones"
+O <- tab
+E <- outer(rowSums(O), colSums(O)) / sum(O)   # fila × columna / total
+round(E, 1)
+round((O - E)^2 / E, 2)
+```
+
+```{r}
+#| filename: "Paso 3 · La prueba y los residuos"
+prueba <- chisq.test(tab)
+prueba
+prueba$stdres |> round(2)
+```
+
+## Tamaño del efecto y Fisher {.copia}
+
+```{r}
+#| filename: "Paso 4 · V de Cramér"
+v_cramer <- function(t) {
+  chi <- suppressWarnings(chisq.test(t, correct = FALSE))$statistic
+  sqrt(chi / (sum(t) * (min(dim(t)) - 1))) |> unname()
+}
+v_cramer(tab)
+fisher.test(tab)$p.value
+```
+
+::: pequeno
+Fisher: cuando alguna frecuencia esperada es menor que 5.
+:::
+
+## Más categorías: residuos como mapa de calor {.copia}
+
+[Paso 5 · L1 × subjuntivo]{.paso-et}
+
+```{r}
+#| output-location: column
+#| fig-width: 7
+#| fig-height: 4.4
+tab2 <- table(ele$L1, ele$subjuntivo)
+chisq.test(tab2)$p.value
+as.data.frame(chisq.test(tab2)$stdres) |>
+  ggplot(aes(Var2, Var1, fill = Freq)) +
+  geom_tile() +
+  geom_text(aes(label = round(Freq, 1)),
+            size = 7) +
+  scale_fill_gradient2(low = "#E63946",
+    mid = "white", high = "#2A9D8F") +
+  labs(x = NULL, y = NULL)
+```
+
+## ¿Por qué no hacer muchas pruebas t? {.explica}
+
+::: {.w data-w="fwer"}
+:::
+
+::: notes
+Con 4 grupos hay 6 comparaciones dos a dos: un 26 % de probabilidad de al menos una falsa alarma. Activar Bonferroni. Por eso usamos un ANOVA (una sola prueba) y luego Tukey.
+:::
+
+## La idea de F {.explica}
+
+$$F = \frac{\text{variación entre grupos}}{\text{variación dentro de los grupos}}$$
+
+::: {.w data-w="anova-f"}
+:::
+
+::: notes
+Separar las medias: la barra roja (entre) crece y F sube. Aumentar el ruido dentro: la barra gris crece y F baja. Es la misma lógica de señal y ruido que la prueba t, para más de dos grupos.
+:::
+
+## ANOVA: ficha
+
+::: {.tarjetas style="--cols:2"}
+<div><span class="t">¿Qué pregunta responde?</span>¿Difieren las <b>medias</b> entre <b>3 o más grupos</b>?<br><i>¿Varía la nota del DELE según la L1?</i></div>
+<div><span class="t">Hipótesis</span>H₀: μ₁ = μ₂ = μ₃ = μ₄<br>H₁: al menos una media es distinta</div>
+<div><span class="t">Supuestos</span><ul><li>Residuos <b>normales</b></li><li><b>Varianzas similares</b></li><li>Observaciones independientes</li></ul></div>
+<div><span class="t">Después</span>F grande → p pequeño → <b>post hoc</b> (Tukey) y <b>η²</b></div>
+:::
+
+## ANOVA de un factor {.copia}
+
+```{r}
+#| filename: "Paso 6 · Ajustar el ANOVA"
+modelo_aov <- aov(nota_dele ~ L1, data = ele)
+summary(modelo_aov)
+```
+
+```{r}
+#| filename: "Paso 7 · Supuestos"
+shapiro.test(residuals(modelo_aov))$p.value   # normalidad de residuos
+bartlett.test(nota_dele ~ L1, data = ele)$p.value  # igualdad de varianzas
+```
+
+## ¿Qué grupos difieren? Tukey {.copia}
+
+```{r}
+#| filename: "Paso 8 · Comparaciones post hoc"
+TukeyHSD(modelo_aov)
+```
+
+## Tu resultado de Tukey, explicado {.explica}
+
+::: {.w data-w="tukey"}
+:::
+
+::: notes
+Cada línea es el IC 95 % de una diferencia de medias, ya corregido por comparaciones múltiples. Si cruza el 0 (gris), no podemos afirmar que difieran. Pasar el ratón por cada fila y leer la frase.
+:::
+
+## Tamaño del efecto y dos factores {.copia}
+
+```{r}
+#| filename: "Paso 9 · η²"
+ss <- summary(modelo_aov)[[1]]$`Sum Sq`
+eta2 <- ss[1] / sum(ss)
+eta2
+```
+
+La L1 explica un `r round(100 * eta2)` % de la variación de la nota.
+
+```{r}
+#| filename: "Paso 10 · ANOVA de dos factores con interacción"
+summary(aov(nota_dele ~ L1 * estancia, data = ele))
+```
+
+## ¿Qué es una interacción? {.explica}
+
+::: {.w data-w="interaccion"}
+:::
+
+::: notes
+Primero nuestros datos: casi paralelas, la interacción L1:estancia no es significativa. Después los escenarios ficticios: ordinal (la estancia ayuda a todos, pero no por igual) y cruzada (ayuda a unos y perjudica a otros). En la cruzada, mirar solo los efectos principales llevaría a conclusiones equivocadas.
+:::
+
+## Kruskal-Wallis y resumen {.copia}
+
+```{r}
+#| filename: "Paso 11 · ANOVA no paramétrico"
+kruskal.test(err_ser_estar ~ L1, data = ele)
+```
+
+| Pregunta | Prueba | Función |
+|:--|:--|:--|
+| 2 categóricas | Chi cuadrado / Fisher | `chisq.test()`, `fisher.test()` |
+| Numérica × ≥ 3 grupos | ANOVA + Tukey | `aov()`, `TukeyHSD()` |
+| Ídem, sin normalidad | Kruskal-Wallis | `kruskal.test()` |
+
+## Práctica 4 (20 min) {.reto-s background-gradient="linear-gradient(135deg, #2A9D8F 0%, #1D3557 100%)"}
+
+::: practica
+- [ ] ¿Depende el uso del subjuntivo del **nivel**? Haz la tabla y el χ².
+- [ ] Revisa los residuos estandarizados: ¿qué niveles se desvían?
+- [ ] Dibuja el mosaico (`mosaicplot(t4, shade = TRUE)`) y calcula la V de Cramér.
+- [ ] ¿Difiere la nota del DELE según el **nivel**? Haz un ANOVA y un Tukey.
+- [ ] ¿Difieren los errores de *ser/estar* según el nivel? (Kruskal-Wallis)
+:::
+
+## Práctica 4: soluciones {.copia}
+
+```{r}
+#| eval: false
+#| filename: "Soluciones de la práctica 4"
+t4 <- table(ele$nivel, ele$subjuntivo)
+chisq.test(t4); chisq.test(t4)$stdres
+mosaicplot(t4, shade = TRUE); v_cramer(t4)
+m4 <- aov(nota_dele ~ nivel, data = ele)
+summary(m4); TukeyHSD(m4)
+kruskal.test(err_ser_estar ~ nivel, data = ele)
+```
+
+
+## {#s5 .hero background-image="img/s5_corpus.jpg" background-size="cover" background-color="#0d1b2a" data-menu-title="Sesión 5 · Corpus y modelos"}
+
+::: hero-panel
+[Sesión 5 · 60 minutos]{.kicker}
+
+<h1>Estadística de corpus y modelos</h1>
+
+::: pregunta
+¿Qué palabras delatan a un aprendiente? ¿Qué predice que use bien el subjuntivo?
+:::
+
+::: chips
+<span>Frecuencias normalizadas</span><span>Log-likelihood</span><span>Log-ratio</span><span>Simple Maths</span><span>Mapa de palabras clave</span><span>Regresión lineal y logística</span>
+:::
+:::
+
+## Aprendientes frente a nativos {.copia}
+
+```{r}
+#| filename: "Paso 1 · Tamaños de los corpus y frecuencias normalizadas"
+N_aprend <- 150000; N_nativo <- 200000   # palabras de cada corpus
+frec <- frec |>
+  mutate(pmw_aprend = aprend / N_aprend * 1e6,
+         pmw_nativo = nativo / N_nativo * 1e6)
+frec |> select(palabra, aprend, nativo, pmw_aprend, pmw_nativo) |> head(5)
+```
+
+::: idea
+Corpus de distinto tamaño → comparar frecuencias **por millón** de palabras (pmw).
+:::
+
+## Log-likelihood (G²): el caso de *pues*
+
+| | Aprendientes | Nativos | Total |
+|:--|--:|--:|--:|
+| **Observadas** | 90 | 380 | 470 |
+| Tamaño del corpus | 150 000 | 200 000 | 350 000 |
+| **Esperadas** | 470 × 150/350 = **201** | 470 × 200/350 = **269** | 470 |
+
+$$G^2 = 2 \sum O \ln\frac{O}{E} = 2 \times [90 \ln(90/201) + 380 \ln(380/269)] \approx 118$$
+
+::: clave
+G² > 3,84 → p < 0,05 · G² > 15,13 → p < 0,0001. Con frecuencias bajas es más fiable que χ².
+:::
+
+## LL y log-ratio en R {.copia}
+
+```{r}
+#| filename: "Paso 2 · Dos funciones y una tabla"
+ll <- function(a, b, N1, N2) {
+  E1 <- N1 * (a + b) / (N1 + N2); E2 <- N2 * (a + b) / (N1 + N2)
+  2 * (a * log(a / E1) + b * log(b / E2))
+}
+frec <- frec |> mutate(LL = ll(aprend, nativo, N_aprend, N_nativo),
+                       LR = log2(pmw_aprend / pmw_nativo))
+frec |> arrange(desc(abs(LR))) |>
+  transmute(palabra, LL = round(LL, 1), LR = round(LR, 2),
+            sig = ifelse(LL > 15.13, "***", ifelse(LL > 3.84, "*", "")))
+```
+
+## El mapa de palabras clave {.explica}
+
+::: {.w data-w="keyness"}
+:::
+
+::: notes
+Eje vertical: ¿es fiable la diferencia? (LL). Eje horizontal: ¿es grande? (log-ratio; 1 = el doble, −1 = la mitad). Palabras clave de verdad: arriba y a los lados. Bajar el umbral a p < 0,05 o el |LR| a 0,5 y ver cómo cambia la lista. Pasar el ratón por «pues» y por «o sea».
+:::
+
+## Simple Maths: la fórmula de Sketch Engine {.copia}
+
+$$SM = \frac{pmw_{aprend} + n}{pmw_{nativo} + n} \qquad (n = 1 \text{ por defecto})$$
+
+```{r}
+#| filename: "Paso 3 · Simple Maths con dos valores de n"
+sm <- function(pmw1, pmw2, n = 1) (pmw1 + n) / (pmw2 + n)
+frec |> mutate(SM_1 = sm(pmw_aprend, pmw_nativo),
+               SM_1000 = sm(pmw_aprend, pmw_nativo, n = 1000)) |>
+  arrange(desc(SM_1)) |> select(palabra, SM_1, SM_1000) |> head(4)
+```
+
+## ¿Cómo cambia el ranking con *n*? {.explica}
+
+::: {.w data-w="simple-maths"}
+:::
+
+::: notes
+Mover n de 0,1 a 10 000. Con n bajo destacan las palabras raras; con n alto todo se acerca a 1 y destacan las frecuentes. Observar cómo «muy» adelanta a «cosa» y cómo «sin embargo» cae. Kilgarriff (2009).
+:::
+
+## Con textos reales: `quanteda` {.copia}
+
+```{r}
+#| eval: false
+#| filename: "Para tus propios corpus"
+library(quanteda); library(quanteda.textstats)
+corp <- corpus(readtext::readtext("corpus/*.txt", docvarsfrom = "filenames"))
+dfm_g <- tokens(corp, remove_punct = TRUE) |> dfm() |>
+  dfm_group(groups = docvar1)                  # aprendientes / nativos
+kw <- textstat_keyness(dfm_g, target = "aprendientes", measure = "lr")
+head(kw, 20)                                   # G² y valor p
+quanteda.textplots::textplot_keyness(kw)
+```
+
+::: idea
+Cómo informar: *pues* aparece significativamente menos en el corpus de aprendientes (LL = `r fmt(frec$LL[frec$palabra == "pues"], 1)`, p < 0,0001; log-ratio = `r fmt(frec$LR[frec$palabra == "pues"], 2)`): lo usan unas `r fmt(2^-frec$LR[frec$palabra == "pues"], 1)` veces menos.
+:::
+
+## La idea de la regresión {.explica}
+
+::: {.w data-w="regresion"}
+:::
+
+::: notes
+Pedir a alguien que mueva los deslizadores hasta minimizar la suma de los cuadrados rojos. Después pulsar «Ajuste de lm()»: la recta salta a la solución de mínimos cuadrados. Eso es exactamente lo que hace lm().
+:::
+
+## Regresión lineal: predecir la nota {.copia}
+
+```{r}
+#| filename: "Paso 4 · lm() con dos predictores"
+modelo_lm <- lm(nota_dele ~ horas + estancia, data = ele)
+summary(modelo_lm)$coefficients |> round(3)
+summary(modelo_lm)$r.squared
+```
+
+::: clave
+Cada hora de instrucción suma `r fmt(coef(modelo_lm)[2], 3)` puntos (unos `r fmt(100 * coef(modelo_lm)[2], 1)` cada 100 horas). La estancia suma `r fmt(coef(modelo_lm)[3], 1)` puntos a igualdad de horas. El modelo explica el `r round(100 * summary(modelo_lm)$r.squared)` % de la variación.
+:::
+
+## ¿Por qué no una recta para un sí/no?
+
+```{r}
+#| echo: false
+#| fig-width: 12
+#| fig-height: 5
+ele2 <- ele |> mutate(y = as.integer(subjuntivo == "correcto"))
+ggplot(ele2, aes(horas, y)) + geom_jitter(height = .04, alpha = .3, colour = "#1D3557") +
+  geom_smooth(method = "lm", se = FALSE, colour = "grey50", linetype = 2, fullrange = TRUE) +
+  geom_smooth(method = "glm", method.args = list(family = binomial), se = FALSE, colour = "#E63946", linewidth = 1.4) +
+  labs(y = "Subjuntivo correcto (1) / incorrecto (0)", x = "Horas")
+```
+
+La recta (gris) predice probabilidades **< 0 o > 1**; la curva **en S** (roja) se queda entre 0 y 1.
+
+## Probabilidad, odds y log-odds {.explica}
+
+::: {.w data-w="logistica"}
+:::
+
+::: notes
+Modelo simplificado con un solo predictor (horas). Mover b₀ desplaza la S; b₁ la hace más o menos empinada. El tercer deslizador consulta una cantidad de horas: se ve la cadena log-odds → odds → probabilidad. Pulsar «Ajuste de glm()».
+:::
+
+## Regresión logística en R {.copia}
+
+```{r}
+#| filename: "Paso 5 · glm() con family = binomial"
+ele <- ele |> mutate(subj_ok = as.integer(subjuntivo == "correcto"))
+modelo_glm <- glm(subj_ok ~ horas + estancia + L1, data = ele, family = binomial)
+summary(modelo_glm)$coefficients |> round(3)
+exp(coef(modelo_glm)) |> round(2)      # odds ratios
+```
+
+::: clave
+OR > 1 → **aumenta** la probabilidad de acierto. La estancia multiplica las *odds* de acierto por `r fmt(exp(coef(modelo_glm))["estanciasí"], 1)`.
+:::
+
+## Probabilidades predichas {.resultado}
+
+[Paso 6 · Curvas por grupo]{.paso-et}
+
+```{r}
+#| output-location: column
+#| fig-width: 7.5
+#| fig-height: 5
+ggplot(ele, aes(horas, subj_ok,
+                colour = estancia)) +
+  geom_jitter(height = .05, alpha = .4) +
+  geom_smooth(method = "glm",
+    method.args = list(family = binomial),
+    se = FALSE, linewidth = 1.4) +
+  scale_colour_manual(
+    values = c("#1D3557", "#E63946")) +
+  labs(y = "P(subjuntivo correcto)")
+```
+
+
+## {#arboles .hero background-image="img/s6_arboles.jpg" background-size="cover" background-color="#0d1b2a" data-menu-title="Árboles de decisión"}
+
+::: hero-panel
+[Sesión 5 · Segunda parte]{.kicker}
+
+<h1>Árboles de decisión</h1>
+
+::: pregunta
+¿Qué perfil de aprendiente usa bien el subjuntivo? Que los datos hagan las preguntas.
+:::
+
+::: chips
+<span>Anatomía de un árbol</span><span>Impureza de Gini</span><span>El mejor corte</span><span>Crecer y podar</span><span>Sobreajuste</span><span>Matriz de confusión</span><span>Árboles de regresión</span>
+:::
+:::
+
+## Un árbol es un juego de preguntas
+
+::: columns
+::: {.column width="52%"}
+Antes elegimos la prueba con un **árbol hecho por nosotros**. Ahora será **R** quien construya el árbol a partir de los datos.
+
+::: {.tarjetas style="--cols:1"}
+<div><span class="t">La pregunta del curso</span>¿Quién usa correctamente el subjuntivo en un contexto obligatorio?</div>
+<div><span class="t">Lo que hace el árbol</span>Busca la <b>pregunta de sí/no</b> que mejor separa a quienes aciertan de quienes fallan… y vuelve a preguntar dentro de cada grupo.</div>
+<div><span class="t">Lo que obtenemos</span>Reglas que se leen en voz alta: <i>«Si tiene más de 243 horas y es C1, acierta el 82 %»</i>.</div>
+:::
+:::
+::: {.column width="48%"}
+![](img/arbol_intuicion.jpg){fig-alt="Ilustración de un árbol cuyas ramas son preguntas" style="border-radius:20px; box-shadow: 0 6px 24px rgba(29,53,87,.13);"}
+:::
+:::
+
+## Anatomía de un árbol {.explica}
+
+::: {.w data-w="anatomia-arbol"}
+:::
+
+::: notes
+Pasar el ratón por raíz, rama, nodo interno y hojas. Es un trozo del árbol real que construiremos. Insistir en que la rama izquierda es el «sí» en rpart.plot. La hoja de 59 % es impura: el árbol duda.
+:::
+
+## Dos tipos de árbol
+
+::: {.tarjetas style="--cols:2"}
+<div><span class="t">Árbol de clasificación</span>Respuesta <b>categórica</b><br><i>subjuntivo: correcto / incorrecto</i><p>Cada hoja predice una <b>clase</b> y una proporción.</p><p><code>rpart(..., method = "class")</code></p></div>
+<div><span class="t">Árbol de regresión</span>Respuesta <b>numérica</b><br><i>nota_dele</i><p>Cada hoja predice una <b>media</b>.</p><p><code>rpart(...)</code> (método «anova»)</p></div>
+:::
+
+::: idea
+El paquete `rpart` (*recursive partitioning*) hace las dos cosas. `rpart.plot` los dibuja.
+:::
+
+## ¿Qué es una buena pregunta? La impureza {.explica}
+
+::: {.w data-w="gini"}
+:::
+
+::: notes
+Un nodo puro (todos correcto o todos incorrecto) tiene impureza 0. Una mezcla 50/50 tiene la máxima: 0,5. El árbol busca preguntas que produzcan hijos lo más puros posible. Activar la entropía: otra medida con la misma forma.
+:::
+
+## El mejor corte, en directo {.explica}
+
+::: {.w data-w="mejor-corte"}
+:::
+
+::: notes
+Con «horas»: mover el corte. Los dos recuadros de la derecha son los hijos; la curva inferior, la reducción de Gini en cada corte posible. Pulsar «Buscar el mejor corte»: se barren todos y se detiene en 243,5, que es exactamente el que elige rpart. Después cambiar a nivel, L1 y estancia y, por último, «Comparar»: gana horas → es la raíz.
+:::
+
+## El algoritmo en cuatro pasos
+
+::: {.tarjetas style="--cols:4"}
+<div><span class="t">1 · Probar</span>Todas las variables y todos los puntos de corte posibles.</div>
+<div><span class="t">2 · Elegir</span>El corte que más reduce la impureza (Gini).</div>
+<div><span class="t">3 · Repetir</span>Dentro de cada hijo, como si fuera un conjunto de datos nuevo (recursivo).</div>
+<div><span class="t">4 · Parar</span>Cuando mejorar «cuesta» más que el parámetro de complejidad <b>cp</b>, o hay pocos casos.</div>
+:::
+
+::: idea
+Un árbol muy profundo **memoriza** los datos (sobreajuste). Hay que **podarlo** y evaluarlo con datos nuevos.
+:::
+
+## Construye tu primer árbol {.copia}
+
+```{r}
+#| filename: "Paso 1 · Ajustar el árbol de clasificación"
+set.seed(2026)   # la validación cruzada interna usa números aleatorios
+arbol <- rpart(subjuntivo ~ horas + estancia + L1 + nivel,
+               data = ele, method = "class", cp = 0.01)
+```
+
+```{r}
+#| filename: "Paso 2 · Verlo en texto"
+arbol
+```
+
+## Cómo leer `print(arbol)` {.resultado}
+
+::: anatomia
+::: salida
+n= 240\
+\
+[node), split, n, loss, yval, (yprob)]{.an data-exp="<b>La cabecera</b> explica cada columna: número de nodo, condición, n de casos, casos mal clasificados (<b>loss</b>), clase predicha (<b>yval</b>) y proporciones de cada clase."}\
+      * denotes terminal node\
+\
+[ 1) root 240 116 correcto (0.5166667 0.4833333)]{.an data-exp="<b>Nodo 1, la raíz</b>: los 240 aprendientes. Si predijéramos siempre «correcto» fallaríamos 116 veces. Hay un 51,7 % de correctos."}\
+[   2) horas>=243.5 161  52 correcto (0.6770186 0.3229814)]{.an data-exp="<b>Primera división</b>: 161 aprendientes con 243,5 horas o más. El 67,7 % acierta. La sangría indica la profundidad."}\
+[     4) nivel=C1 62  11 correcto (0.8225806 0.1774194) *]{.an data-exp="<b>Una hoja</b> (el asterisco): con muchas horas y nivel C1, el 82 % acierta. Solo 11 de 62 fallan."}\
+     5) nivel=A2,B1,B2 99  41 correcto (0.5858586 0.4141414)\
+      10) horas>=351.5 19   3 correcto (0.8421053 0.1578947) *\
+      11) horas< 351.5 80  38 correcto (0.5250000 0.4750000)\
+        22) horas< 256.5 8   1 correcto (0.8750000 0.1250000) *\
+[        23) horas>=256.5 72  35 incorrecto (0.4861111 0.5138889)]{.an data-exp="<b>Sospechoso</b>: un corte en 256,5 horas justo después de otro en 243,5, con solo 8 personas a un lado. Huele a <b>sobreajuste</b>: el árbol está aprendiendo el ruido."}\
+          46) L1=inglés,italiano 33  14 correcto (0.5757576 0.4242424) *\
+          47) L1=árabe,chino 39  16 incorrecto (0.4102564 0.5897436)\
+            94) horas< 293.5 14   6 correcto (0.5714286 0.4285714) *\
+            95) horas>=293.5 25   8 incorrecto (0.3200000 0.6800000) *\
+[   3) horas< 243.5 79  15 incorrecto (0.1898734 0.8101266) *]{.an data-exp="<b>La otra rama de la raíz</b>: con menos de 243,5 horas, el 81 % <b>falla</b> el subjuntivo. Es una hoja muy pura y muy útil."}
+:::
+::: an-panel
+Pasa el ratón por las líneas resaltadas o pulsa el botón para recorrerlas.
+:::
+:::
+
+## Dibújalo {.copia}
+
+```{r}
+#| filename: "Paso 3 · rpart.plot()"
+#| fig-width: 14
+#| fig-height: 6.4
+rpart.plot(arbol, type = 4, extra = 104, box.palette = "RdGn",
+           fallen.leaves = FALSE, tweak = 1.5)
+```
+
+::: pequeno
+`type = 4`: etiqueta las dos ramas · `extra = 104`: probabilidades de cada clase y % de casos en cada nodo.
+:::
+
+## Mira cómo crece {.explica}
+
+::: {.w data-w="arbol" data-arbol="grande" data-modo="crecer"}
+:::
+
+::: notes
+Empezar en profundidad 0: sin preguntas, predecir siempre «correcto» da un 51,7 %. Con la primera pregunta (horas) se salta al 72 %. Cada nivel posterior gana muy poco… en estos datos. Dejar la duda en el aire: ¿esas preguntas extra sirven para aprendientes nuevos?
+:::
+
+## Explora las reglas {.explica}
+
+::: {.w data-w="arbol" data-arbol="grande" data-modo="explorar"}
+:::
+
+::: notes
+Pasar el ratón por cada hoja: aparece la regla completa en forma SI… Y… ENTONCES. Preguntar al grupo qué hoja les parece más útil para un profesor (la de menos de 243,5 horas: el 81 % falla).
+:::
+
+## Sigue a un aprendiente por el árbol {.explica}
+
+::: {.w data-w="arbol" data-arbol="grande" data-modo="seguir"}
+:::
+
+::: notes
+Pedir a un estudiante que invente un perfil: horas, nivel, L1. La ficha baja por el árbol y da la predicción. Cambiar la estancia: no pasa nada, porque el árbol no la usa. El árbol también selecciona variables.
+:::
+
+## Las reglas, en texto y en tabla {.copia}
+
+```{r}
+#| filename: "Paso 4 · Una regla por hoja"
+rpart.rules(arbol, cover = TRUE)
+```
+
+## ¿Acierta? {.copia}
+
+```{r}
+#| filename: "Paso 5 · Predecir y comparar con la realidad"
+pred <- predict(arbol, type = "class")
+table(real = ele$subjuntivo, predicho = pred)
+mean(pred == ele$subjuntivo)      # exactitud en los MISMOS datos
+mean(ele$subjuntivo == "correcto")   # sin árbol: predecir siempre la clase mayoritaria
+```
+
+::: idea
+Pasamos de un `r round(100 * mean(ele$subjuntivo == "correcto"))` % a un `r round(100 * mean(pred == ele$subjuntivo))` %. Pero lo hemos medido con los datos con los que **aprendió**: es como poner el examen con las preguntas resueltas en clase.
+:::
+
+## El sobreajuste: la tabla de complejidad {.copia}
+
+```{r}
+#| filename: "Paso 6 · Un árbol sin freno (cp = 0) y su validación cruzada"
+set.seed(2026)
+arbol_total <- rpart(subjuntivo ~ horas + estancia + L1 + nivel, data = ele,
+                     method = "class",
+                     control = rpart.control(cp = 0, minsplit = 6))
+printcp(arbol_total)
+```
+
+## `plotcp()` {.resultado}
+
+[Paso 7 · El gráfico de la poda]{.paso-et}
+
+```{r}
+#| output-location: column
+#| fig-width: 7.5
+#| fig-height: 5.2
+plotcp(arbol_total)
+```
+
+::: pequeno
+Eje Y: error de validación cruzada (`xerror`). La línea horizontal es el mínimo + 1 error estándar.
+:::
+
+## Entrenamiento frente a validación cruzada {.explica}
+
+::: {.w data-w="cp-curva"}
+:::
+
+::: notes
+La línea azul (entrenamiento) siempre baja: más hojas, menos error en los datos conocidos. La roja (validación cruzada, como si fueran datos nuevos) baja al principio y luego sube: eso es el sobreajuste. Recorrer las filas con el deslizador y pulsar «Regla de 1 EE»: el árbol más simple casi tan bueno como el mejor es… el de un solo corte.
+:::
+
+## Podar el árbol {.copia}
+
+[Paso 8 · prune() con el cp elegido]{.paso-et}
+
+```{r}
+#| output-location: column
+#| fig-width: 7
+#| fig-height: 4.6
+tabla_cp <- arbol_total$cptable
+minimo <- which.min(tabla_cp[, "xerror"])
+umbral <- tabla_cp[minimo, "xerror"] +
+          tabla_cp[minimo, "xstd"]
+fila_1ee <- which(tabla_cp[, "xerror"] <= umbral)[1]
+arbol_podado <- prune(arbol_total,
+  cp = tabla_cp[fila_1ee, "CP"])
+rpart.plot(arbol_podado, type = 4,
+  extra = 104, box.palette = "RdGn")
+```
+
+## Ponerlo a prueba con datos nuevos {.copia}
+
+```{r}
+#| filename: "Paso 9 · Separar entrenamiento (70 %) y prueba (30 %)"
+set.seed(2026)
+idx <- sample(nrow(ele), size = 0.7 * nrow(ele))
+entreno <- ele[idx, ]
+prueba  <- ele[-idx, ]
+arbol_e <- rpart(subjuntivo ~ horas + estancia + L1 + nivel, data = entreno,
+                 method = "class", control = rpart.control(cp = 0, minsplit = 6))
+cp_opt <- arbol_e$cptable[which.min(arbol_e$cptable[, "xerror"]), "CP"]
+arbol_p <- prune(arbol_e, cp = cp_opt)
+acierto <- function(m, d) mean(predict(m, d, type = "class") == d$subjuntivo)
+c(grande_entreno = acierto(arbol_e, entreno), grande_prueba = acierto(arbol_e, prueba),
+  podado_entreno = acierto(arbol_p, entreno), podado_prueba = acierto(arbol_p, prueba)) |> round(3)
+```
+
+## La matriz de confusión {.explica}
+
+::: {.w data-w="confusion"}
+:::
+
+::: notes
+Con el árbol sin podar: casi un 90 % en entrenamiento, pero solo un 64 % con aprendientes que no ha visto. El podado pierde algo en entrenamiento y gana en prueba. Pasar el ratón por las celdas para explicar falsos positivos y falsos negativos. Sensibilidad = correctos detectados; especificidad = incorrectos detectados.
+:::
+
+## Cómo ve el árbol el espacio {.explica}
+
+::: {.w data-w="particion"}
+:::
+
+::: notes
+Árbol con dos predictores numéricos (horas y nota) para poder dibujarlo en un plano. Profundidad 1: un corte vertical. Al subir la profundidad, más rectángulos: el árbol solo hace cortes paralelos a los ejes. Con profundidad 5 aparecen rectángulos diminutos para unos pocos puntos: sobreajuste visible. Activar la frontera logística: una sola línea oblicua.
+:::
+
+## ¿Qué variables importan? {.copia}
+
+[Paso 10 · Importancia de las variables]{.paso-et}
+
+```{r}
+#| output-location: column
+#| fig-width: 7
+#| fig-height: 4.4
+imp <- arbol$variable.importance
+round(imp, 1)
+barplot(sort(imp), horiz = TRUE, las = 1,
+        col = "#1D3557", border = NA,
+        main = "Importancia en el árbol")
+```
+
+::: pequeno
+La importancia suma lo que cada variable reduce la impureza, también como **sustituta** (*surrogate*) en los cortes en que no fue elegida.
+:::
+
+## Árbol de regresión: la nota {.copia}
+
+```{r}
+#| filename: "Paso 11 · Respuesta numérica"
+#| fig-width: 13
+#| fig-height: 5.6
+arbol_nota <- rpart(nota_dele ~ horas + estancia + L1, data = ele, cp = 0.03)
+rpart.plot(arbol_nota, type = 4, box.palette = "Blues", tweak = 1.1)
+```
+
+## Predice la nota de un aprendiente {.explica}
+
+::: {.w data-w="arbol" data-arbol="nota" data-modo="seguir"}
+:::
+
+::: notes
+Ahora cada hoja predice una media. Probar: 200 horas y L1 chino → nota prevista unos 49. 400 horas e italiano → unos 77. La estancia no aparece: el árbol no la usa con este cp.
+:::
+
+## Un árbol de regresión es una escalera {.explica}
+
+::: {.w data-w="escalones"}
+:::
+
+::: notes
+Con un solo predictor, el árbol divide el eje de horas en tramos y predice la media de cada tramo. Más profundidad, más escalones. Activar la recta de lm: la relación es casi lineal, así que la recta es más simple y explica casi lo mismo. Un árbol brilla cuando hay umbrales e interacciones.
+:::
+
+## ¿Árbol o regresión?
+
+::: {.tarjetas style="--cols:2"}
+<div><span class="t">✔ Ventajas del árbol</span><ul><li>Reglas fáciles de explicar a no especialistas</li><li>Detecta <b>umbrales</b> e <b>interacciones</b> solo</li><li>No exige normalidad ni linealidad</li><li>Selecciona variables</li></ul></div>
+<div><span class="t">✘ Limitaciones</span><ul><li><b>Inestable</b>: pocos datos distintos → árbol distinto</li><li>Tiende al <b>sobreajuste</b>: hay que podar y validar</li><li>No da valores p ni intervalos de confianza</li><li>Cortes solo paralelos a los ejes</li></ul></div>
+:::
+
+::: clave
+**Logística** para cuantificar y contrastar efectos · **árbol** para explorar perfiles y comunicar reglas. Usarlos juntos es una buena práctica.
+:::
+
+## Para saber más: bosques aleatorios {.copia}
+
+```{r}
+#| eval: false
+#| filename: "Muchos árboles votando (install.packages('ranger'))"
+library(ranger)
+bosque <- ranger(factor(subjuntivo) ~ horas + estancia + L1 + nivel,
+                 data = entreno, num.trees = 500, importance = "impurity")
+mean(predict(bosque, prueba)$predictions == prueba$subjuntivo)
+bosque$variable.importance
+```
+
+::: pequeno
+Un bosque promedia cientos de árboles hechos con remuestreos: es más estable y suele predecir mejor, pero ya no se puede leer como un único árbol.
+:::
+
+## Cómo informar de un árbol
+
+```{r}
+#| include: false
+a_e <- acierto(arbol_e, prueba); a_p <- acierto(arbol_p, prueba)
+nodo_alto <- arbol$frame[rownames(arbol$frame) == "2", ]
+nodo_bajo <- arbol$frame[rownames(arbol$frame) == "3", ]
+```
+
+> Se ajustó un árbol de clasificación (paquete *rpart*, índice de Gini) para predecir el uso correcto del subjuntivo a partir de las horas de instrucción, la estancia, la L1 y el nivel. La primera división, y la más informativa, fue la de las **horas de instrucción**: con 243,5 horas o más, el `r fmt(100 * nodo_alto$yval2[, 4], 1)` % de los aprendientes usó correctamente el subjuntivo, frente al `r fmt(100 * nodo_bajo$yval2[, 4], 1)` % con menos horas. El árbol se podó mediante validación cruzada (10 particiones). En una muestra de prueba independiente (30 %), el árbol podado acertó el `r fmt(100 * a_p, 1)` % de los casos, frente al `r fmt(100 * a_e, 1)` % del árbol sin podar.
+
+::: pequeno
+Siempre: variables candidatas, criterio de división, cómo se podó, **exactitud con datos de prueba** y comparación con la clase mayoritaria.
+:::
+
+## Práctica: árboles (20 min) {.reto-s background-gradient="linear-gradient(135deg, #E63946 0%, #1D3557 100%)"}
+
+::: practica
+- [ ] Ajusta un árbol para predecir `estancia` a partir de `horas`, `nota_dele`, `L1` y `nivel`. ¿Tiene sentido?
+- [ ] Dibuja el árbol y lee en voz alta la regla de la hoja más pura.
+- [ ] Haz `printcp()` y `plotcp()`. ¿Cuántas hojas recomienda la regla de 1 EE?
+- [ ] Pódalo y compara el acierto con datos de entrenamiento y de prueba.
+- [ ] Ajusta un árbol de regresión para `err_ser_estar`. ¿Qué variable aparece primero?
+- [ ] Redacta dos frases de resultados como en la diapositiva anterior.
+
+<details><summary>Pista</summary>Copia el Paso 9 y cambia `subjuntivo` por `estancia` en la fórmula y en la función `acierto()`.</details>
+:::
+
+## Práctica de árboles: soluciones {.copia}
+
+```{r}
+#| eval: false
+#| filename: "Soluciones"
+set.seed(2026)
+a_est <- rpart(estancia ~ horas + nota_dele + L1 + nivel, data = ele,
+               method = "class", control = rpart.control(cp = 0, minsplit = 6))
+rpart.plot(a_est, type = 4, extra = 104)
+printcp(a_est); plotcp(a_est)
+a_est_p <- prune(a_est, cp = a_est$cptable[which.min(a_est$cptable[, "xerror"]), "CP"])
+rpart.plot(a_est_p, type = 4, extra = 104)
+a_err <- rpart(err_ser_estar ~ horas + L1 + nivel + estancia, data = ele, cp = 0.02)
+rpart.plot(a_err, type = 4)
+```
+
+
+## {#cierre-s .hero background-image="img/cierre.jpg" background-size="cover" background-color="#0d1b2a" data-menu-title="Cierre"}
+
+::: hero-panel
+[Cierre · mini-investigación]{.kicker}
+
+<h1>De la pregunta al párrafo de resultados</h1>
+
+::: pregunta
+Elegir la prueba, ejecutarla, comprobar los supuestos e informar con rigor.
+:::
+
+::: chips
+<a href="#/elegir-prueba">Volver al árbol de pruebas</a><span>Cómo informar</span><span>Errores frecuentes</span><span>Práctica final</span>
+:::
+:::
+
+## ¿Qué método elijo?
+
+| Pregunta | Método | Función |
+|:--|:--|:--|
+| ¿Palabra más frecuente en un corpus que en otro? | Log-likelihood + log-ratio | `ll()`, `log2()` |
+| ¿Cuánto más frecuente es? | Log-ratio / Simple Maths | `sm()` |
+| ¿Qué predice una variable numérica? | Regresión lineal | `lm()` |
+| ¿Qué predice un sí/no? | Regresión logística | `glm(family = binomial)` |
+| ¿Qué perfiles hay? ¿Reglas fáciles de explicar? | Árbol de decisión | `rpart()`, `rpart.plot()` |
+
+::: pequeno
+Para las pruebas de contraste, vuelve al [árbol interactivo de la sesión 3](#/elegir-prueba).
+:::
+
+## Cómo informar de un resultado
+
+```{r}
+#| include: false
+desc <- ele |> group_by(estancia) |> summarise(m = mean(nota_dele), s = sd(nota_dele))
+d_est <- with(ele, d_cohen(nota_dele[estancia == "sí"], nota_dele[estancia == "no"]))
+```
+
+> Los aprendientes que habían realizado una estancia en un país hispanohablante obtuvieron una nota media más alta (*M* = `r fmt(desc$m[2], 1)`; *DE* = `r fmt(desc$s[2], 1)`) que quienes no la habían realizado (*M* = `r fmt(desc$m[1], 1)`; *DE* = `r fmt(desc$s[1], 1)`), *t*(`r fmt(tt$parameter, 1)`) = `r fmt(abs(tt$statistic), 2)`, *p* = `r fmt(tt$p.value, 3)`, *d* = `r fmt(d_est, 2)`.
+
+::: {.tarjetas style="--cols:4"}
+<div><span class="t">Descriptivos</span>M y DE de cada grupo</div>
+<div><span class="t">Estadístico</span>t, F, χ²… con sus gl</div>
+<div><span class="t">p</span>Exacto, con 3 decimales</div>
+<div><span class="t">Efecto</span>d, r, V, η², LR…</div>
+:::
+
+## Errores frecuentes
+
+::: giro
+<div><div class="in"><div class="fr">«Es significativo, así que es importante»</div><div class="re">Con muestras grandes todo es significativo. Informa siempre del <b>tamaño del efecto</b>.</div></div></div>
+<div><div class="in"><div class="fr">«He probado veinte pruebas y una ha salido»</div><div class="re">Eso es <b>p-hacking</b>: corrige por comparaciones múltiples o preregistra.</div></div></div>
+<div><div class="in"><div class="fr">«Tengo varios textos por aprendiente y los trato como independientes»</div><div class="re">No lo son: usa <b>modelos mixtos</b> (<code>lme4</code>).</div></div></div>
+<div><div class="in"><div class="fr">«Mi árbol acierta un 90 %»</div><div class="re">¿Con qué datos? Mide el acierto con <b>datos de prueba</b> o validación cruzada.</div></div></div>
+:::
+
+## Práctica 5: mini-investigación (20 min) {.reto-s background-gradient="linear-gradient(135deg, #2A9D8F 0%, #1D3557 100%)"}
+
+::: practica
+- [ ] Calcula LL y log-ratio de `frecuencias.csv`. ¿Qué palabras son clave?
+- [ ] Calcula Simple Maths con n = 1 y n = 100: ¿cambia el orden?
+- [ ] Regresión lineal: `nota_dele ~ horas + L1`. ¿Qué L1 difiere del árabe (la categoría de referencia)?
+- [ ] Regresión logística: `subj_ok ~ nivel + estancia`. Interpreta las OR.
+- [ ] Redacta **un párrafo** de resultados para uno de los análisis.
+:::
+
+## Práctica 5: soluciones {.copia}
+
+```{r}
+#| eval: false
+#| filename: "Soluciones de la práctica 5"
+frec |> mutate(LL = ll(aprend, nativo, 150000, 200000),
+               LR = log2((aprend / 150000) / (nativo / 200000))) |> arrange(desc(LL))
+frec |> mutate(SM1 = sm(pmw_aprend, pmw_nativo, 1),
+               SM100 = sm(pmw_aprend, pmw_nativo, 100)) |> arrange(desc(SM1))
+summary(lm(nota_dele ~ horas + L1, data = ele))
+exp(coef(glm(subj_ok ~ nivel + estancia, data = ele, family = binomial)))
+```
+
+## Lo que hemos recorrido
+
+::: hub
+<a href="#/s1" style="--c:#1D3557"><span class="n">1</span><span class="t">Describir</span><span class="d">media, mediana, DE, cuartiles, group_by()</span></a>
+<a href="#/s2" style="--c:#E63946"><span class="n">2</span><span class="t">Visualizar</span><span class="d">ggplot2, ggplotly, motion charts, mapas de calor</span></a>
+<a href="#/s3" style="--c:#2A9D8F"><span class="n">3</span><span class="t">Inferir</span><span class="d">IC, p, potencia, t, Wilcoxon, r</span></a>
+<a href="#/s4" style="--c:#F4A261"><span class="n">4</span><span class="t">Comparar</span><span class="d">χ², residuos, ANOVA, Tukey, interacción</span></a>
+<a href="#/s5" style="--c:#457B9D"><span class="n">5</span><span class="t">Modelar</span><span class="d">LL, log-ratio, lm, glm</span></a>
+<a href="#/arboles" class="destacada" style="--c:#E63946"><span class="n">🌳</span><span class="t">Clasificar</span><span class="d">rpart, Gini, poda, matriz de confusión</span></a>
+:::
+
+## Recursos
+
+- **Fundamentos de estadística con R para lingüistas** (Cabedo Nebot, 2021, Tirant Lo Blanch)
+- **R for Data Science** (2.ª ed.): <https://r4ds.hadley.nz>
+- **Statistics for Linguists: An Introduction Using R** (Winter, 2019)
+- **Statistics for Linguistics with R** (Gries, 2021)
+- **Log Ratio: an informal introduction** (Hardie, 2014) · **Simple maths for keywords** (Kilgarriff, 2009)
+- **LADAL**, Language Technology and Data Analysis Laboratory: <https://ladal.edu.au>
+- **rpart.plot**: <http://www.milbo.org/rpart-plot/prp.pdf> · **plotly para R**: <https://plotly-r.com>
+
+## {#gracias .hero background-image="img/cierre.jpg" background-size="cover" background-color="#0d1b2a" data-menu-title="Gracias"}
+
+::: hero-panel
+[Gracias]{.kicker}
+
+<h1>¿Preguntas?</h1>
+
+**Adrián Cabedo Nebot** · Universitat de València
+
+::: chips
+<span>adrian.cabedo@uv.es</span><a href="#/inicio">Volver al inicio</a>
+:::
+:::

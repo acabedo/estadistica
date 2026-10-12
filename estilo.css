@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono&display=swap');
+
+:root { --azul: #1D3557; --rojo: #E63946; --verde: #2A9D8F; --arena: #F4A261; --claro: #F1FAEE; }
+
+.reveal { font-family: 'Source Sans 3', sans-serif; font-size: 29px; color: #22313f; }
+.reveal h1, .reveal h2, .reveal h3 { font-family: 'Outfit', sans-serif; text-transform: none; }
+.reveal h2 { color: var(--azul); font-size: 1.3em; font-weight: 700;
+  border-left: 8px solid var(--rojo); padding-left: .45em; margin-bottom: .6em; }
+.reveal code, .reveal pre { font-family: 'JetBrains Mono', monospace; font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+.reveal pre { border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,.08); }
+.reveal div.sourceCode pre code, .reveal pre code { font-size: 1.02em !important; line-height: 1.4; max-height: 540px; }
+.reveal div.sourceCode pre code { min-height: auto; }
+.reveal .cell-output pre code { font-size: 0.95em !important; background: #fafafa; }
+.reveal .cell-output pre { border-left: 4px solid #A8DADC; }
+.reveal strong { color: var(--azul); }
+
+/* Portadas de sesión y título */
+.reveal section[data-background-gradient] h1,
+.reveal section[data-background-gradient] h2,
+.reveal section[data-background-gradient] strong,
+.reveal section[data-background-gradient] p { color: #fff; border: none; }
+.reveal section[data-background-gradient] h1 { font-size: 2.3em; font-weight: 800; }
+#title-slide, #title-slide .quarto-title-authors, #title-slide .quarto-title-author { text-align: left !important; justify-content: flex-start !important; }
+#title-slide .title { color: var(--azul); font-family: 'Outfit'; font-weight: 800; font-size: 1.8em; line-height: 1.15;
+  border-left: 10px solid var(--rojo); padding-left: .5em; }
+#title-slide .subtitle { color: #457B9D; font-family: 'Outfit'; font-weight: 500; padding-left: 1.1em; margin-top: .4em; }
+#title-slide .quarto-title-authors, #title-slide .date { padding-left: 1.1em; }
+#title-slide .quarto-title-author-name { color: var(--azul); font-weight: 600; }
+#title-slide .quarto-title-affiliation, #title-slide .date { color: #6b7785; }
+
+/* Separadores de sesión */
+.reveal section.seccion h1 { color: var(--azul); font-size: 2em; font-weight: 800; text-align: left;
+  border-left: 10px solid var(--rojo); padding-left: .5em; line-height: 1.2; }
+
+/* Tablas */
+.reveal table { font-size: .78em; border-collapse: collapse; }
+.reveal table th { background: var(--azul); color: #fff; padding: .35em .6em; }
+.reveal table td { padding: .3em .6em; border-bottom: 1px solid #e3e8ee; }
+.reveal table tr:nth-child(even) td { background: #f5f8fb; }
+
+/* Cajas */
+.grande { font-size: 1.5em; font-weight: 700; color: var(--rojo); font-family: 'Outfit'; text-align: center; margin: .5em 0; }
+.idea { border-left: 6px solid var(--rojo); padding: .4em .9em; background: #fff4f4; border-radius: 0 10px 10px 0; margin-top: .6em; }
+.practica { border-left: 6px solid var(--verde); padding: .5em 1em; background: #fff; color: #22313f; border-radius: 0 12px 12px 0; }
+.pequeno { font-size: .7em; color: #555; }
+
+/* Fichas de pruebas: rejilla de tarjetas */
+.ficha { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: .78em; }
+.ficha .tarjeta { background: #fff; border-radius: 14px; padding: .5em .9em; box-shadow: 0 3px 12px rgba(29,53,87,.12); border-top: 6px solid var(--azul); }
+.ficha .tarjeta:nth-child(2) { border-top-color: var(--rojo); }
+.ficha .tarjeta:nth-child(3) { border-top-color: var(--verde); }
+.ficha .tarjeta:nth-child(4) { border-top-color: var(--arena); }
+.ficha .tarjeta p { margin: .2em 0; }
+.ficha .tarjeta ul { margin: 0; }
+.ficha .t { font-family: 'Outfit'; font-weight: 700; color: var(--azul); display: block; margin-bottom: .15em; }
+
+/* Hoja de ruta */
+.ruta { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin: 1em 0 1.2em; }
+.ruta .paso { background: #fff; border-radius: 14px; padding: .6em .7em; box-shadow: 0 3px 12px rgba(29,53,87,.12);
+  border-top: 6px solid var(--azul); font-size: .9em; min-height: 250px; }
+.ruta .paso:nth-child(2) { border-top-color: var(--rojo); } .ruta .paso:nth-child(3) { border-top-color: var(--verde); }
+.ruta .paso:nth-child(4) { border-top-color: var(--arena); } .ruta .paso:nth-child(5) { border-top-color: #457B9D; }
+.ruta .num { font-family: 'Outfit'; font-weight: 800; font-size: 2.4em; color: #d5dde6; line-height: 1; }
+.ruta .paso p { margin: .3em 0; }
+.ruta .pr { color: #2A9D8F; font-weight: 600; }
