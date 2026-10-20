@@ -64,27 +64,6 @@ w_holdout <- list(
   simple = list(hojas = sum(w_a1$frame$var == "<leaf>"),
                 entreno = matriz(w_a1, w_entreno), prueba = matriz(w_a1, w_prueba)))
 
-# --- Partición del plano (horas × nota) según la profundidad ---
-w_gh <- seq(min(ele$horas), max(ele$horas), length.out = 64)
-w_gn <- seq(min(ele$nota_dele), max(ele$nota_dele), length.out = 44)
-w_rejilla <- expand.grid(horas = w_gh, nota_dele = w_gn)
-w_particion <- lapply(1:5, function(d) {
-  m <- rpart(subjuntivo ~ horas + nota_dele, data = ele, method = "class",
-             control = rpart.control(cp = 0, maxdepth = d, minsplit = 10))
-  list(prof = d, hojas = sum(m$frame$var == "<leaf>"),
-       acierto = mean(predict(m, type = "class") == ele$subjuntivo),
-       p = round(predict(m, w_rejilla)[, "correcto"], 3))
-})
-w_glm2 <- coef(glm(subjuntivo == "correcto" ~ horas + nota_dele, data = ele, family = binomial))
-
-# --- Árbol de regresión con un solo predictor (función escalonada) ---
-w_hs <- seq(min(ele$horas), max(ele$horas), length.out = 300)
-w_escalones <- lapply(1:4, function(d) {
-  m <- rpart(nota_dele ~ horas, data = ele, control = rpart.control(cp = 0, maxdepth = d, minsplit = 20))
-  list(prof = d, y = round(predict(m, data.frame(horas = w_hs)), 2),
-       r2 = 1 - sum(residuals(m)^2) / sum((ele$nota_dele - mean(ele$nota_dele))^2))
-})
-
 # --- Otros resultados ---
 w_tab <- table(ele$estancia, ele$subjuntivo)
 w_chi <- suppressWarnings(chisq.test(w_tab))
@@ -114,9 +93,7 @@ CURSO <- list(
   cptabla = cp_a_tabla(w_arbol_total),
   importancia = data.frame(var = names(w_arbol_grande$variable.importance),
                            imp = unname(w_arbol_grande$variable.importance)),
-  holdout = w_holdout,
-  particion = list(horas = w_gh, nota = w_gn, capas = w_particion, glm = unname(w_glm2)),
-  escalones = list(horas = w_hs, capas = w_escalones)
+  holdout = w_holdout
 )
 
 writeLines(paste0("window.CURSO = ", toJSON(CURSO, auto_unbox = TRUE, digits = 6, dataframe = "rows",

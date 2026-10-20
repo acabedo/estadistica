@@ -161,12 +161,12 @@
     const col = d3.scaleSequential([35, 100], d3.interpolateRgb("#d8e2ec", COL.azul));
     const dots = svg.append("g").selectAll("circle").data(pts).join("circle")
       .attr("cx", d => d.x).attr("cy", d => d.y).attr("r", 6).attr("fill", "#cdd6e0");
-    svg.append("text").attr("class", "w-tag").attr("x", 40).attr("y", 16).text("Población: 240 aprendientes (cada punto, una persona)");
+    svg.append("text").attr("class", "w-tag").attr("x", 40).attr("y", 16).text("Población: 240 aprendientes (cada punto, una persona; el color, su nota DELE)");
     const x = d3.scaleLinear([56, 80], [60, 860]), g = svg.append("g");
     ejes(g, x, null, { y0: 470, sinY: true, tx: 12 });
     svg.append("line").attr("x1", x(mu)).attr("x2", x(mu)).attr("y1", 340).attr("y2", 470).attr("stroke", COL.rojo).attr("stroke-width", 3);
-    svg.append("text").attr("class", "w-tag rojo").attr("x", x(mu) + 6).attr("y", 352).text("media real " + f(mu, 1));
-    svg.append("text").attr("class", "w-tag").attr("x", 60).attr("y", 352).text("Medias de las muestras extraídas");
+    svg.append("text").attr("class", "w-tag rojo").attr("x", x(mu) + 6).attr("y", 352).text("nota media real " + f(mu, 1));
+    svg.append("text").attr("class", "w-tag").attr("x", 60).attr("y", 352).text("Nota media de cada muestra extraída");
     const gm = svg.append("g"); let hist = [];
     let n = 30; const rd = lectura(panel, "grande");
     const nDesl = deslizador(panel, { etq: "Tamaño de la muestra (n)", min: 5, max: 120, valor: 30, cambio: v => { n = v; } });
@@ -181,7 +181,7 @@
         .attr("r", 4.5).attr("fill", (v, i) => i === hist.length - 1 ? COL.rojo : COL.celeste)
         .transition().duration(rapido ? 100 : 600).attr("opacity", 0.85)
         .attr("cy", v => { const k = Math.round(v * 2) / 2; cuenta[k] = (cuenta[k] || 0) + 1; return 462 - (cuenta[k] - 1) * 8; });
-      rd.innerHTML = `<div>Media real <b class="rojo">${f(mu, 1)}</b></div><div>Media de esta muestra <b>${f(m, 1)}</b></div>
+      rd.innerHTML = `<div>Nota media real <b class="rojo">${f(mu, 1)}</b></div><div>Nota media de esta muestra <b>${f(m, 1)}</b></div>
         <div>Error de muestreo <b>${signo(m - mu)}</b></div><div class="peq">${hist.length} muestras · DE de las medias ${hist.length > 2 ? f(de(hist), 2) : "—"}</div>`;
     }
     botones(panel, [{ etq: "Extraer una muestra", click: () => extraer() },
@@ -235,8 +235,8 @@
         d3.select(this).selectAll("circle").data(z).join("circle").attr("r", 4).attr("fill", g.c).attr("opacity", 0.6)
           .attr("cy", (d, i) => g.yb + ((i % 5) - 2) * 3).transition().duration(400).attr("cx", d => x(Math.max(20, Math.min(120, 70 + d * g.sd))));
       });
-      rd.innerHTML = grupos.map(g => `<div><b style="color:${g.c}">Grupo ${g.k}</b> DE ${f(g.sd, 1)} · RIC ≈ ${f(1.349 * g.sd, 1)}</div>`).join("") +
-        `<div class="peq">Las dos tienen media 70. Cambia solo la dispersión.</div>`;
+      rd.innerHTML = grupos.map(g => `<div><b style="color:${g.c}">Grupo ${g.k}</b> DE ${f(g.sd, 1)} · RIC ≈ ${f(1.349 * g.sd, 1)}</div><div class="peq">2 de cada 3 notas entre ${f(70 - g.sd, 0)} y ${f(70 + g.sd, 0)} · mitad central entre ${f(70 - 0.674 * g.sd, 1)} y ${f(70 + 0.674 * g.sd, 1)} · varianza ${f(g.sd * g.sd, 0)}</div>`).join("") +
+        `<div class="peq">Las dos tienen media 70. Cambia solo la dispersión. <b>DE</b> = desviación típica (o estándar); <b>RIC</b> = Q3 − Q1.</div>`;
     }
     grupos.forEach(g => deslizador(panel, { etq: `DE del grupo ${g.k}`, min: 2, max: 20, paso: 0.5, valor: g.sd, fmt: v => f(v, 1), cambio: v => { g.sd = v; dibuja(); } }));
     dibuja();
@@ -254,9 +254,9 @@
     const textos = [
       "<b>1.</b> Cinco notas y su media (70).",
       "<b>2.</b> Distancia de cada nota a la media: −15, −8, 0, +1, +22. Si las sumamos dan 0.",
-      "<b>3.</b> Elevamos cada distancia al cuadrado (literalmente: cuadrados). Desaparecen los signos.",
-      "<b>4.</b> Promediamos los cuadrados (dividiendo entre n − 1): <b>varianza = 774 / 4 = 193,5</b>.",
-      "<b>5.</b> Raíz cuadrada para volver a las unidades de la nota: <b>DE = √193,5 ≈ 13,9</b>. La franja muestra ±1 DE."];
+      "<b>3.</b> Elevamos cada distancia al cuadrado (literalmente: cuadrados): 225, 64, 0, 1 y 484. Desaparecen los signos.",
+      "<b>4.</b> Sumamos los cuadrados: 225 + 64 + 0 + 1 + 484 = <b>774</b> (suma de cuadrados). Los promediamos dividiendo entre n − 1 = 4: <b>varianza = 774 / 4 = 193,5</b> (en puntos²).",
+      "<b>5.</b> Raíz cuadrada para volver a puntos de nota: <b>DE = √193,5 ≈ 13,9</b>. La franja azul va de 70 − 13,9 = 56,1 a 70 + 13,9 = 83,9 (media ± 1 DE): dentro quedan 62, 70 y 71."];
     const rd = lectura(panel, "grande"); let paso = 0;
     function dibuja() {
       const segs = paso >= 1 ? v : [];
@@ -395,7 +395,7 @@
       ["ggplot(ele, aes(x = horas, y = nota_dele,", "                colour = estancia)) +", "  geom_point() +", "  geom_smooth(method = \"lm\", se = FALSE) +", "  facet_wrap(~ nivel, nrow = 1) +", "  labs(x = \"Horas de instrucción\",", "       y = \"Nota DELE\", colour = \"Estancia\")"]];
     const nuevas = [[0], [0], [1], [0, 1], [3], [4], [5, 6]];
     const expl = ["Solo datos: un lienzo vacío.", "<b>aes()</b> asigna variables a los ejes.", "<b>geom_point()</b>: una capa de puntos.",
-      "Una tercera estética: el <b>color</b> según la estancia.", "Otra capa: una <b>recta</b> por grupo.", "<b>Facetas</b>: un panel por nivel.", "<b>Etiquetas</b> legibles: listo para publicar."];
+      "Una tercera estética: el <b>color</b> según la estancia.", "Otra capa: una <b>recta</b> por grupo. <b>lm</b> = <i>linear model</i>: la recta que pasa más cerca de los puntos. <b>se = FALSE</b> quita la banda gris de incertidumbre.", "<b>Facetas</b>: un panel por nivel.", "<b>Etiquetas</b> legibles: listo para publicar."];
     const cod = crear(panel, "w-code", "pre"), rd = lectura(panel); panel.prepend(cod);
     const colE = { no: COL.azul, "sí": COL.rojo }, gEj = svg.append("g"), gP = svg.append("g"), gL = svg.append("g"), gT = svg.append("g");
     svg.append("rect").attr("x", 60).attr("y", 15).attr("width", 785).attr("height", 400).attr("fill", "#f5f7fa").lower();
@@ -437,7 +437,7 @@
   W.histograma = el => {
     const D = CUR().ele, { vis, panel } = marco(el), w = 860, h = 460, svg = lienzo(vis, w, h);
     const st = { v: "nota_dele", bw: 5 }, gEj = svg.append("g"), gB = svg.append("g"); const cod = crear(panel, "w-code", "pre");
-    const rango = { nota_dele: [1, 20, 5], horas: [5, 120, 25] }; let desl;
+    const rango = { nota_dele: [1, 20, 5], horas: [5, 120, 25] }; let desl, rdH;
     function dibuja() {
       const vals = D.map(d => d[st.v]), ext = d3.extent(vals), x = d3.scaleLinear([ext[0] - st.bw, ext[1] + st.bw], [70, 830]);
       const th = d3.range(Math.floor(ext[0] / st.bw) * st.bw, ext[1] + st.bw, st.bw);
@@ -445,11 +445,12 @@
       ejes(gEj, x, y, { y0: 400, xlab: st.v, ylab: "Número de aprendientes" });
       gB.selectAll("rect").data(bins).join(en => en.append("rect").attr("y", 400).attr("height", 0)).attr("fill", COL.azul).attr("stroke", "#fff")
         .transition().duration(500).attr("x", b => x(b.x0)).attr("width", b => Math.max(0, x(b.x1) - x(b.x0))).attr("y", b => y(b.length)).attr("height", b => 400 - y(b.length));
-      cod.innerHTML = `ggplot(ele, aes(x = <b>${st.v}</b>)) +\n  geom_histogram(binwidth = <b>${st.bw}</b>,\n                 fill = "#1D3557",\n                 colour = "white")`;
+      cod.innerHTML = `ggplot(ele, aes(x = <b>${st.v}</b>)) +\n  geom_histogram(binwidth = <b>${st.bw}</b>,\n                 boundary = 0,\n                 fill = "#1D3557",\n                 colour = "white")`;
+      rdH.innerHTML = `Cada barra agrupa <b>${st.bw}</b> ${st.v === "nota_dele" ? (st.bw === 1 ? "punto de nota" : "puntos de nota") : "horas de clase"}: ${th[Math.floor(th.length / 2)]}–${th[Math.floor(th.length / 2)] + st.bw}, ${th[Math.floor(th.length / 2)] + st.bw}–${th[Math.floor(th.length / 2)] + 2 * st.bw}… · ${bins.length} barras`;
     }
     selector(panel, "Variable", ["nota_dele", "horas"], st.v, v => { st.v = v; const r = rango[v]; desl.inp.min = r[0]; desl.inp.max = r[1]; st.bw = r[2]; desl.set(r[2], true); dibuja(); });
     desl = deslizador(panel, { etq: "Anchura de la barra (binwidth)", min: 1, max: 20, valor: 5, cambio: v => { st.bw = v; dibuja(); } });
-    panel.appendChild(cod); crear(panel, "w-nota").innerHTML = "Barras muy finas: ruido. Barras muy anchas: se pierde la forma. No hay una anchura «correcta»: prueba varias.";
+    rdH = lectura(panel); panel.appendChild(cod); crear(panel, "w-nota").innerHTML = "Barras muy finas: ruido. Barras muy anchas: se pierde la forma. No hay una anchura «correcta»: prueba varias.";
     dibuja();
   };
 
@@ -612,7 +613,7 @@
       const ee = sigma / Math.sqrt(n), escala = medias.length * paso * dy;
       curva.attr("d", medias.length > 20 ? d3.line()(d3.range(50, 86, 0.25).map(v => [xb(v), 466 - dnorm(v, mu, ee) * escala])) : null);
       rd.innerHTML = `<div>${medias.length} muestras de n = ${n}</div><div>Media de las medias <b>${medias.length ? f(media(medias), 2) : "—"}</b></div>
-        <div>DE de las medias <b>${medias.length > 2 ? f(de(medias), 2) : "—"}</b></div><div>Error estándar teórico σ/√n <b class="rojo">${f(ee, 2)}</b></div>`;
+        <div>DE de las medias <b>${medias.length > 2 ? f(de(medias), 2) : "—"}</b></div><div>Error estándar teórico σ/√n = ${f(sigma, 1)} / √${n} = <b class="rojo">${f(ee, 2)}</b></div><div class="peq">σ = DE de las 240 notas; n = tamaño de cada muestra. Las medias suelen alejarse unos ${f(ee, 1)} puntos de la media real.</div>`;
     }
     function una(anim) {
       const s = d3.range(n).map(() => P[Math.floor(Math.random() * P.length)]), m = media(s);
@@ -642,9 +643,10 @@
       s.attr("transform", d => `translate(${x(d.i + 1)},0)`).attr("opacity", 0).transition().delay(d => d.i * 25).duration(200).attr("opacity", 1);
       s.select("line").attr("y1", d => y(Math.max(50, d.lo))).attr("y2", d => y(Math.min(86, d.hi))).attr("stroke", d => d.ok ? COL.celeste : COL.rojo).attr("stroke-width", d => d.ok ? 3 : 5);
       s.select("circle").attr("cy", d => y(d.m)).attr("r", 4.5).attr("fill", d => d.ok ? COL.azul : COL.rojo);
-      const k = ics.filter(d => d.ok).length;
+      const k = ics.filter(d => d.ok).length, semi = d3.mean(ics, d => (d.hi - d.lo) / 2);
       rd.innerHTML = `<div><b>${k} de ${st.k}</b> intervalos (${pct(k / st.k)}) contienen la media real.</div><div class="rojo">${st.k - k} fallan.</div>
-        <div class="peq">Nivel de confianza ${pct(st.c)} · n = ${st.n} · t crítico ${f(tq, 2)}</div>`;
+        <div>Anchura media: <b>± ${f(semi, 1)}</b> puntos</div>
+        <div class="peq">Nivel de confianza ${pct(st.c)} · n = ${st.n} · cada intervalo = media ± ${f(tq, 2)} × DE / √${st.n}</div>`;
     }
     deslizador(panel, { etq: "Tamaño de la muestra (n)", min: 5, max: 120, valor: 30, cambio: v => { st.n = v; nuevas(); } });
     segmentado(panel, "Confianza", [["0.8", "80 %"], ["0.9", "90 %"], ["0.95", "95 %"], ["0.99", "99 %"]], "0.95", v => { st.c = +v; nuevas(); });
@@ -667,10 +669,10 @@
       linea.attr("x1", x(t)).attr("x2", x(t)); et.attr("x", x(t)).text("t = " + f(t, 2));
       const tc = qt(st.colas === 2 ? 0.975 : 0.95, df);
       crit.selectAll("line").data(st.colas === 2 ? [-tc, tc] : [tc]).join("line").attr("x1", x).attr("x2", x).attr("y1", 300).attr("y2", 385).attr("stroke", COL.arena).attr("stroke-width", 3);
-      crit.selectAll("text").data(st.colas === 2 ? [-tc, tc] : [tc]).join("text").attr("x", x).attr("y", 402).attr("text-anchor", "middle").attr("class", "w-tag").attr("fill", COL.arena).text(v => "crítico " + f(v, 2));
+      crit.selectAll("text").data(st.colas === 2 ? [-tc, tc] : [tc]).join("text").attr("x", x).attr("y", 402).attr("text-anchor", "middle").attr("class", "w-tag").attr("fill", COL.arena).text(v => "valor crítico " + f(v, 2));
       const sig = p < 0.05;
       rd.innerHTML = `<div>p ${fp(p)}</div><div class="${sig ? "verde" : "rojo"}"><b>${sig ? "Rechazamos H₀" : "No podemos rechazar H₀"}</b></div>
-        <div class="peq">Área roja = probabilidad de obtener un t tan extremo o más si H₀ fuera cierta (gl = ${df}).</div>`;
+        <div class="peq">Área roja = probabilidad de obtener un t tan extremo o más si H₀ fuera cierta (gl = ${df}).</div><div class="peq">${st.colas === 2 ? "<b>Bilateral</b>: H₁ = «las medias son distintas» (en cualquier dirección): se suman las dos colas." : "<b>Unilateral</b>: H₁ = «la media con estancia es mayor»: solo cuenta una cola, así que p es la mitad."}</div>`;
     }
     const s = deslizador(panel, { etq: "t observado", min: 0, max: 5, paso: 0.01, valor: 2.2, fmt: v => f(v, 2), cambio: v => { st.t = v; dibuja(); } });
     segmentado(panel, "Contraste", [["2", "Bilateral"], ["1", "Unilateral"]], "2", v => { st.colas = +v; dibuja(); });
@@ -694,12 +696,13 @@
       c0.attr("d", d3.line().x(v => x(v)).y(v => y(dnorm(v, 0)))(xs)); c1.transition().duration(250).attr("d", d3.line().x(v => x(v)).y(v => y(dnorm(v, delta)))(xs));
       aA.attr("d", ar(0)(xs.filter(v => v >= zc))); aB.transition().duration(250).attr("d", ar(delta)(xs.filter(v => v <= zc))); aP.transition().duration(250).attr("d", ar(delta)(xs.filter(v => v >= zc)));
       lc.attr("x1", x(zc)).attr("x2", x(zc)); t0.attr("x", x(0)); t1.transition().duration(250).attr("x", x(delta));
-      const pot = 1 - pnorm(zc - delta);
-      let n80 = 2; while (1 - pnorm(zc - st.d * Math.sqrt(n80 / 2)) < 0.8 && n80 < 2000) n80++;
+      const potN = nn => { const dl = st.d * Math.sqrt(nn / 2); return 1 - pnorm(zc - dl) + pnorm(-zc - dl); }, pot = potN(st.n);
+      let n80 = 2; while (potN(n80) < 0.8 && n80 < 2000) n80++;
       rd.innerHTML = `<div><span class="cuadro" style="background:${COL.rojo}"></span>α (falsa alarma) <b>${pct(st.a)}</b></div>
         <div><span class="cuadro" style="background:${COL.arena}"></span>β (se me escapa) <b>${pct(1 - pot)}</b></div>
         <div><span class="cuadro" style="background:${COL.verde}"></span>Potencia 1 − β <b>${pct(pot)}</b></div>
-        <div class="peq">Para un 80 % de potencia con d = ${f(st.d, 2)} hacen falta unos <b>${st.d > 0.05 ? n80 : "∞"}</b> aprendientes por grupo.</div>`;
+        <div class="peq">d = ${f(st.d, 2)} equivale a una diferencia real de unos <b>${f(st.d * 13, 0)} puntos</b> de nota DELE (DE ≈ 13).</div>
+        <div class="peq">Con <b>${st.n}</b> por grupo, la potencia es del ${pct(pot)}. Para llegar al 80 % harían falta, como mínimo, unos <b>${st.d > 0.05 ? n80 : "∞"}</b> aprendientes por grupo.</div>`;
     }
     deslizador(panel, { etq: "Tamaño del efecto (d)", min: 0, max: 1.5, paso: 0.05, valor: 0.5, fmt: v => f(v, 2), cambio: v => { st.d = v; dibuja(); } });
     deslizador(panel, { etq: "n por grupo", min: 5, max: 200, valor: 30, cambio: v => { st.n = v; dibuja(); } });
@@ -708,19 +711,21 @@
   };
 
   W["cohen-d"] = el => {
-    const D = CUR().ele, { vis, panel } = marco(el), w = 860, h = 380, svg = lienzo(vis, w, h);
-    const x = d3.scaleLinear([-4, 6], [40, 840]), y = d3.scaleLinear([0, 0.42], [340, 20]); const xs = d3.range(-4, 6.01, 0.02);
-    ejes(svg.append("g"), x, null, { y0: 340, sinY: true, xlab: "Puntuación (en desviaciones típicas)" });
+    const D = CUR().ele, { vis, panel } = marco(el), w = 860, h = 312, svg = lienzo(vis, w, h);
+    const x = d3.scaleLinear([-4, 6], [40, 840]), y = d3.scaleLinear([0, 0.42], [260, 40]); const xs = d3.range(-4, 6.01, 0.02);
+    ejes(svg.append("g"), x, null, { y0: 260, sinY: true, xlab: "Nota DELE (puntos)", fx: v => f(65.9 + 12.7 * v, 0) });
+    const etA = svg.append("text").attr("class", "w-tag fuerte").attr("fill", COL.azul).attr("text-anchor", "middle").attr("x", x(0)).attr("y", 30).text("sin estancia");
+    const etB = svg.append("text").attr("class", "w-tag fuerte").attr("fill", COL.rojo).attr("text-anchor", "middle").attr("y", 50);
     const a1 = svg.append("path").attr("fill", COL.azul).attr("opacity", .35), a2 = svg.append("path").attr("fill", COL.rojo).attr("opacity", .35);
     const rd = lectura(panel, "grande");
     const est = welch(D.filter(d => d.estancia === "sí").map(d => d.nota_dele), D.filter(d => d.estancia === "no").map(d => d.nota_dele)).d;
     function dibuja(dd) {
-      const ar = m => d3.area().x(v => x(v)).y0(340).y1(v => y(dnorm(v, m)))(xs);
-      a1.attr("d", ar(0)); a2.transition().duration(300).attr("d", ar(dd));
+      const ar = m => d3.area().x(v => x(v)).y0(260).y1(v => y(dnorm(v, m)))(xs);
+      a1.attr("d", ar(0)); a2.transition().duration(300).attr("d", ar(dd)); etB.transition().duration(300).attr("x", x(dd)).text(dd ? "con estancia" : "");
       const ovl = 2 * pnorm(-Math.abs(dd) / 2), u3 = pnorm(dd), ps = pnorm(dd / Math.SQRT2);
       const et = Math.abs(dd) < 0.2 ? "despreciable" : Math.abs(dd) < 0.5 ? "pequeño" : Math.abs(dd) < 0.8 ? "mediano" : "grande";
-      rd.innerHTML = `<div>d = <b>${f(dd, 2)}</b> → efecto <b>${et}</b></div><div>Solapamiento <b>${pct(ovl)}</b></div>
-        <div>El ${pct(u3)} del grupo rojo supera la media del azul</div><div class="peq">Probabilidad de que una persona al azar del grupo rojo puntúe más que una del azul: ${pct(ps)}</div>`;
+      rd.innerHTML = `<div>d = <b>${f(dd, 2)}</b> → efecto <b>${et}</b></div><div>Diferencia: <b>${f(12.7 * dd, 1)} puntos</b> de nota (${f(dd, 2)} × DE de 12,7)</div><div>Solapamiento de las curvas <b>${pct(ovl)}</b></div>
+        <div>El ${pct(u3)} de los que tienen estancia supera la nota media de los que no (sin efecto: 50 %)</div><div class="peq">Si elegimos al azar a uno de cada grupo, el que tiene estancia saca más nota el ${pct(ps)} de las veces (sin efecto: 50 %).</div>`;
     }
     const s = deslizador(panel, { etq: "d de Cohen", min: 0, max: 2.5, paso: 0.05, valor: 0.5, fmt: v => f(v, 2), cambio: dibuja });
     botones(panel, [{ etq: "Nuestra d (estancia)", click: () => s.set(Math.round(est * 100) / 100) }]);
@@ -746,15 +751,15 @@
           { r: "Medir la relación", q: "¿Relación lineal y datos normales?", c: [
             { r: "Sí", fin: "Correlación de Pearson", cod: "cor.test(ele$horas, ele$nota_dele)", ef: "r y r²", ej: "¿A más horas, más nota?" },
             { r: "No", fin: "Correlación de Spearman", cod: "cor.test(ele$horas, ele$err_ser_estar,\n         method = \"spearman\")", ef: "ρ", ej: "Horas y número de errores" }] },
-          { r: "Predecir", fin: "Regresión lineal (o árbol de regresión)", cod: "lm(nota_dele ~ horas + estancia, data = ele)", ef: "R² y coeficientes", ej: "¿Cuánto sube la nota por hora de clase?" }] }] },
+          { r: "Predecir", fin: "Regresión lineal (Plus) o árbol de regresión", cod: "lm(nota_dele ~ horas + estancia, data = ele)", ef: "R² y coeficientes", ej: "¿Cuánto sube la nota por hora de clase?" }] }] },
       { r: "Categórica", q: "¿Qué quieres saber?", c: [
         { r: "Si dos categóricas están asociadas", q: "¿Frecuencias esperadas ≥ 5 en todas las celdas?", c: [
           { r: "Sí", fin: "Chi cuadrado (χ²)", cod: "chisq.test(table(ele$estancia, ele$subjuntivo))", ef: "V de Cramér", ej: "¿Depende el subjuntivo de la estancia?" },
           { r: "No", fin: "Prueba exacta de Fisher", cod: "fisher.test(tabla)", ef: "odds ratio", ej: "Tablas con celdas pequeñas" }] },
         { r: "Predecirla con varios predictores", q: "¿Qué priorizas?", c: [
-          { r: "Cuantificar cada efecto", fin: "Regresión logística", cod: "glm(subj_ok ~ horas + estancia + L1,\n    data = ele, family = binomial)", ef: "odds ratios", ej: "¿Qué predice el uso correcto del subjuntivo?" },
+          { r: "Cuantificar cada efecto", fin: "Regresión logística (Plus)", cod: "glm(subj_ok ~ horas + estancia + L1,\n    data = ele, family = binomial)", ef: "odds ratios", ej: "¿Qué predice el uso correcto del subjuntivo?" },
           { r: "Reglas fáciles de explicar", fin: "Árbol de decisión", cod: "rpart(subjuntivo ~ horas + estancia + L1 + nivel,\n      data = ele, method = \"class\")", ef: "acierto y matriz de confusión", ej: "¿Qué perfil de aprendiente usa bien el subjuntivo?" }] }] },
-      { r: "Frecuencias de palabras en dos corpus", fin: "Log-likelihood + log-ratio", cod: "ll(aprend, nativo, N1, N2)\nlog2((aprend / N1) / (nativo / N2))", ef: "log-ratio", ej: "¿Qué palabras sobreusan los aprendientes?" }] };
+      { r: "Frecuencias de palabras en dos corpus", fin: "Log-likelihood + log-ratio (Plus)", cod: "ll(aprend, nativo, N1, N2)\nlog2((aprend / N1) / (nativo / N2))", ef: "log-ratio", ej: "¿Qué palabras sobreusan los aprendientes?" }] };
 
   W["elige-prueba"] = el => {
     const { vis, panel } = marco(el, { ancho: 470 }), w = 900, h = 560, svg = lienzo(vis, w, h);
@@ -796,7 +801,7 @@
     ejes(svg.append("g"), x, y, { y0: 400, ylab: "Nota" });
     const gA = svg.append("g"), gB = svg.append("g"), mA = svg.append("line"), mB = svg.append("line");
     const barra = svg.append("g").attr("transform", "translate(680,40)");
-    barra.append("text").attr("class", "w-tag fuerte").attr("x", 40).attr("y", -10).attr("text-anchor", "middle").text("|t|");
+    barra.append("text").attr("class", "w-tag fuerte").attr("x", 40).attr("y", -10).attr("text-anchor", "middle").text("|t| observado");
     const rb = barra.append("rect").attr("x", 15).attr("width", 50).attr("fill", COL.rojo), lin = barra.append("line").attr("x1", 0).attr("x2", 80).attr("stroke", COL.tinta).attr("stroke-dasharray", "5 3");
     const tCrit = barra.append("text").attr("class", "w-tag").attr("x", 85);
     const rd = lectura(panel, "grande");
@@ -808,9 +813,11 @@
       [[mA, "Grupo A", r.mb], [mB, "Grupo B", r.ma]].forEach(([l, g, m]) => l.attr("x1", x(g)).attr("x2", x(g) + x.bandwidth()).attr("stroke", COL.tinta).attr("stroke-width", 5).transition().duration(300).attr("y1", y(m)).attr("y2", y(m)));
       const ys = d3.scaleLinear([0, 10], [340, 0]), tc = qt(0.975, r.gl);
       rb.transition().duration(300).attr("y", ys(Math.min(10, Math.abs(r.t)))).attr("height", 340 - ys(Math.min(10, Math.abs(r.t)))).attr("fill", r.p < 0.05 ? COL.verde : COL.rojo);
-      lin.attr("y1", ys(tc)).attr("y2", ys(tc)); tCrit.attr("y", ys(tc) + 4).text("crítico");
-      rd.innerHTML = `<div>Señal (diferencia de medias) <b>${f(r.ma - r.mb, 1)}</b></div><div>Ruido (DE dentro) <b>${f(st.s, 1)}</b></div>
-        <div>t = <b>${f(r.t, 2)}</b> · gl = ${f(r.gl, 1)}</div><div>p ${fp(r.p)} · d = ${f(r.d, 2)}</div>`;
+      lin.attr("y1", ys(tc)).attr("y2", ys(tc)); tCrit.attr("y", ys(tc) + 4).text("valor crítico " + f(tc, 2));
+      const eeD = r.t ? (r.ma - r.mb) / r.t : NaN;
+      rd.innerHTML = `<div>Señal (diferencia de medias) <b>${f(r.ma - r.mb, 1)}</b></div><div>Ruido (EE de la diferencia) <b>${f(eeD, 2)}</b> <span class="peq">con DE ${f(st.s, 1)} y n = ${st.n}</span></div>
+        <div>t = ${f(r.ma - r.mb, 1)} / ${f(eeD, 2)} = <b>${f(r.t, 2)}</b> · gl = ${f(r.gl, 1)}</div><div>p ${fp(r.p)} · d = ${f(r.d, 2)}</div>
+        <div class="peq">${Math.abs(r.t) > tc ? `|t| supera el valor crítico (${f(tc, 2)}): p < 0,05, diferencia significativa.` : `|t| no llega al valor crítico (${f(tc, 2)}): p > 0,05, podría ser azar.`}</div>`;
     }
     deslizador(panel, { etq: "Diferencia real entre grupos", min: 0, max: 15, paso: 0.5, valor: 7, fmt: v => f(v, 1), cambio: v => { st.dif = v; dibuja(); } });
     deslizador(panel, { etq: "Variabilidad dentro de los grupos (DE)", min: 2, max: 25, paso: 0.5, valor: 10, fmt: v => f(v, 1), cambio: v => { st.s = v; dibuja(); } });
@@ -877,7 +884,7 @@
      ===================================================================== */
 
   W["chi-mosaico"] = el => {
-    const X = CUR().chi, { vis, panel } = marco(el), w = 760, h = 470, svg = lienzo(vis, w, h);
+    const X = CUR().chi, { vis, panel } = marco(el, { ancho: 470 }), w = 760, h = 470, svg = lienzo(vis, w, h);
     const O = X.O, tot = d3.sum(O.flat()), fil = O.map(r => d3.sum(r)), col = [0, 1].map(j => O[0][j] + O[1][j]);
     const E = O.map((r, i) => r.map((v, j) => fil[i] * col[j] / tot));
     const x0 = 90, ancho = 640, alto = 380, y0 = 30, colC = { correcto: COL.verde, incorrecto: COL.rojo };
@@ -896,8 +903,10 @@
       g.select("text").transition().duration(900).attr("x", c => (fil[c.i] / tot * ancho) / 2).attr("y", c => (modo === "e" ? E : O)[c.i][c.j] / fil[c.i] * alto / 2 + 4)
         .text(c => modo === "o" ? `${c.o} ${X.cols[c.j]}` : modo === "e" ? `${f(c.e, 1)} esperados` : `residuo ${f(c.res, 2)}`).attr("fill", c => modo === "r" && Math.abs(c.res) < 2 ? COL.tinta : "#fff");
       rd.innerHTML = { o: "<b>Observadas.</b> Con estancia, el subjuntivo correcto es más frecuente.", e: "<b>Esperadas si no hubiera relación</b>: las dos columnas tendrían el mismo reparto.", r: "<b>Residuos estandarizados</b>: |r| > 1,96 → la celda se aleja de lo esperado." }[modo];
-      tabla.innerHTML = `<table><tr><th></th><th>O</th><th>E</th><th>(O−E)²/E</th></tr>` + celdas.map(c => `<tr><td>${X.filas[c.i]} · ${X.cols[c.j]}</td><td>${c.o}</td><td>${f(c.e, 1)}</td><td>${f((c.o - c.e) ** 2 / c.e, 2)}</td></tr>`).join("") +
-        `<tr><td colspan="3"><b>χ² (con corrección de Yates)</b></td><td><b>${f(X.x2, 2)}</b></td></tr></table><div class="peq">p ${fp(X.p)}</div>`;
+      const suma = d3.sum(celdas, c => (c.o - c.e) ** 2 / c.e);
+      tabla.innerHTML = `<table><tr><th>estancia · subjuntivo</th><th>O</th><th>E</th><th>(O−E)²/E</th><th>residuo</th></tr>` + celdas.map(c => `<tr><td>${X.filas[c.i]} · ${X.cols[c.j]}</td><td>${c.o}</td><td>${f(c.e, 1)}</td><td>${f((c.o - c.e) ** 2 / c.e, 2)}</td><td>${f(c.res, 2)}</td></tr>`).join("") +
+        `<tr><td colspan="3">Suma = χ² sin corrección</td><td><b>${f(suma, 2)}</b></td><td></td></tr><tr><td colspan="3">χ² de <code>chisq.test()</code> (con corrección de Yates)</td><td><b>${f(X.x2, 2)}</b></td><td></td></tr></table>
+        <div class="peq">p ${fp(X.p)} · (O−E)²/E = contribución de la celda al χ²; residuo = residuo estandarizado, el que se dibuja (|r| > 1,96 → la celda se aparta de lo esperado). Yates resta 0,5 a cada |O − E| en las tablas 2 × 2.</div>`;
     }
     segmentado(panel, "Mostrar", [["o", "Observadas"], ["e", "Esperadas"], ["r", "Residuos"]], "o", v => { modo = v; dibuja(); });
     panel.appendChild(rd); panel.appendChild(tabla); dibuja();
@@ -936,6 +945,8 @@
     bar.append("text").attr("class", "w-tag fuerte").attr("x", 0).attr("y", 0).text("Varianza media");
     const bE = bar.append("rect").attr("x", 0).attr("width", 60).attr("fill", COL.rojo), bD = bar.append("rect").attr("x", 80).attr("width", 60).attr("fill", COL.gris);
     bar.append("text").attr("class", "w-tag").attr("x", 30).attr("y", 395).attr("text-anchor", "middle").text("entre"); bar.append("text").attr("class", "w-tag").attr("x", 110).attr("y", 395).attr("text-anchor", "middle").text("dentro");
+    const vE = bar.append("text").attr("class", "w-tag fuerte").attr("x", 30).attr("text-anchor", "middle"), vD = bar.append("text").attr("class", "w-tag fuerte").attr("x", 110).attr("text-anchor", "middle");
+    svg.append("text").attr("class", "w-tag").attr("x", 80).attr("y", 450).text("Simulación: nota de 4 grupos de 25 aprendientes · rayas negras: media de cada grupo · discontinua: media general");
     const rd = lectura(panel, "grande"); const off = [-1.5, 0.5, 1.5, -0.5];
     function dibuja() {
       const grupos = L1S.map((l, k) => zs[k].map(z => 68 + off[k] * st.sep + z * st.s)), todos = grupos.flat(), gmed = media(todos);
@@ -949,7 +960,10 @@
       gm.transition().duration(300).attr("y1", y(gmed)).attr("y2", y(gmed));
       const yb = d3.scaleLinear([0, Math.max(msb, msw, 400)], [370, 20]);
       bE.transition().duration(300).attr("y", yb(msb)).attr("height", 370 - yb(msb)); bD.transition().duration(300).attr("y", yb(msw)).attr("height", 370 - yb(msw));
-      rd.innerHTML = `<div>F = entre / dentro = <b>${f(F, 2)}</b></div><div>p ${fp(p)}</div><div>η² = <b>${f(eta, 3)}</b> (${pct(eta)} de la variación)</div>`;
+      vE.attr("y", yb(msb) - 6).text(f(msb, 0)); vD.attr("y", yb(msw) - 6).text(f(msw, 0));
+      rd.innerHTML = `<div>F = entre / dentro = ${f(msb, 0)} / ${f(msw, 0)} = <b>${f(F, 2)}</b></div><div>p ${fp(p)}</div>
+        <div>η² = SC entre / SC total = ${f(ssb, 0)} / ${f(ssb + sse, 0)} = <b>${f(eta, 3)}</b></div>
+        <div class="peq">El ${pct(eta)} de la variación de las notas se debe a la diferencia entre grupos; el ${pct(1 - eta)}, a diferencias entre personas del mismo grupo. Las barras son varianzas medias (puntos²): la gris ≈ DE² dentro de los grupos.</div>`;
     }
     deslizador(panel, { etq: "Separación entre las medias", min: 0, max: 10, paso: 0.5, valor: 4, fmt: v => f(v, 1), cambio: v => { st.sep = v; dibuja(); } });
     deslizador(panel, { etq: "Variabilidad dentro de cada grupo", min: 2, max: 20, paso: 0.5, valor: 10, fmt: v => f(v, 1), cambio: v => { st.s = v; dibuja(); } });
@@ -969,10 +983,12 @@
       .transition().delay((d, i) => i * 150).duration(600).attr("x2", d => x(d.upr));
     filas.append("circle").attr("cx", d => x(d.diff)).attr("r", 8).attr("fill", d => sig(d) ? COL.rojo : COL.gris);
     const rd = lectura(panel, "grande");
-    const msg = d => `<b>${d.comp.replace("-", " − ")}</b><br>Diferencia ${signo(d.diff, 1)} puntos<br>IC 95 % [${f(d.lwr, 1)}, ${f(d.upr, 1)}]<br>p ajustado ${fp(d.p)}<br>` +
+    const frase = d => { const [a, b] = d.comp.split("-"), mas = d.diff > 0 ? a : b, menos = d.diff > 0 ? b : a;
+      return `Los aprendientes de L1 <b>${mas}</b> sacan de media <b>${f(Math.abs(d.diff), 1)} puntos más</b> que los de L1 <b>${menos}</b>.<br>`; };
+    const msg = d => `<b>${d.comp.replace("-", " − ")}</b><br>${frase(d)}Diferencia ${signo(d.diff, 1)} puntos<br>IC 95 % [${f(d.lwr, 1)}, ${f(d.upr, 1)}]<br>p ajustado ${fp(d.p)}<br>` +
       (sig(d) ? `<span class="rojo">El intervalo no cruza el 0: diferencia significativa.</span>` : `<span class="peq">Cruza el 0: no podemos afirmar que difieran.</span>`);
     filas.on("mouseenter click", (e, d) => { rd.innerHTML = msg(d); filas.attr("opacity", o => o === d ? 1 : 0.4); });
-    rd.innerHTML = "Pasa el ratón por cada comparación.";
+    rd.innerHTML = "Variable: <b>nota DELE</b> según la L1. Pasa el ratón por cada comparación.";
   };
 
   W.interaccion = el => {
@@ -983,8 +999,9 @@
       real: L1S.map(l => [I.find(d => d.L1 === l && d.estancia === "no").m, I.find(d => d.L1 === l && d.estancia === "sí").m]),
       sin: [[60, 66], [55, 61], [68, 74], [72, 78]], ord: [[60, 63], [55, 57], [66, 78], [70, 86]], cruz: [[70, 58], [55, 68], [66, 78], [78, 62]] };
     const txt = { real: "<b>Nuestros datos</b>: líneas casi paralelas → la estancia suma más o menos lo mismo en todas las L1 (interacción no significativa).",
-      sin: "<b>Sin interacción</b>: líneas paralelas. Cada factor suma por su cuenta.", ord: "<b>Interacción ordinal</b>: la estancia ayuda a todos, pero mucho más a unos que a otros.",
-      cruz: "<b>Interacción cruzada</b>: la estancia ayuda a unos y perjudica a otros. ¡Los efectos principales engañan!" };
+      sin: "<b>Sin interacción</b> (escenario ficticio, datos inventados): líneas paralelas. Cada factor suma por su cuenta.", ord: "<b>Interacción ordinal</b> (escenario ficticio, datos inventados): la estancia ayuda a todos, pero mucho más a unos que a otros.",
+      cruz: "<b>Interacción cruzada</b> (escenario ficticio, datos inventados): la estancia ayuda a unos y perjudica a otros. ¡Los efectos principales engañan!" };
+    const marca = svg.append("text").attr("class", "w-tag fuerte").attr("x", 740).attr("y", 30).attr("text-anchor", "end").attr("fill", COL.rojo);
     const g = svg.append("g").selectAll("g").data(L1S).join(en => { const gg = en.append("g"); gg.append("line"); gg.append("circle").attr("class", "a"); gg.append("circle").attr("class", "b"); gg.append("text"); return gg; });
     g.select("line").attr("stroke", l => COL_L1[l]).attr("stroke-width", 4); g.selectAll("circle").attr("r", 8).attr("fill", l => COL_L1[l]);
     g.select("text").attr("class", "w-tag fuerte").attr("fill", l => COL_L1[l]).attr("x", x("sí") + 14).text(l => l);
@@ -995,8 +1012,9 @@
         s.select("line").attr("x1", x("no")).attr("x2", x("sí")).attr("y1", y(v[i][0])).attr("y2", y(v[i][1]));
         s.select(".a").attr("cx", x("no")).attr("cy", y(v[i][0])); s.select(".b").attr("cx", x("sí")).attr("cy", y(v[i][1])); s.select("text").attr("y", y(v[i][1]) + 5); });
       rd.innerHTML = txt[k];
+      marca.text(k === "real" ? "" : "ESCENARIO FICTICIO");
     }
-    segmentado(panel, "Escenario", [["real", "Nuestros datos"], ["sin", "Sin interacción"], ["ord", "Ordinal"], ["cruz", "Cruzada"]], "real", dibuja);
+    segmentado(panel, "Escenario", [["real", "Nuestros datos (reales)"], ["sin", "Sin interacción (ficticio)"], ["ord", "Ordinal (ficticio)"], ["cruz", "Cruzada (ficticio)"]], "real", dibuja);
     panel.appendChild(rd); dibuja("real");
   };
 
@@ -1051,7 +1069,9 @@
       filas.select("rect").attr("height", y.bandwidth()).transition().duration(700).attr("x", d => Math.min(x(1), x(d.sm))).attr("width", d => Math.abs(x(d.sm) - x(1))).attr("fill", d => d.sm >= 1 ? COL.azul : COL.rojo);
       filas.select(".nombre").attr("x", 120).attr("y", y.bandwidth() / 2 + 6);
       filas.select(".val").transition().duration(700).attr("x", d => (d.sm >= 1 ? x(d.sm) + 6 : x(d.sm) - 6)).attr("text-anchor", d => d.sm >= 1 ? "start" : "end").attr("y", y.bandwidth() / 2 + 6).text(d => f(d.sm, 2));
-      rd.innerHTML = `n = <b>${n < 1 ? f(n, 2) : f(n, 0)}</b> · más sobreusada: <b>${ord[0].palabra}</b><div class="peq">${lg < 1 ? "n bajo: pesan las palabras de frecuencia baja." : lg > 2.5 ? "n alto: todo se acerca a 1; destacan las palabras más frecuentes." : "Valor intermedio."}</div>`;
+      const t0 = ord[0], pu = F.find(d => d.palabra === "pues"), cal = d => `(${f(d.p1, 0)} + ${n < 1 ? f(n, 2) : f(n, 0)}) / (${f(d.p2, 0)} + ${n < 1 ? f(n, 2) : f(n, 0)}) = <b>${f(d.sm, 2)}</b>`;
+      rd.innerHTML = `n = <b>${n < 1 ? f(n, 2) : f(n, 0)}</b> <span class="peq">(constante de suavizado, no un tamaño de muestra)</span> · más sobreusada: <b>${ord[0].palabra}</b>
+        <div class="peq"><b>${t0.palabra}</b>: ${cal(t0)} · <b>pues</b>: ${cal(pu)} <br>(pmw aprendientes + n) / (pmw nativos + n). &gt; 1 sobreuso · &lt; 1 infrauso.</div><div class="peq">${lg < 1 ? "n bajo: pesan las palabras de frecuencia baja." : lg > 2.5 ? "n alto: todo se acerca a 1; destacan las palabras más frecuentes." : "Valor intermedio."}</div>`;
     }
     deslizador(panel, { etq: "Parámetro n (log₁₀)", min: -1, max: 4, paso: 0.1, valor: 0, fmt: v => f(Math.pow(10, v), v < 0 ? 1 : 0), cambio: dibuja });
     panel.appendChild(rd); dibuja(0);
@@ -1074,7 +1094,8 @@
         .transition().duration(dur).attr("x", d => x(d.horas)).attr("y", d => y(Math.max(d.nota_dele, p(d.horas)))).attr("width", d => Math.abs(d.nota_dele - p(d.horas)) * ky).attr("height", d => Math.abs(d.nota_dele - p(d.horas)) * ky);
       const sse = d3.sum(D, d => (d.nota_dele - p(d.horas)) ** 2);
       rd.innerHTML = `<div>nota = <b>${f(st.b0, 1)}</b> + <b>${f(st.b1, 3)}</b> × horas</div><div>Suma de cuadrados de los residuos <b class="rojo">${f(sse, 0)}</b></div>
-        <div class="peq">Mínimo posible (lm): ${f(sseMin, 0)} · R² de tu recta: ${f(1 - sse / sst, 2)}</div>` + (sse - sseMin < 30 ? `<div class="verde"><b>¡Has encontrado la recta de mínimos cuadrados!</b></div>` : "");
+        <div class="peq">Mínimo posible (lm): ${f(sseMin, 0)} · R² de tu recta: ${f(1 - sse / sst, 2)}</div>
+        <div>Predicción para alguien con 300 horas: ${f(st.b0, 1)} + ${f(st.b1, 3)} × 300 = <b>${f(p(300), 1)}</b></div>` + (sse - sseMin < 30 ? `<div class="verde"><b>¡Has encontrado la recta de mínimos cuadrados!</b></div>` : "");
     }
     s0 = deslizador(panel, { etq: "Intercepto b₀", min: 20, max: 90, paso: 0.5, valor: 60, fmt: v => f(v, 1), cambio: v => { st.b0 = v; dibuja(); } });
     s1 = deslizador(panel, { etq: "Pendiente b₁", min: -0.05, max: 0.15, paso: 0.001, valor: 0.02, fmt: v => f(v, 3), cambio: v => { st.b1 = v; dibuja(); } });
@@ -1089,6 +1110,10 @@
     const st = { b0: -2, b1: 0.008, hh: 250 }, x = d3.scaleLinear([0, 520], [70, 840]), y = d3.scaleLinear([-0.1, 1.1], [400, 20]); const r = rng(9);
     ejes(svg.append("g"), x, y, { y0: 400, xlab: "Horas de instrucción", ylab: "P(subjuntivo correcto)", fy: v => f(v, 1) });
     svg.append("g").selectAll("circle").data(D).join("circle").attr("cx", d => x(d.horas)).attr("cy", d => y((d.subjuntivo === "correcto" ? 1 : 0) + (r() - 0.5) * 0.12)).attr("r", 4).attr("fill", d => d.subjuntivo === "correcto" ? COL.verde : COL.rojo).attr("opacity", .4);
+    const tramos = d3.range(0, 550, 50).map(a => { const s = D.filter(d => d.horas > a && d.horas <= a + 50); return { x: a + 25, n: s.length, p: s.filter(d => d.subjuntivo === "correcto").length / s.length }; }).filter(t => t.n >= 5);
+    svg.append("g").selectAll("path").data(tramos).join("path").attr("d", d3.symbol(d3.symbolDiamond, 180)).attr("transform", t => `translate(${x(t.x)},${y(t.p)})`).attr("fill", COL.arena).attr("stroke", "#fff").attr("stroke-width", 1.5)
+      .append("title").text(t => `${t.x - 25}–${t.x + 25} h: ${pct(t.p)} aciertan (n = ${t.n})`);
+    svg.append("text").attr("class", "w-tag").attr("x", 80).attr("y", 14).text("◆ proporción real de aciertos en cada tramo de 50 horas · arriba (1): aciertan · abajo (0): fallan");
     const curva = svg.append("path").attr("fill", "none").attr("stroke", COL.azul).attr("stroke-width", 4);
     const sonda = svg.append("g"); sonda.append("line").attr("class", "v").attr("stroke", COL.tinta).attr("stroke-dasharray", "4 4"); sonda.append("circle").attr("r", 9).attr("fill", COL.arena).attr("stroke", "#fff").attr("stroke-width", 3);
     const rd = lectura(panel, "grande"); let s0, s1;
@@ -1099,7 +1124,7 @@
       sonda.select("circle").transition().duration(dur).attr("cx", x(st.hh)).attr("cy", y(p(st.hh)));
       const lo = st.b0 + st.b1 * st.hh, pp = p(st.hh);
       rd.innerHTML = `<div>log-odds = ${f(st.b0, 2)} + ${f(st.b1, 4)} × ${st.hh} = <b>${f(lo, 2)}</b></div><div>odds = e<sup>${f(lo, 2)}</sup> = <b>${f(Math.exp(lo), 2)}</b></div>
-        <div>probabilidad = <b class="rojo">${pct(pp)}</b></div><div class="peq">Odds ratio por cada 100 horas más: ×${f(Math.exp(st.b1 * 100), 2)}</div>`;
+        <div>probabilidad = odds / (1 + odds) = <b class="rojo">${pct(pp)}</b></div><div class="peq">Es decir, de cada 100 aprendientes con ${st.hh} horas, unos ${f(100 * pp, 0)} aciertan y ${f(100 - 100 * pp, 0)} fallan: ${f(Math.exp(lo), 2)} aciertos por cada fallo.</div><div class="peq">Odds ratio por cada 100 horas más: ×${f(Math.exp(st.b1 * 100), 2)}</div>`;
     }
     s0 = deslizador(panel, { etq: "Intercepto b₀", min: -8, max: 2, paso: 0.05, valor: -2, fmt: v => f(v, 2), cambio: v => { st.b0 = v; dibuja(); } });
     s1 = deslizador(panel, { etq: "Pendiente b₁", min: 0, max: 0.03, paso: 0.0005, valor: 0.008, fmt: v => f(v, 4), cambio: v => { st.b1 = v; dibuja(); } });
@@ -1284,7 +1309,7 @@
     const t1 = g.append("text").attr("class", "nodo1").attr("text-anchor", "middle").attr("y", -5), t2 = g.append("text").attr("class", "nodo2").attr("text-anchor", "middle").attr("y", 16);
     const pinta = (d, hoja) => {
       const n = d.data;
-      if (clase) { const pc = n.p, pr = n.clase === "correcto" ? pc : 1 - pc; return [n.clase, `${pct(pr)} · ${pct(n.n / n0)}`]; }
+      if (clase) { const pc = n.p, pr = n.clase === "correcto" ? pc : 1 - pc; return [n.clase, `${pct(pr)} ${n.clase === "correcto" ? "acierta" : "falla"} · n = ${n.n}`]; }
       return [`nota ${f(n.media, 1)}`, `n = ${n.n} (${pct(n.n / n0)})`];
     };
     g.select("rect").attr("fill", d => clase ? colorN(d.data.p) : colorN(d.data.media));
@@ -1353,16 +1378,16 @@
 
   W["cp-curva"] = el => {
     const T0 = CUR().cptabla, { vis, panel } = marco(el, { ancho: 400 }), w = 860, h = 470, svg = lienzo(vis, w, h);
-    const errRaiz = 116 / 240, x = d3.scaleLinear([1, d3.max(T0, d => d.nsplit + 1)], [70, 830]), y = d3.scaleLinear([0.15, 1.1], [410, 20]);
-    ejes(svg.append("g"), x, y, { y0: 410, xlab: "Tamaño del árbol (número de hojas)", ylab: "Error relativo", fy: v => f(v, 1) });
+    const errRaiz = 116 / 240, acc = e => 1 - e * errRaiz, x = d3.scaleLinear([1, d3.max(T0, d => d.nsplit + 1)], [70, 830]), y = d3.scaleLinear([0.45, 0.95], [410, 20]);
+    ejes(svg.append("g"), x, y, { y0: 410, xlab: "Tamaño del árbol (número de hojas)", ylab: "Acierto", fy: d3.format(".0%") });
     const min = T0.reduce((a, b) => b.xerror < a.xerror ? b : a), umbral = min.xerror + min.xstd, unoEE = T0.find(d => d.xerror <= umbral);
-    svg.append("path").attr("d", d3.area().x(d => x(d.nsplit + 1)).y0(d => y(d.xerror - d.xstd)).y1(d => y(d.xerror + d.xstd))(T0)).attr("fill", COL.rojo).attr("opacity", 0.12);
-    svg.append("line").attr("x1", 70).attr("x2", 830).attr("y1", y(umbral)).attr("y2", y(umbral)).attr("stroke", COL.tinta).attr("stroke-dasharray", "4 5");
-    svg.append("text").attr("class", "w-tag").attr("x", 826).attr("y", y(umbral) - 6).attr("text-anchor", "end").text("mínimo + 1 EE");
-    [["rel_error", COL.azul, "error en los datos de entrenamiento"], ["xerror", COL.rojo, "error en validación cruzada (datos nuevos)"]].forEach(([k, c, t], i) => {
-      svg.append("path").attr("d", d3.line().x(d => x(d.nsplit + 1)).y(d => y(d[k]))(T0)).attr("fill", "none").attr("stroke", c).attr("stroke-width", 3.5);
-      svg.append("g").selectAll("circle").data(T0).join("circle").attr("cx", d => x(d.nsplit + 1)).attr("cy", d => y(d[k])).attr("r", 5).attr("fill", c);
-      svg.append("rect").attr("x", 420).attr("y", 30 + i * 26).attr("width", 18).attr("height", 5).attr("fill", c); svg.append("text").attr("class", "w-tag").attr("x", 446).attr("y", 37 + i * 26).text(t);
+    svg.append("path").attr("d", d3.area().x(d => x(d.nsplit + 1)).y0(d => y(acc(d.xerror - d.xstd))).y1(d => y(acc(d.xerror + d.xstd)))(T0)).attr("fill", COL.rojo).attr("opacity", 0.12);
+    svg.append("line").attr("x1", 70).attr("x2", 830).attr("y1", y(acc(umbral))).attr("y2", y(acc(umbral))).attr("stroke", COL.tinta).attr("stroke-dasharray", "4 5");
+    svg.append("text").attr("class", "w-tag").attr("x", 826).attr("y", y(acc(umbral)) + 18).attr("text-anchor", "end").text("mejor acierto − 1 EE (margen de incertidumbre)");
+    [["rel_error", COL.azul, "acierto con los datos de entrenamiento (ya conocidos)"], ["xerror", COL.rojo, "acierto estimado con aprendientes nuevos (validación cruzada)"]].forEach(([k, c, t], i) => {
+      svg.append("path").attr("d", d3.line().x(d => x(d.nsplit + 1)).y(d => y(acc(d[k])))(T0)).attr("fill", "none").attr("stroke", c).attr("stroke-width", 3.5);
+      svg.append("g").selectAll("circle").data(T0).join("circle").attr("cx", d => x(d.nsplit + 1)).attr("cy", d => y(acc(d[k]))).attr("r", 5).attr("fill", c);
+      svg.append("rect").attr("x", 300).attr("y", 350 + i * 26).attr("width", 18).attr("height", 5).attr("fill", c); svg.append("text").attr("class", "w-tag").attr("x", 326).attr("y", 357 + i * 26).text(t);
     });
     const mk = svg.append("line").attr("y1", 20).attr("y2", 410).attr("stroke", COL.arena).attr("stroke-width", 4);
     const rd = lectura(panel, "grande"); let s;
@@ -1376,51 +1401,6 @@
     s = deslizador(panel, { etq: "Fila de la tabla cp", min: 0, max: T0.length - 1, valor: T0.length - 1, fmt: i => `${T0[i].nsplit + 1} hojas`, cambio: dibuja });
     botones(panel, [{ etq: "Elegir con la regla de 1 EE", click: () => s.set(T0.indexOf(unoEE)) }]);
     panel.appendChild(rd); dibuja(T0.length - 1);
-  };
-
-  W.particion = el => {
-    const P = CUR().particion, D = CUR().ele, { vis, panel } = marco(el), w = 860, h = 480, svg = lienzo(vis, w, h), st = { d: 1, glm: false };
-    const x = d3.scaleLinear(d3.extent(P.horas), [70, 840]), y = d3.scaleLinear(d3.extent(P.nota), [420, 20]);
-    const dx = (x(P.horas[1]) - x(P.horas[0])), dy = (y(P.nota[0]) - y(P.nota[1]));
-    const celdas = []; P.nota.forEach((nv, j) => P.horas.forEach((hv, i) => celdas.push({ i, j, k: j * P.horas.length + i })));
-    const col = d3.scaleLinear([0, 0.5, 1], [COL.rojo, "#f4f4f4", COL.verde]);
-    const gc = svg.append("g").selectAll("rect").data(celdas).join("rect").attr("x", c => x(P.horas[c.i]) - dx / 2).attr("y", c => y(P.nota[c.j]) - dy / 2).attr("width", dx + 0.6).attr("height", dy + 0.6).attr("opacity", 0.55);
-    ejes(svg.append("g"), x, y, { y0: 430, x0: 62, xlab: "Horas de instrucción", ylab: "Nota DELE" });
-    svg.append("g").selectAll("circle").data(D).join("circle").attr("cx", d => x(d.horas)).attr("cy", d => y(d.nota_dele)).attr("r", 4.5)
-      .attr("fill", d => d.subjuntivo === "correcto" ? COL.verde : COL.rojo).attr("stroke", "#fff").attr("stroke-width", 1.2);
-    const lg = svg.append("line").attr("stroke", COL.azul).attr("stroke-width", 4).attr("stroke-dasharray", "10 6"); const rd = lectura(panel, "grande");
-    function dibuja() {
-      const capa = P.capas[st.d - 1]; gc.transition().duration(500).attr("fill", c => col(capa.p[c.k]));
-      const [b0, b1, b2] = P.glm, n = hh => -(b0 + b1 * hh) / b2, [h0, h1] = d3.extent(P.horas);
-      lg.attr("x1", x(h0)).attr("x2", x(h1)).attr("y1", y(n(h0))).attr("y2", y(n(h1))).attr("opacity", st.glm ? 1 : 0);
-      rd.innerHTML = `<div>Profundidad <b>${st.d}</b> · <b>${capa.hojas}</b> rectángulos (hojas)</div><div>Acierto en estos datos <b class="rojo">${pct(capa.acierto, 1)}</b></div>` +
-        `<div class="peq">El árbol solo hace cortes <b>paralelos a los ejes</b>: divide el plano en rectángulos.${st.glm ? " La regresión logística traza, en cambio, una única frontera <b>oblicua</b>." : ""}</div>`;
-    }
-    deslizador(panel, { etq: "Profundidad máxima (maxdepth)", min: 1, max: 5, valor: 1, cambio: v => { st.d = v; dibuja(); } });
-    const lb = crear(crear(panel, "w-ctrl"), "w-chk", "label"), i = crear(lb, "", "input"); i.type = "checkbox"; lb.append(" Frontera de la regresión logística");
-    i.onchange = () => { st.glm = i.checked; dibuja(); };
-    panel.appendChild(rd); dibuja();
-  };
-
-  W.escalones = el => {
-    const E = CUR().escalones, D = CUR().ele, { vis, panel } = marco(el), w = 860, h = 460, svg = lienzo(vis, w, h), st = { d: 1, lm: false };
-    const x = d3.scaleLinear(d3.extent(E.horas), [70, 840]), y = d3.scaleLinear([20, 100], [410, 20]);
-    ejes(svg.append("g"), x, y, { y0: 410, xlab: "Horas de instrucción", ylab: "Nota DELE" });
-    svg.append("g").selectAll("circle").data(D).join("circle").attr("cx", d => x(d.horas)).attr("cy", d => y(d.nota_dele)).attr("r", 4).attr("fill", COL.celeste).attr("opacity", .45);
-    const esc = svg.append("path").attr("fill", "none").attr("stroke", COL.rojo).attr("stroke-width", 4.5), rl = svg.append("line").attr("stroke", COL.azul).attr("stroke-width", 3).attr("stroke-dasharray", "8 6");
-    const hx = D.map(d => d.horas), ny = D.map(d => d.nota_dele), b1 = d3.sum(hx, (v, k) => (v - media(hx)) * (ny[k] - media(ny))) / d3.sum(hx, v => (v - media(hx)) ** 2), b0 = media(ny) - b1 * media(hx);
-    const r2lm = pearson(hx, ny) ** 2; const rd = lectura(panel, "grande");
-    function dibuja() {
-      const c = E.capas[st.d - 1];
-      esc.transition().duration(600).attr("d", d3.line().curve(d3.curveStepAfter).x((v, i) => x(E.horas[i])).y(v => y(v))(c.y));
-      const [h0, h1] = d3.extent(E.horas); rl.attr("x1", x(h0)).attr("x2", x(h1)).attr("y1", y(b0 + b1 * h0)).attr("y2", y(b0 + b1 * h1)).attr("opacity", st.lm ? 1 : 0);
-      rd.innerHTML = `<div>Profundidad <b>${st.d}</b> · ${2 ** st.d} escalones como máximo</div><div>R² del árbol <b class="rojo">${f(c.r2, 3)}</b></div>` + (st.lm ? `<div>R² de la recta (lm) <b style="color:${COL.azul}">${f(r2lm, 3)}</b></div>` : "") +
-        `<div class="peq">Un árbol de regresión predice la <b>media</b> de cada tramo: una función en escalera.</div>`;
-    }
-    deslizador(panel, { etq: "Profundidad máxima", min: 1, max: 4, valor: 1, cambio: v => { st.d = v; dibuja(); } });
-    const lb = crear(crear(panel, "w-ctrl"), "w-chk", "label"), i = crear(lb, "", "input"); i.type = "checkbox"; lb.append(" Comparar con la regresión lineal");
-    i.onchange = () => { st.lm = i.checked; dibuja(); };
-    panel.appendChild(rd); dibuja();
   };
 
   W.confusion = el => {
@@ -1470,6 +1450,23 @@
       b.onclick = () => { i = (i + 1) % spans.length; muestra(spans[i]); }; panel.after(b);
     });
   }
+  // Botón «Copiar» en los recuadros de código de los componentes (el código se puede pegar en RStudio)
+  function copiar(texto, boton) {
+    const hecho = () => { boton.textContent = "¡Copiado!"; boton.classList.add("ok"); setTimeout(() => { boton.textContent = "Copiar"; boton.classList.remove("ok"); }, 1600); };
+    const plan_b = () => { const t = document.createElement("textarea"); t.value = texto; t.style.position = "fixed"; t.style.opacity = "0";
+      document.body.appendChild(t); t.select(); try { document.execCommand("copy"); hecho(); } catch (e) { boton.textContent = "Selecciona y copia"; } t.remove(); };
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(texto).then(hecho, plan_b); else plan_b();
+  }
+  function botonesCopiar(raiz) {
+    if (!raiz || !raiz.querySelectorAll) return;
+    const pres = raiz.matches && raiz.matches("pre.w-code") ? [raiz] : [...raiz.querySelectorAll("pre.w-code")];
+    pres.forEach(pre => {
+      if (pre.parentElement && pre.parentElement.classList.contains("w-code-caja")) return;
+      const caja = document.createElement("div"); caja.className = "w-code-caja"; pre.replaceWith(caja); caja.appendChild(pre);
+      const b = document.createElement("button"); b.type = "button"; b.className = "w-copiar"; b.textContent = "Copiar"; b.title = "Copiar el código";
+      b.addEventListener("click", e => { e.stopPropagation(); copiar(pre.textContent.replace(/\u00a0/g, " "), b); }); caja.appendChild(b);
+    });
+  }
   function contadores(slide) {
     slide.querySelectorAll(".contador[data-hasta]").forEach(c => {
       const fin = +c.dataset.hasta; d3.select(c).transition().duration(1400).ease(d3.easeCubicOut).tween("t", () => { const i = d3.interpolateNumber(0, fin); return t => { c.textContent = Math.round(i(t)); }; });
@@ -1480,7 +1477,7 @@
     if (!slide) return;
     slide.querySelectorAll(".w[data-w]").forEach(el => {
       const fn = W[el.dataset.w]; if (!fn || el._w) return;
-      try { el._w = fn(el) || {}; } catch (e) { el._w = {}; console.error("[curso] Error en el componente", el.dataset.w, e); el.innerHTML = `<p class="pequeno">No se pudo cargar «${el.dataset.w}».</p>`; }
+      try { el._w = fn(el) || {}; botonesCopiar(el); } catch (e) { el._w = {}; console.error("[curso] Error en el componente", el.dataset.w, e); el.innerHTML = `<p class="pequeno">No se pudo cargar «${el.dataset.w}».</p>`; }
     });
   }
   // Prepara las diapositivas vecinas cuando el navegador queda libre
@@ -1494,6 +1491,10 @@
     document.querySelectorAll(".practica input[type=checkbox], .reto input[type=checkbox]").forEach(c => { c.disabled = false; });
     document.querySelectorAll(".giro > div").forEach(c => c.addEventListener("click", () => c.classList.toggle("on")));
     anatomias();
+    // Los componentes que reescriben su código (p. ej., el árbol para elegir la prueba) reciben también el botón
+    const slidesEl = document.querySelector(".reveal .slides");
+    if (slidesEl && window.MutationObserver) new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => { if (n.nodeType === 1) botonesCopiar(n); })))
+      .observe(slidesEl, { childList: true, subtree: true });
     const R = window.Reveal;
     if (R) {
       // En lugar de construir los ~70 componentes al cargar (lento en móvil y tableta),

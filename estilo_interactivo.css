@@ -27,7 +27,7 @@
 
 /* ---------- Cinta del método: copia → resultado → explica ---------- */
 .reveal section.copia::before, .reveal section.resultado::before, .reveal section.explica::before, .reveal section.reto-s::before {
-  position: absolute; top: -6px; right: 0; font-family: 'Outfit'; font-weight: 800; font-size: .46em; letter-spacing: .08em;
+  position: absolute; top: 4px; right: 0; font-family: 'Outfit'; font-weight: 800; font-size: .46em; letter-spacing: .08em; line-height: 1.25;
   padding: .35em .9em; border-radius: 999px; color: #fff; text-transform: uppercase; z-index: 5; }
 .reveal section.copia::before { content: "① Copia y ejecuta"; background: var(--azul); }
 .reveal section.resultado::before { content: "② Tu resultado"; background: var(--verde); }
@@ -202,7 +202,7 @@
 .w-svg .w-tag.nodo-t { font-size: 15px; }
 
 /* ---------- Diapositivas explicativas «En pocas palabras» (interactivo/explicaciones.js) ---------- */
-.reveal section.explicacion-slide::before { content: "↓ En pocas palabras"; position: absolute; top: -6px; right: 0; font-family: 'Outfit'; font-weight: 800;
+.reveal section.explicacion-slide::before { content: "↓ En pocas palabras"; position: absolute; top: 4px; line-height: 1.25; right: 0; font-family: 'Outfit'; font-weight: 800;
   font-size: .46em; letter-spacing: .08em; padding: .35em .9em; border-radius: 999px; color: #fff; text-transform: uppercase; background: var(--celeste); z-index: 5; }
 .reveal .explicacion-slide .exp-kicker { font-family: 'Outfit'; font-weight: 800; font-size: .48em; letter-spacing: .14em; text-transform: uppercase; color: var(--celeste); margin: 0 0 .1em; }
 .reveal .explicacion-slide h2 { border-left-color: var(--celeste); }
@@ -213,9 +213,24 @@
 .reveal .explicacion-slide .exp-cuerpo ul, .reveal .explicacion-slide .exp-cuerpo ol { margin: 0 0 .65em 1.1em; }
 .reveal .explicacion-slide .exp-cuerpo li { margin: .18em 0; }
 .reveal .explicacion-slide .exp-cuerpo code { font-size: .9em; background: #eef2f6; padding: 0 .25em; border-radius: 5px; }
-.reveal .ir-explicacion { position: absolute; right: 0; bottom: 8px; z-index: 6; font-family: 'Outfit'; font-weight: 700; font-size: .42em; letter-spacing: .04em;
-  padding: .35em .9em; border-radius: 999px; border: 2px solid var(--celeste); background: #fff; color: var(--celeste); cursor: pointer; opacity: .8; }
-.reveal .ir-explicacion:hover { opacity: 1; background: var(--celeste); color: #fff; }
+/* El botón queda por encima del número de diapositiva y del pie: así el ratón siempre lo alcanza */
+.reveal .ir-explicacion { position: absolute; right: 0; bottom: 52px; z-index: 40; pointer-events: auto; font-family: 'Outfit'; font-weight: 700; font-size: .42em; letter-spacing: .04em;
+  padding: .4em 1em; border-radius: 999px; border: 2px solid var(--celeste); background: #fff; color: var(--celeste); cursor: pointer;
+  box-shadow: 0 3px 10px rgba(69,123,157,.25); transition: background .15s, color .15s; }
+.reveal .ir-explicacion:hover, .reveal .ir-explicacion:focus-visible { background: var(--celeste); color: #fff; outline: none; }
 .reveal.print-pdf .ir-explicacion, .reveal.overview .ir-explicacion { display: none; }
 /* El menú lateral lista solo las diapositivas principales */
 .slide-menu-items .slide-menu-item-vertical { display: none; }
+
+/* Recuadro destacado (p. ej., la definición del valor p) */
+.recuadro { border: 3px solid var(--azul); background: #fffaf0; border-radius: 16px; padding: .45em .9em; margin-top: .5em; font-size: .85em; box-shadow: var(--sombra); }
+.recuadro strong { color: var(--rojo); }
+
+/* Botón «Copiar» de los recuadros de código de los componentes */
+.w-code-caja { position: relative; }
+.w-code-caja pre.w-code { padding-right: 5.2em !important; }
+.w-copiar { position: absolute; top: .4em; right: .4em; font: 700 .78em 'Outfit', sans-serif; border: 1px solid rgba(255,255,255,.35); border-radius: 8px;
+  background: rgba(255,255,255,.12); color: #fff; padding: .2em .65em; cursor: pointer; z-index: 2; }
+.w-copiar:hover { background: var(--arena); color: var(--azul); }
+.w-copiar.ok { background: var(--verde); border-color: var(--verde); }
+.w-code { user-select: text; -webkit-user-select: text; }
