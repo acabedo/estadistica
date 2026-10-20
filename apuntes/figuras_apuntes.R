@@ -70,7 +70,7 @@ fig_de_pasos <- function() {
     geom_point(size = 3.5, colour = col$azul) +
     annotate("text", x = 5.45, y = 72, label = "media = 70", colour = col$rojo, hjust = 1, size = 3.3) +
     annotate("text", x = .65, y = 70 + de + 2, label = "± 1 DE = 13,9", hjust = 0, size = 3.3, colour = col$celeste) +
-    labs(x = "Aprendiente", y = "Nota")
+    labs(x = "Estudiante", y = "Nota")
 }
 
 fig_cuartiles <- function() {
@@ -79,7 +79,7 @@ fig_cuartiles <- function() {
     geom_dotplot(binwidth = 1, dotsize = .6, fill = col$agua, colour = NA) +
     geom_vline(xintercept = qs[2:4], colour = c(col$celeste, col$rojo, col$celeste), linewidth = 1) +
     annotate("label", x = qs[2:4], y = .95, label = c("Q1", "Mediana", "Q3"), size = 3.3) +
-    theme(axis.text.y = element_blank()) + labs(y = NULL, x = "Nota DELE (cada punto, un aprendiente)")
+    theme(axis.text.y = element_blank()) + labs(y = NULL, x = "Nota DELE (cada punto, un estudiante)")
 }
 
 fig_resumen_grupos <- function() {
@@ -188,7 +188,7 @@ fig_ic <- function() {
     geom_pointrange(aes(ymin = inf, ymax = sup), size = .2) +
     scale_colour_manual(values = c(`TRUE` = col$celeste, `FALSE` = col$rojo),
                         labels = c(`TRUE` = "Contiene la media real", `FALSE` = "No la contiene"), name = NULL) +
-    labs(x = "50 muestras de 30 aprendientes", y = "IC 95 % de la media") + theme(legend.position = "top")
+    labs(x = "50 muestras de 30 estudiantes", y = "IC 95 % de la media") + theme(legend.position = "top")
 }
 
 fig_valor_p <- function() {
@@ -488,7 +488,7 @@ fig_cp <- function() {
     ggplot(aes(hojas)) +
     geom_ribbon(aes(ymin = acc(xerror + xstd), ymax = acc(xerror - xstd)), fill = col$rojo, alpha = .15) +
     geom_line(aes(y = acc(`rel error`), colour = "Entrenamiento (datos conocidos)"), linewidth = 1) +
-    geom_line(aes(y = acc(xerror), colour = "Validación cruzada (aprendientes nuevos)"), linewidth = 1) +
+    geom_line(aes(y = acc(xerror), colour = "Validación cruzada (estudiantes nuevos)"), linewidth = 1) +
     geom_point(aes(y = acc(`rel error`)), colour = col$azul) + geom_point(aes(y = acc(xerror)), colour = col$rojo) +
     geom_hline(yintercept = with(as_tibble(arbol_total$cptable), acc(min(xerror) + xstd[which.min(xerror)])), linetype = 2) +
     scale_colour_manual(values = c(col$azul, col$rojo), name = NULL) +

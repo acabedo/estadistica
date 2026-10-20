@@ -161,7 +161,7 @@
     const col = d3.scaleSequential([35, 100], d3.interpolateRgb("#d8e2ec", COL.azul));
     const dots = svg.append("g").selectAll("circle").data(pts).join("circle")
       .attr("cx", d => d.x).attr("cy", d => d.y).attr("r", 6).attr("fill", "#cdd6e0");
-    svg.append("text").attr("class", "w-tag").attr("x", 40).attr("y", 16).text("Población: 240 aprendientes (cada punto, una persona; el color, su nota DELE)");
+    svg.append("text").attr("class", "w-tag").attr("x", 40).attr("y", 16).text("Población: 240 estudiantes (cada punto, una persona; el color, su nota DELE)");
     const x = d3.scaleLinear([56, 80], [60, 860]), g = svg.append("g");
     ejes(g, x, null, { y0: 470, sinY: true, tx: 12 });
     svg.append("line").attr("x1", x(mu)).attr("x2", x(mu)).attr("y1", 340).attr("y2", 470).attr("stroke", COL.rojo).attr("stroke-width", 3);
@@ -246,7 +246,7 @@
     const { vis, panel } = marco(el), w = 900, h = 480, svg = lienzo(vis, w, h);
     const v = [55, 62, 70, 71, 92], m = 70, x = d3.scaleLinear([0.5, 5.5], [70, 560]), y = d3.scaleLinear([40, 100], [440, 30]);
     const u = y(0) - y(1);                       // píxeles por punto de nota
-    ejes(svg.append("g"), x, y, { tx: 5, xlab: "Aprendiente", ylab: "Nota", fx: d3.format("d") });
+    ejes(svg.append("g"), x, y, { tx: 5, xlab: "Estudiante", ylab: "Nota", fx: d3.format("d") });
     const gl = svg.append("g"), gs = svg.append("g"), gseg = svg.append("g"), gp = svg.append("g"), gx = svg.append("g");
     gl.append("line").attr("x1", 70).attr("x2", 560).attr("y1", y(m)).attr("y2", y(m)).attr("stroke", COL.rojo).attr("stroke-width", 3);
     gl.append("text").attr("x", 565).attr("y", y(m) + 5).attr("class", "w-tag rojo fuerte").text("media = 70");
@@ -299,7 +299,7 @@
     const D = CUR().ele.map(d => d.nota_dele).sort(d3.ascending), { vis, panel } = marco(el), w = 900, h = 470, svg = lienzo(vis, w, h);
     const x = d3.scaleLinear([d3.min(D) - 2, d3.max(D) + 2], [40, 870]); const cnt = {};
     const pos = D.map(v => { cnt[v] = (cnt[v] || 0) + 1; return { v, k: cnt[v] }; });
-    ejes(svg.append("g"), x, null, { y0: 300, sinY: true, xlab: "Nota DELE (cada punto, un aprendiente)" });
+    ejes(svg.append("g"), x, null, { y0: 300, sinY: true, xlab: "Nota DELE (cada punto, un estudiante)" });
     const sombra = svg.append("rect").attr("x", 40).attr("y", 60).attr("height", 240).attr("fill", COL.agua).attr("opacity", 0.35);
     const pts = svg.append("g").selectAll("circle").data(pos).join("circle").attr("cx", d => x(d.v)).attr("cy", d => 292 - (d.k - 1) * 11).attr("r", 5);
     const q = [0.25, 0.5, 0.75].map(p => d3.quantile(D, p)), ric = q[2] - q[0];
@@ -318,7 +318,7 @@
       sombra.transition().duration(300).attr("width", x(v) - 40);
       pts.attr("fill", d => d.v <= v ? COL.azul : "#c9d3df");
       const nombre = { 25: "Q1", 50: "la mediana", 75: "Q3" }[p];
-      rd.innerHTML = `<div>El <b>${p} %</b> de los aprendientes tiene una nota ≤ <b class="rojo">${f(v, 1)}</b></div>` + (nombre ? `<div>Es <b>${nombre}</b>.</div>` : "");
+      rd.innerHTML = `<div>El <b>${p} %</b> de los estudiantes tiene una nota ≤ <b class="rojo">${f(v, 1)}</b></div>` + (nombre ? `<div>Es <b>${nombre}</b>.</div>` : "");
     }
     const s = deslizador(panel, { etq: "Percentil", min: 1, max: 99, valor: 50, cambio: dibuja });
     botones(panel, [{ etq: "Q1", cls: "sec", click: () => s.set(25) }, { etq: "Mediana", cls: "sec", click: () => s.set(50) }, { etq: "Q3", cls: "sec", click: () => s.set(75) }]);
@@ -442,7 +442,7 @@
       const vals = D.map(d => d[st.v]), ext = d3.extent(vals), x = d3.scaleLinear([ext[0] - st.bw, ext[1] + st.bw], [70, 830]);
       const th = d3.range(Math.floor(ext[0] / st.bw) * st.bw, ext[1] + st.bw, st.bw);
       const bins = d3.bin().domain([th[0], th[th.length - 1]]).thresholds(th)(vals), y = d3.scaleLinear([0, d3.max(bins, b => b.length)], [400, 20]).nice();
-      ejes(gEj, x, y, { y0: 400, xlab: st.v, ylab: "Número de aprendientes" });
+      ejes(gEj, x, y, { y0: 400, xlab: st.v, ylab: "Número de estudiantes" });
       gB.selectAll("rect").data(bins).join(en => en.append("rect").attr("y", 400).attr("height", 0)).attr("fill", COL.azul).attr("stroke", "#fff")
         .transition().duration(500).attr("x", b => x(b.x0)).attr("width", b => Math.max(0, x(b.x1) - x(b.x0))).attr("y", b => y(b.length)).attr("height", b => 400 - y(b.length));
       cod.innerHTML = `ggplot(ele, aes(x = <b>${st.v}</b>)) +\n  geom_histogram(binwidth = <b>${st.bw}</b>,\n                 boundary = 0,\n                 fill = "#1D3557",\n                 colour = "white")`;
@@ -702,7 +702,7 @@
         <div><span class="cuadro" style="background:${COL.arena}"></span>β (se me escapa) <b>${pct(1 - pot)}</b></div>
         <div><span class="cuadro" style="background:${COL.verde}"></span>Potencia 1 − β <b>${pct(pot)}</b></div>
         <div class="peq">d = ${f(st.d, 2)} equivale a una diferencia real de unos <b>${f(st.d * 13, 0)} puntos</b> de nota DELE (DE ≈ 13).</div>
-        <div class="peq">Con <b>${st.n}</b> por grupo, la potencia es del ${pct(pot)}. Para llegar al 80 % harían falta, como mínimo, unos <b>${st.d > 0.05 ? n80 : "∞"}</b> aprendientes por grupo.</div>`;
+        <div class="peq">Con <b>${st.n}</b> por grupo, la potencia es del ${pct(pot)}. Para llegar al 80 % harían falta, como mínimo, unos <b>${st.d > 0.05 ? n80 : "∞"}</b> estudiantes por grupo.</div>`;
     }
     deslizador(panel, { etq: "Tamaño del efecto (d)", min: 0, max: 1.5, paso: 0.05, valor: 0.5, fmt: v => f(v, 2), cambio: v => { st.d = v; dibuja(); } });
     deslizador(panel, { etq: "n por grupo", min: 5, max: 200, valor: 30, cambio: v => { st.n = v; dibuja(); } });
@@ -758,8 +758,8 @@
           { r: "No", fin: "Prueba exacta de Fisher", cod: "fisher.test(tabla)", ef: "odds ratio", ej: "Tablas con celdas pequeñas" }] },
         { r: "Predecirla con varios predictores", q: "¿Qué priorizas?", c: [
           { r: "Cuantificar cada efecto", fin: "Regresión logística (Plus)", cod: "glm(subj_ok ~ horas + estancia + L1,\n    data = ele, family = binomial)", ef: "odds ratios", ej: "¿Qué predice el uso correcto del subjuntivo?" },
-          { r: "Reglas fáciles de explicar", fin: "Árbol de decisión", cod: "rpart(subjuntivo ~ horas + estancia + L1 + nivel,\n      data = ele, method = \"class\")", ef: "acierto y matriz de confusión", ej: "¿Qué perfil de aprendiente usa bien el subjuntivo?" }] }] },
-      { r: "Frecuencias de palabras en dos corpus", fin: "Log-likelihood + log-ratio (Plus)", cod: "ll(aprend, nativo, N1, N2)\nlog2((aprend / N1) / (nativo / N2))", ef: "log-ratio", ej: "¿Qué palabras sobreusan los aprendientes?" }] };
+          { r: "Reglas fáciles de explicar", fin: "Árbol de decisión", cod: "rpart(subjuntivo ~ horas + estancia + L1 + nivel,\n      data = ele, method = \"class\")", ef: "acierto y matriz de confusión", ej: "¿Qué perfil de estudiante usa bien el subjuntivo?" }] }] },
+      { r: "Frecuencias de palabras en dos corpus", fin: "Log-likelihood + log-ratio (Plus)", cod: "ll(aprend, nativo, N1, N2)\nlog2((aprend / N1) / (nativo / N2))", ef: "log-ratio", ej: "¿Qué palabras sobreusan los estudiantes?" }] };
 
   W["elige-prueba"] = el => {
     const { vis, panel } = marco(el, { ancho: 470 }), w = 900, h = 560, svg = lienzo(vis, w, h);
@@ -946,7 +946,7 @@
     const bE = bar.append("rect").attr("x", 0).attr("width", 60).attr("fill", COL.rojo), bD = bar.append("rect").attr("x", 80).attr("width", 60).attr("fill", COL.gris);
     bar.append("text").attr("class", "w-tag").attr("x", 30).attr("y", 395).attr("text-anchor", "middle").text("entre"); bar.append("text").attr("class", "w-tag").attr("x", 110).attr("y", 395).attr("text-anchor", "middle").text("dentro");
     const vE = bar.append("text").attr("class", "w-tag fuerte").attr("x", 30).attr("text-anchor", "middle"), vD = bar.append("text").attr("class", "w-tag fuerte").attr("x", 110).attr("text-anchor", "middle");
-    svg.append("text").attr("class", "w-tag").attr("x", 80).attr("y", 450).text("Simulación: nota de 4 grupos de 25 aprendientes · rayas negras: media de cada grupo · discontinua: media general");
+    svg.append("text").attr("class", "w-tag").attr("x", 80).attr("y", 450).text("Simulación: nota de 4 grupos de 25 estudiantes · rayas negras: media de cada grupo · discontinua: media general");
     const rd = lectura(panel, "grande"); const off = [-1.5, 0.5, 1.5, -0.5];
     function dibuja() {
       const grupos = L1S.map((l, k) => zs[k].map(z => 68 + off[k] * st.sep + z * st.s)), todos = grupos.flat(), gmed = media(todos);
@@ -984,7 +984,7 @@
     filas.append("circle").attr("cx", d => x(d.diff)).attr("r", 8).attr("fill", d => sig(d) ? COL.rojo : COL.gris);
     const rd = lectura(panel, "grande");
     const frase = d => { const [a, b] = d.comp.split("-"), mas = d.diff > 0 ? a : b, menos = d.diff > 0 ? b : a;
-      return `Los aprendientes de L1 <b>${mas}</b> sacan de media <b>${f(Math.abs(d.diff), 1)} puntos más</b> que los de L1 <b>${menos}</b>.<br>`; };
+      return `Los estudiantes de L1 <b>${mas}</b> sacan de media <b>${f(Math.abs(d.diff), 1)} puntos más</b> que los de L1 <b>${menos}</b>.<br>`; };
     const msg = d => `<b>${d.comp.replace("-", " − ")}</b><br>${frase(d)}Diferencia ${signo(d.diff, 1)} puntos<br>IC 95 % [${f(d.lwr, 1)}, ${f(d.upr, 1)}]<br>p ajustado ${fp(d.p)}<br>` +
       (sig(d) ? `<span class="rojo">El intervalo no cruza el 0: diferencia significativa.</span>` : `<span class="peq">Cruza el 0: no podemos afirmar que difieran.</span>`);
     filas.on("mouseenter click", (e, d) => { rd.innerHTML = msg(d); filas.attr("opacity", o => o === d ? 1 : 0.4); });
@@ -1047,7 +1047,7 @@
       lista.innerHTML = `<div><b style="color:${COL.azul}">Sobreuso:</b> ${pos.map(d => d.palabra).join(", ") || "—"}</div><div><b style="color:${COL.rojo}">Infrauso:</b> ${neg.map(d => d.palabra).join(", ") || "—"}</div>`;
     }
     pts.on("mouseenter click", (e, d) => { rd.innerHTML = `<b>${d.palabra}</b>: ${d.aprend} (aprend.) vs ${d.nativo} (nativos)<br>${f(d.p1, 0)} vs ${f(d.p2, 0)} pmw<br>LL = <b>${f(d.LL, 1)}</b> · LR = <b>${f(d.LR, 2)}</b><br>` +
-      (d.LR > 0 ? `Los aprendientes la usan ${f(2 ** d.LR, 1)} veces más.` : `Los aprendientes la usan ${f(2 ** -d.LR, 1)} veces menos.`); });
+      (d.LR > 0 ? `Los estudiantes la usan ${f(2 ** d.LR, 1)} veces más.` : `Los estudiantes la usan ${f(2 ** -d.LR, 1)} veces menos.`); });
     segmentado(panel, "Umbral de LL", [["3.84", "p < 0,05"], ["6.63", "p < 0,01"], ["15.13", "p < 0,0001"]], "15.13", v => { st.ll = +v; dibuja(); });
     deslizador(panel, { etq: "|log-ratio| mínimo", min: 0, max: 2, paso: 0.1, valor: 1, fmt: v => f(v, 1) + ` (×${f(2 ** v, 1)})`, cambio: v => { st.lr = v; dibuja(); } });
     panel.appendChild(lista); panel.appendChild(rd); rd.innerHTML = "<span class='peq'>Pasa el ratón por una palabra.</span>"; dibuja();
@@ -1071,7 +1071,7 @@
       filas.select(".val").transition().duration(700).attr("x", d => (d.sm >= 1 ? x(d.sm) + 6 : x(d.sm) - 6)).attr("text-anchor", d => d.sm >= 1 ? "start" : "end").attr("y", y.bandwidth() / 2 + 6).text(d => f(d.sm, 2));
       const t0 = ord[0], pu = F.find(d => d.palabra === "pues"), cal = d => `(${f(d.p1, 0)} + ${n < 1 ? f(n, 2) : f(n, 0)}) / (${f(d.p2, 0)} + ${n < 1 ? f(n, 2) : f(n, 0)}) = <b>${f(d.sm, 2)}</b>`;
       rd.innerHTML = `n = <b>${n < 1 ? f(n, 2) : f(n, 0)}</b> <span class="peq">(constante de suavizado, no un tamaño de muestra)</span> · más sobreusada: <b>${ord[0].palabra}</b>
-        <div class="peq"><b>${t0.palabra}</b>: ${cal(t0)} · <b>pues</b>: ${cal(pu)} <br>(pmw aprendientes + n) / (pmw nativos + n). &gt; 1 sobreuso · &lt; 1 infrauso.</div><div class="peq">${lg < 1 ? "n bajo: pesan las palabras de frecuencia baja." : lg > 2.5 ? "n alto: todo se acerca a 1; destacan las palabras más frecuentes." : "Valor intermedio."}</div>`;
+        <div class="peq"><b>${t0.palabra}</b>: ${cal(t0)} · <b>pues</b>: ${cal(pu)} <br>(pmw estudiantes + n) / (pmw nativos + n). &gt; 1 sobreuso · &lt; 1 infrauso.</div><div class="peq">${lg < 1 ? "n bajo: pesan las palabras de frecuencia baja." : lg > 2.5 ? "n alto: todo se acerca a 1; destacan las palabras más frecuentes." : "Valor intermedio."}</div>`;
     }
     deslizador(panel, { etq: "Parámetro n (log₁₀)", min: -1, max: 4, paso: 0.1, valor: 0, fmt: v => f(Math.pow(10, v), v < 0 ? 1 : 0), cambio: dibuja });
     panel.appendChild(rd); dibuja(0);
@@ -1124,7 +1124,7 @@
       sonda.select("circle").transition().duration(dur).attr("cx", x(st.hh)).attr("cy", y(p(st.hh)));
       const lo = st.b0 + st.b1 * st.hh, pp = p(st.hh);
       rd.innerHTML = `<div>log-odds = ${f(st.b0, 2)} + ${f(st.b1, 4)} × ${st.hh} = <b>${f(lo, 2)}</b></div><div>odds = e<sup>${f(lo, 2)}</sup> = <b>${f(Math.exp(lo), 2)}</b></div>
-        <div>probabilidad = odds / (1 + odds) = <b class="rojo">${pct(pp)}</b></div><div class="peq">Es decir, de cada 100 aprendientes con ${st.hh} horas, unos ${f(100 * pp, 0)} aciertan y ${f(100 - 100 * pp, 0)} fallan: ${f(Math.exp(lo), 2)} aciertos por cada fallo.</div><div class="peq">Odds ratio por cada 100 horas más: ×${f(Math.exp(st.b1 * 100), 2)}</div>`;
+        <div>probabilidad = odds / (1 + odds) = <b class="rojo">${pct(pp)}</b></div><div class="peq">Es decir, de cada 100 estudiantes con ${st.hh} horas, unos ${f(100 * pp, 0)} aciertan y ${f(100 - 100 * pp, 0)} fallan: ${f(Math.exp(lo), 2)} aciertos por cada fallo.</div><div class="peq">Odds ratio por cada 100 horas más: ×${f(Math.exp(st.b1 * 100), 2)}</div>`;
     }
     s0 = deslizador(panel, { etq: "Intercepto b₀", min: -8, max: 2, paso: 0.05, valor: -2, fmt: v => f(v, 2), cambio: v => { st.b0 = v; dibuja(); } });
     s1 = deslizador(panel, { etq: "Pendiente b₁", min: 0, max: 0.03, paso: 0.0005, valor: 0.008, fmt: v => f(v, 4), cambio: v => { st.b1 = v; dibuja(); } });
@@ -1140,10 +1140,10 @@
   W["anatomia-arbol"] = el => {
     const { vis, panel } = marco(el), w = 860, h = 460, svg = lienzo(vis, w, h);
     const N = [
-      { id: "raiz", x: 430, y: 60, t: ["¿horas ≥ 243,5?"], c: COL.azul, exp: "<b>Nodo raíz</b>: contiene a los 240 aprendientes. Su pregunta es la que <b>mejor</b> separa las clases de todos los datos." },
-      { id: "int", x: 250, y: 210, t: ["¿nivel = C1?"], c: COL.celeste, exp: "<b>Nodo interno</b>: una nueva pregunta, solo para los aprendientes que han llegado hasta aquí (161)." },
+      { id: "raiz", x: 430, y: 60, t: ["¿horas ≥ 243,5?"], c: COL.azul, exp: "<b>Nodo raíz</b>: contiene a los 240 estudiantes. Su pregunta es la que <b>mejor</b> separa las clases de todos los datos." },
+      { id: "int", x: 250, y: 210, t: ["¿nivel = C1?"], c: COL.celeste, exp: "<b>Nodo interno</b>: una nueva pregunta, solo para los estudiantes que han llegado hasta aquí (161)." },
       { id: "h1", x: 680, y: 210, t: ["incorrecto", "81 % · n = 79"], c: COL.rojo, hoja: 1, exp: "<b>Hoja</b> (nodo terminal): ya no se divide. Predice la clase mayoritaria: <b>incorrecto</b> (81 % de los 79 casos)." },
-      { id: "h2", x: 110, y: 370, t: ["correcto", "82 % · n = 62"], c: COL.verde, hoja: 1, exp: "<b>Hoja</b>: aprendientes con muchas horas y nivel C1. El 82 % usa bien el subjuntivo." },
+      { id: "h2", x: 110, y: 370, t: ["correcto", "82 % · n = 62"], c: COL.verde, hoja: 1, exp: "<b>Hoja</b>: estudiantes con muchas horas y nivel C1. El 82 % usa bien el subjuntivo." },
       { id: "h3", x: 390, y: 370, t: ["correcto", "59 % · n = 99"], c: "#7fbfb3", hoja: 1, exp: "<b>Hoja impura</b>: predice «correcto», pero con solo un 59 %. Aquí el árbol duda: es un buen candidato para seguir dividiendo… o no." }];
     const E = [{ a: "raiz", b: "int", t: "sí" }, { a: "raiz", b: "h1", t: "no" }, { a: "int", b: "h2", t: "sí" }, { a: "int", b: "h3", t: "no" }];
     const by = Object.fromEntries(N.map(n => [n.id, n]));
@@ -1167,7 +1167,7 @@
     const { vis, panel } = marco(el), w = 860, h = 420, svg = lienzo(vis, w, h), st = { k: 14, ent: false };
     const bolas = svg.append("g").attr("transform", "translate(40,60)");
     svg.append("rect").attr("x", 25).attr("y", 40).attr("width", 290).attr("height", 250).attr("rx", 18).attr("fill", "#f5f7fa").attr("stroke", COL.claro).lower();
-    svg.append("text").attr("class", "w-tag fuerte").attr("x", 170).attr("y", 28).attr("text-anchor", "middle").text("Un nodo con 20 aprendientes");
+    svg.append("text").attr("class", "w-tag fuerte").attr("x", 170).attr("y", 28).attr("text-anchor", "middle").text("Un nodo con 20 estudiantes");
     const x = d3.scaleLinear([0, 1], [400, 840]), y = d3.scaleLinear([0, 1], [360, 40]);
     ejes(svg.append("g"), x, y, { y0: 360, x0: 400, xlab: "Proporción de «correcto» en el nodo", ylab: "Impureza", fx: d3.format(".0%"), fy: v => f(v, 1) });
     const cG = svg.append("path").attr("fill", "none").attr("stroke", COL.rojo).attr("stroke-width", 4), cE = svg.append("path").attr("fill", "none").attr("stroke", COL.celeste).attr("stroke-width", 3).attr("stroke-dasharray", "7 5");
@@ -1185,7 +1185,7 @@
         (st.ent ? `<div>Entropía = <b style="color:${COL.celeste}">${f(ent, 3)}</b></div>` : "") +
         `<div class="peq">${g === 0 ? "<b>Nodo puro</b>: todos iguales. Impureza 0." : g >= 0.49 ? "<b>Máxima mezcla</b>: 50/50. El nodo no sabe qué predecir." : "Cuanto más mezclado, más impuro."}</div>`;
     }
-    deslizador(panel, { etq: "Aprendientes con subjuntivo correcto", min: 0, max: 20, valor: 14, cambio: v => { st.k = v; dibuja(); } });
+    deslizador(panel, { etq: "Estudiantes con subjuntivo correcto", min: 0, max: 20, valor: 14, cambio: v => { st.k = v; dibuja(); } });
     const lb = crear(crear(panel, "w-ctrl"), "w-chk", "label"), i = crear(lb, "", "input"); i.type = "checkbox"; lb.append(" Comparar con la entropía");
     i.onchange = () => { st.ent = i.checked; dibuja(); };
     panel.appendChild(rd); dibuja();
@@ -1274,7 +1274,7 @@
     panel.appendChild(rd); panel.appendChild(caja); monta();
   };
 
-  /* --- Árbol de rpart: crecer, explorar, seguir a un aprendiente --- */
+  /* --- Árbol de rpart: crecer, explorar, seguir a un estudiante --- */
   function parseCond(c) {
     const m = c.match(/^(.+?)\s*(>=|<|=)\s*(.+)$/); if (!m) return null;
     return { v: m[1].trim(), op: m[2], val: m[2] === "=" ? m[3].split(",") : +m[3] };
@@ -1319,7 +1319,7 @@
     const regla = d => d.ancestors().reverse().slice(1).map(a => bonita(a.data.cond));
     function infoNodo(d) {
       const n = d.data, r = regla(d);
-      return `<div class="peq">${d.depth ? "SI" : "Todos los aprendientes"}</div>` + (r.length ? `<div class="regla">${r.map(x => `<span>${x}</span>`).join(" <b>y</b> ")}</div>` : "") +
+      return `<div class="peq">${d.depth ? "SI" : "Todos los estudiantes"}</div>` + (r.length ? `<div class="regla">${r.map(x => `<span>${x}</span>`).join(" <b>y</b> ")}</div>` : "") +
         `<div class="peq">ENTONCES</div>` +
         (clase ? `<div>predicción <b style="color:${n.clase === "correcto" ? COL.verde : COL.rojo}">${n.clase}</b></div><div class="barra2"><span style="width:${100 * n.p}%"></span></div>
           <div class="peq">${n.conteos[0]} correctos · ${n.conteos[1]} incorrectos (n = ${n.n}, ${pct(n.n / n0)} de la muestra)</div>`
@@ -1384,7 +1384,7 @@
     svg.append("path").attr("d", d3.area().x(d => x(d.nsplit + 1)).y0(d => y(acc(d.xerror - d.xstd))).y1(d => y(acc(d.xerror + d.xstd)))(T0)).attr("fill", COL.rojo).attr("opacity", 0.12);
     svg.append("line").attr("x1", 70).attr("x2", 830).attr("y1", y(acc(umbral))).attr("y2", y(acc(umbral))).attr("stroke", COL.tinta).attr("stroke-dasharray", "4 5");
     svg.append("text").attr("class", "w-tag").attr("x", 826).attr("y", y(acc(umbral)) + 18).attr("text-anchor", "end").text("mejor acierto − 1 EE (margen de incertidumbre)");
-    [["rel_error", COL.azul, "acierto con los datos de entrenamiento (ya conocidos)"], ["xerror", COL.rojo, "acierto estimado con aprendientes nuevos (validación cruzada)"]].forEach(([k, c, t], i) => {
+    [["rel_error", COL.azul, "acierto con los datos de entrenamiento (ya conocidos)"], ["xerror", COL.rojo, "acierto estimado con estudiantes nuevos (validación cruzada)"]].forEach(([k, c, t], i) => {
       svg.append("path").attr("d", d3.line().x(d => x(d.nsplit + 1)).y(d => y(acc(d[k])))(T0)).attr("fill", "none").attr("stroke", c).attr("stroke-width", 3.5);
       svg.append("g").selectAll("circle").data(T0).join("circle").attr("cx", d => x(d.nsplit + 1)).attr("cy", d => y(acc(d[k]))).attr("r", 5).attr("fill", c);
       svg.append("rect").attr("x", 300).attr("y", 350 + i * 26).attr("width", 18).attr("height", 5).attr("fill", c); svg.append("text").attr("class", "w-tag").attr("x", 326).attr("y", 357 + i * 26).text(t);
@@ -1430,7 +1430,7 @@
       cel.select("rect").transition().duration(400).attr("fill", d => (d.k === "vp" || d.k === "vn") ? COL.verde : COL.rojo).attr("opacity", d => 0.25 + 0.75 * c[d.k] / tot * 2.2);
       cel.select("text").text(d => c[d.k]);
       rd.innerHTML = `<div>Exactitud <b>${pct((c.vp + c.vn) / tot, 1)}</b></div><div>Sensibilidad <b>${pct(c.vp / (c.vp + c.fn))}</b> <span class="peq">(correctos detectados)</span></div>
-        <div>Especificidad <b>${pct(c.vn / (c.vn + c.fp))}</b> <span class="peq">(incorrectos detectados)</span></div><div class="peq">${tot} aprendientes de ${st.d === "prueba" ? "prueba (nunca vistos)" : "entrenamiento"} · árbol ${st.a} (${H[st.a].hojas} hojas)</div>`;
+        <div>Especificidad <b>${pct(c.vn / (c.vn + c.fp))}</b> <span class="peq">(incorrectos detectados)</span></div><div class="peq">${tot} estudiantes de ${st.d === "prueba" ? "prueba (nunca vistos)" : "entrenamiento"} · árbol ${st.a} (${H[st.a].hojas} hojas)</div>`;
     }
     cel.on("mouseenter click", (e, d) => { ex.innerHTML = `<b>${d.t}</b>: ${d.e}`; });
     segmentado(panel, "Árbol", [["grande", "Sin podar"], ["podado", "Podado (mín. xerror)"], ["simple", "1 corte"]], "grande", v => { st.a = v; dibuja(); });

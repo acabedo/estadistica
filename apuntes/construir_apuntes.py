@@ -32,7 +32,7 @@ SEGUIR = '''nuevos <- tibble(horas = c(300, 200, 400),
                  estancia = c("no", "sí", "no"))
 rpart.predict(arbol, nuevos, rules = TRUE)'''
 
-SEGUIR_NOTA = '''predict(arbol_nota, nuevos)                  # nota prevista para cada aprendiente
+SEGUIR_NOTA = '''predict(arbol_nota, nuevos)                  # nota prevista para cada estudiante
 rpart.predict(arbol_nota, nuevos, rules = TRUE)'''
 
 W = {
@@ -72,8 +72,8 @@ W = {
     "mejor-corte": [("fig_mejor_corte()", 2.7)],
     "arbol/grande/crecer": [("tabla_crecer()", None)],
     "arbol/grande/explorar": [("tabla_reglas()", None)],
-    "arbol/grande/seguir": [(SEGUIR, None, "Prueba esto en R: predecir para aprendientes nuevos")],
-    "arbol/nota/seguir": [(SEGUIR_NOTA, None, "Prueba esto en R (usa los mismos tres aprendientes)")],
+    "arbol/grande/seguir": [(SEGUIR, None, "Prueba esto en R: predecir para estudiantes nuevos")],
+    "arbol/nota/seguir": [(SEGUIR_NOTA, None, "Prueba esto en R (usa los mismos tres estudiantes)")],
     "cp-curva": [("fig_cp()", 2.7)],
     "confusion": [("tabla_confusion()", None), ("tabla_matriz()", None)],
 }
@@ -385,7 +385,7 @@ Estos apuntes recogen todo el contenido de la presentación del curso, ordenado 
 - **Las figuras y tablas**. Las que en clase eran interactivas aparecen aquí en una versión estática que resume lo que se veía al manipularlas.
 - **En pocas palabras**: la explicación de qué significa el resultado y por qué importa.
 
-Para reproducir los análisis necesitas R (o posit.cloud), los paquetes `tidyverse`, `rpart`, `rpart.plot`, `pheatmap` y `plotly`, y la carpeta `datos/` con `ele.csv`, `errores.csv` y `frecuencias.csv`. Los datos son **simulados** con fines docentes, aunque se comportan como podrían hacerlo unos datos reales de aprendientes de ELE. Si una salida tuya no coincide con la de estos apuntes, revisa el paso anterior.
+Para reproducir los análisis necesitas R (o posit.cloud), los paquetes `tidyverse`, `rpart`, `rpart.plot`, `pheatmap` y `plotly`, y la carpeta `datos/` con `ele.csv`, `errores.csv` y `frecuencias.csv`. Los datos son **simulados** con fines docentes, aunque se comportan como podrían hacerlo unos datos reales de estudiantes de ELE. Si una salida tuya no coincide con la de estos apuntes, revisa el paso anterior.
 
 Los apuntes siguen el orden del curso: cinco sesiones (descriptiva, visualización, inferencia, chi cuadrado y ANOVA, y árboles de decisión), un capítulo **Plus** con material complementario (estadística de corpus y modelos de regresión lineal y logística) y un cierre sobre cómo elegir el método e informar de los resultados.
 

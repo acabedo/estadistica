@@ -68,7 +68,7 @@ fmt <- function(x, d = 2) format(round(x, d), nsmall = d, decimal.mark = ",", bi
 De los datos del aula a las pruebas estadísticas, **paso a paso y en directo**.
 
 ::: kpis
-<div><span class="contador" data-hasta="240">240</span>aprendientes</div>
+<div><span class="contador" data-hasta="240">240</span>estudiantes</div>
 <div><span class="contador" data-hasta="5">5</span>sesiones</div>
 <div><span class="contador" data-hasta="40">40</span>gráficos interactivos</div>
 :::
@@ -102,9 +102,9 @@ Pulsa una tarjeta para saltar a la sección. Tecla **M**: menú · **Esc**: vist
 
 ::: giro
 <div><div class="in"><div class="fr">¿Funciona mejor este método didáctico que aquel?</div><div class="re">Prueba <b>t</b> (2 grupos) o <b>ANOVA</b> (3 o más) · Sesiones 3 y 4</div></div></div>
-<div><div class="in"><div class="fr">¿Los aprendientes sinohablantes cometen más errores de <i>ser/estar</i>?</div><div class="re">Recuentos → <b>Wilcoxon</b> o <b>Kruskal-Wallis</b> · Sesiones 3 y 4</div></div></div>
+<div><div class="in"><div class="fr">¿Los estudiantes sinohablantes cometen más errores de <i>ser/estar</i>?</div><div class="re">Recuentos → <b>Wilcoxon</b> o <b>Kruskal-Wallis</b> · Sesiones 3 y 4</div></div></div>
 <div><div class="in"><div class="fr">¿Influye una estancia en España en el uso del subjuntivo?</div><div class="re">Dos categóricas → <b>χ²</b>; muchos predictores → <b>árbol</b> o <b>logística</b> · Sesiones 4, 5 y Plus</div></div></div>
-<div><div class="in"><div class="fr">¿Qué palabras sobreusan los aprendientes frente a los nativos?</div><div class="re">Dos corpus → <b>log-likelihood</b> + <b>log-ratio</b> · Plus</div></div></div>
+<div><div class="in"><div class="fr">¿Qué palabras sobreusan los estudiantes frente a los nativos?</div><div class="re">Dos corpus → <b>log-likelihood</b> + <b>log-ratio</b> · Plus</div></div></div>
 :::
 
 ::: idea
@@ -113,7 +113,7 @@ La estadística no sustituye a la interpretación lingüística: la **apoya** y 
 
 ::: notes
 ::: explicacion
-Muchas preguntas que nos hacemos como docentes o investigadores de ELE se pueden responder con datos: si un método funciona mejor que otro, si ciertos aprendientes cometen más errores o si una experiencia, como vivir en España, cambia la forma de usar la lengua.
+Muchas preguntas que nos hacemos como docentes o investigadores de ELE se pueden responder con datos: si un método funciona mejor que otro, si ciertos estudiantes cometen más errores o si una experiencia, como vivir en España, cambia la forma de usar la lengua.
 
 Cada pregunta de la diapositiva lleva asociada la prueba estadística que la responde. No hace falta entender todavía esos nombres: lo importante es ver que **el tipo de pregunta decide el tipo de análisis**.
 
@@ -188,7 +188,7 @@ Los **paquetes** son ampliaciones de R escritas por otras personas. `install.pac
 :::
 :::
 
-## Nuestros datos: 240 aprendientes de ELE {.resultado}
+## Nuestros datos: 240 estudiantes de ELE {.resultado}
 
 ```{r}
 #| echo: false
@@ -202,7 +202,7 @@ Datos **simulados** con fines docentes, con patrones plausibles en ELE. Filtra y
 
 ::: notes
 ::: explicacion
-Este es el conjunto de datos que usaremos durante todo el curso. Cada **fila** es un aprendiente y cada **columna**, una característica suya: su lengua materna, su nivel, sus horas de clase, su nota, etc.
+Este es el conjunto de datos que usaremos durante todo el curso. Cada **fila** es un estudiante y cada **columna**, una característica suya: su lengua materna, su nivel, sus horas de clase, su nota, etc.
 
 Los datos son **simulados**: no corresponden a personas reales, pero se han construido para que se comporten como podrían hacerlo unos datos reales de ELE. Por ejemplo, quienes tienen más horas de instrucción tienden a sacar mejor nota.
 
@@ -242,7 +242,7 @@ El tipo no es un detalle técnico. Determina qué resumen tiene sentido (no se p
 <h1>R y estadística descriptiva</h1>
 
 ::: pregunta
-¿Cómo es un aprendiente «típico»… y cuánto se parecen entre sí?
+¿Cómo es un estudiante «típico»… y cuánto se parecen entre sí?
 :::
 
 ::: chips
@@ -253,7 +253,7 @@ El tipo no es un detalle técnico. Determina qué resumen tiene sentido (no se p
 ## Población y muestra: la nota media del DELE
 
 ::: pequeno
-**Variable**: `nota_dele`, la nota de cada aprendiente en una prueba tipo DELE (de 0 a 100). Hacemos como si nuestros 240 aprendientes fueran **toda la población**: su nota media real es `r fmt(mean(ele$nota_dele), 1)`.
+**Variable**: `nota_dele`, la nota de cada estudiante en una prueba tipo DELE (de 0 a 100). Hacemos como si nuestros 240 estudiantes fueran **toda la población**: su nota media real es `r fmt(mean(ele$nota_dele), 1)`.
 :::
 
 ::: {.w data-w="muestra"}
@@ -261,11 +261,11 @@ El tipo no es un detalle técnico. Determina qué resumen tiene sentido (no se p
 
 ::: notes
 ::: explicacion
-La **población** es el grupo completo sobre el que queremos saber algo; por ejemplo, todos los aprendientes de ELE. Casi nunca podemos estudiarla entera, así que trabajamos con una **muestra**: un subconjunto de personas elegidas al azar.
+La **población** es el grupo completo sobre el que queremos saber algo; por ejemplo, todos los estudiantes de ELE. Casi nunca podemos estudiarla entera, así que trabajamos con una **muestra**: un subconjunto de personas elegidas al azar.
 
-La variable que estudiamos aquí es la **nota en la prueba tipo DELE** (`nota_dele`, de 0 a 100). Para poder comprobar cuánto se equivoca una muestra, hacemos un truco: tratamos a nuestros 240 aprendientes como si fueran la población entera. Así conocemos la respuesta correcta: la nota media real es **68,1**.
+La variable que estudiamos aquí es la **nota en la prueba tipo DELE** (`nota_dele`, de 0 a 100). Para poder comprobar cuánto se equivoca una muestra, hacemos un truco: tratamos a nuestros 240 estudiantes como si fueran la población entera. Así conocemos la respuesta correcta: la nota media real es **68,1**.
 
-Cada pulsación de «Extraer una muestra» elige al azar a 30 de esos 240 aprendientes (los puntos que se iluminan; su color indica su nota) y calcula **su** nota media. Una muestra puede dar 66,3; otra, 70,2; otra, 68,9. Ninguna coincide exactamente con 68,1 (la línea roja), pero todas se acercan. La diferencia entre la media de la muestra y la real es el **error de muestreo**. Si repetimos muchas veces, las medias forman una campana alrededor del valor verdadero.
+Cada pulsación de «Extraer una muestra» elige al azar a 30 de esos 240 estudiantes (los puntos que se iluminan; su color indica su nota) y calcula **su** nota media. Una muestra puede dar 66,3; otra, 70,2; otra, 68,9. Ninguna coincide exactamente con 68,1 (la línea roja), pero todas se acercan. La diferencia entre la media de la muestra y la real es el **error de muestreo**. Si repetimos muchas veces, las medias forman una campana alrededor del valor verdadero.
 
 Con muestras **más grandes**, las medias se agrupan más cerca del valor real: con n = 5 es fácil obtener una media de 60 o de 76; con n = 120, casi todas caen entre 66 y 70. Esta idea, que una muestra grande se equivoca menos, es la base de toda la estadística inferencial que veremos en la sesión 3.
 :::
@@ -485,7 +485,7 @@ Mover el sexto valor de 14 a 120. La media sube sin parar; la mediana se queda e
 
 ## Cómo se calcula cada medida
 
-Notas de 5 aprendientes: **55, 62, 70, 71, 92**
+Notas de 5 estudiantes: **55, 62, 70, 71, 92**
 
 | Medida | Cálculo | Resultado |
 |:--|:--|--:|
@@ -554,7 +554,7 @@ quantile(ele$nota_dele)
 R calcula en una línea cada medida de dispersión.
 
 - `range()`: la nota mínima y la máxima (32 y 100).
-- `sd()`: la **desviación típica** (o desviación estándar, DE; en inglés, *standard deviation*), la distancia media de cada nota respecto a la media. Aquí es de 12,9 puntos: un aprendiente típico se aleja unos 13 puntos de la nota media (68).
+- `sd()`: la **desviación típica** (o desviación estándar, DE; en inglés, *standard deviation*), la distancia media de cada nota respecto a la media. Aquí es de 12,9 puntos: un estudiante típico se aleja unos 13 puntos de la nota media (68).
 - `IQR()`: el **rango intercuartílico** (RIC), la amplitud del 50 % central de los datos: Q3 − Q1 = 77 − 60 = 17 puntos. No le afectan los valores extremos.
 - `quantile()`: los **cuartiles**, los valores que dividen los datos ordenados en cuatro partes iguales (0 %, 25 %, 50 %, 75 % y 100 %).
 
@@ -569,7 +569,7 @@ Si quisiéramos la **varianza**, la función sería `var(ele$nota_dele)`: 166,3,
 
 ::: notes
 ::: explicacion
-La desviación típica parece una fórmula complicada, pero son cinco pasos sencillos que el gráfico recorre uno a uno con las notas de cinco aprendientes: **55, 62, 70, 71 y 92**.
+La desviación típica parece una fórmula complicada, pero son cinco pasos sencillos que el gráfico recorre uno a uno con las notas de cinco estudiantes: **55, 62, 70, 71 y 92**.
 
 1. **Calcular la media**: 350 / 5 = 70.
 2. **Restar la media a cada valor**, para ver cuánto se aleja cada persona: −15, −8, 0, +1 y +22. Si sumamos esas distancias, da 0 (las negativas compensan a las positivas), así que no sirven tal cual.
@@ -577,7 +577,7 @@ La desviación típica parece una fórmula complicada, pero son cinco pasos senc
 4. **Sumar los cuadrados y promediarlos**. La suma es 225 + 64 + 0 + 1 + 484 = **774** (la *suma de cuadrados*). Al dividirla entre n − 1 = 4 obtenemos **193,5**: es la **varianza**. Se divide entre n − 1 y no entre n porque, una vez conocida la media, solo 4 de las 5 distancias son libres: la quinta queda fijada para que todas sumen 0.
 5. **Hacer la raíz cuadrada** para volver a las unidades originales: √193,5 ≈ **13,9 puntos**. Es la **desviación típica** (DE).
 
-La varianza (193,5) está en «puntos al cuadrado», una unidad que no se puede comparar con las notas. La DE (13,9) sí está en puntos: las notas de estos cinco aprendientes se alejan de la media, en promedio, unos 14 puntos.
+La varianza (193,5) está en «puntos al cuadrado», una unidad que no se puede comparar con las notas. La DE (13,9) sí está en puntos: las notas de estos cinco estudiantes se alejan de la media, en promedio, unos 14 puntos.
 
 En el paso 5, la **franja sombreada** marca la zona «media ± 1 DE»: de 70 − 13,9 = 56,1 a 70 + 13,9 = 83,9. Tres de las cinco notas (62, 70 y 71) caen dentro; 55 y 92 quedan fuera. En unos datos con forma de campana, esa franja contiene aproximadamente a dos de cada tres personas.
 
@@ -594,7 +594,7 @@ Avanzar paso a paso. En el paso 3 se ven literalmente cuadrados: por eso se llam
 
 ::: notes
 ::: explicacion
-Si ordenamos a los 240 aprendientes de menor a mayor nota, un **percentil** indica qué nota deja por debajo un determinado porcentaje de personas. El percentil 90 es la nota que solo supera el 10 % del grupo.
+Si ordenamos a los 240 estudiantes de menor a mayor nota, un **percentil** indica qué nota deja por debajo un determinado porcentaje de personas. El percentil 90 es la nota que solo supera el 10 % del grupo.
 
 Tres percentiles tienen nombre propio:
 
@@ -605,7 +605,7 @@ Tres percentiles tienen nombre propio:
 Entre Q1 y Q3 está la mitad central del grupo. Esa franja es la «caja» del diagrama de caja (*boxplot*), que veremos en la sesión 2.
 :::
 
-Cada punto es un aprendiente. Mover el percentil: la parte sombreada contiene ese porcentaje de personas. Pulsar Q1, mediana y Q3 y ver cómo se forma la caja del boxplot, que usaremos en la sesión 2.
+Cada punto es un estudiante. Mover el percentil: la parte sombreada contiene ese porcentaje de personas. Pulsar Q1, mediana y Q3 y ver cómo se forma la caja del boxplot, que usaremos en la sesión 2.
 :::
 
 ## `summary()` y frecuencias {.copia}
@@ -654,7 +654,7 @@ ele |>
 
 ::: notes
 ::: explicacion
-Casi siempre queremos comparar grupos: ¿sacan la misma nota los aprendientes de distintas lenguas maternas?
+Casi siempre queremos comparar grupos: ¿sacan la misma nota los estudiantes de distintas lenguas maternas?
 
 El paquete `dplyr` lo hace con dos órdenes encadenadas:
 
@@ -699,7 +699,7 @@ ele |>
 ::: explicacion
 Tres funciones más completan el trabajo básico con tablas:
 
-- `filter()` se queda con las **filas** que cumplen una condición. Aquí, los aprendientes de nivel C1 que han hecho una estancia. El doble igual (`==`) significa «es igual a».
+- `filter()` se queda con las **filas** que cumplen una condición. Aquí, los estudiantes de nivel C1 que han hecho una estancia. El doble igual (`==`) significa «es igual a».
 - `select()` se queda con las **columnas** que nos interesan.
 - `mutate()` **crea una columna nueva** a partir de las existentes. Aquí, `aprobado` vale `TRUE` si la nota es de 60 o más.
 
@@ -711,7 +711,7 @@ Tres funciones más completan el trabajo básico con tablas:
 
 ::: practica
 - [ ] Crea un proyecto en RStudio o en posit.cloud y carga `ele.csv`.
-- [ ] ¿Cuántos aprendientes hay de cada L1? ¿Y de cada nivel?
+- [ ] ¿Cuántos estudiantes hay de cada L1? ¿Y de cada nivel?
 - [ ] Calcula la media, la mediana y la DE de `horas`.
 - [ ] Calcula la nota media del DELE **por nivel**. ¿Aumenta con el nivel?
 - [ ] ¿Qué porcentaje usa bien el subjuntivo en cada L1?
@@ -737,7 +737,7 @@ ele |> count(L1, subjuntivo) |>
 Este bloque reúne una posible solución para cada ejercicio de la práctica 1:
 
 1. Cargar los datos con `read_csv()`.
-2. Contar aprendientes por L1 y por nivel con `table()`.
+2. Contar estudiantes por L1 y por nivel con `table()`.
 3. Calcular media, mediana y desviación típica de las horas.
 4. Agrupar por nivel y calcular la nota media: se comprueba que la nota **aumenta con el nivel**.
 5. Contar cuántos aciertan y fallan el subjuntivo en cada L1 y convertirlo en porcentaje dentro de cada lengua.
@@ -787,7 +787,7 @@ Pulsar «Animar»: los puntos cambian por completo, pero las medias, la varianza
 
 ::: notes
 ::: explicacion
-`ggplot2`, el paquete de gráficos más usado en R, construye cada gráfico como una suma de **capas**, unidas con el signo `+`. El ejemplo relaciona las **horas de instrucción** (eje x) con la **nota DELE** (eje y) de los 240 aprendientes:
+`ggplot2`, el paquete de gráficos más usado en R, construye cada gráfico como una suma de **capas**, unidas con el signo `+`. El ejemplo relaciona las **horas de instrucción** (eje x) con la **nota DELE** (eje y) de los 240 estudiantes:
 
 - **Datos**: la tabla con la que trabajamos (`ele`).
 - **Estética** (`aes`): qué variable va en cada eje y cuál decide el color o el tamaño. Aquí, `colour = estancia` pinta de un color a quienes han hecho una estancia y de otro a quienes no.
@@ -816,14 +816,14 @@ ggplot(ele, aes(x = nota_dele)) +
                  fill = "#1D3557",
                  colour = "white") +
   labs(x = "Nota DELE",
-       y = "Número de aprendientes")
+       y = "Número de estudiantes")
 ```
 
 ::: notes
 ::: explicacion
-Un **histograma** muestra cómo se reparten los valores de una variable numérica. Divide las notas en tramos y dibuja una barra por tramo: cuanto más alta, más aprendientes tienen una nota en ese intervalo.
+Un **histograma** muestra cómo se reparten los valores de una variable numérica. Divide las notas en tramos y dibuja una barra por tramo: cuanto más alta, más estudiantes tienen una nota en ese intervalo.
 
-**`binwidth`** (anchura del tramo, en inglés *bin*) indica cuántas unidades de la variable abarca cada barra. Como la variable es `nota_dele` y se mide en puntos de 0 a 100, `binwidth = 5` significa que cada barra agrupa **5 puntos de nota**: una barra para las notas de 60 a 65, otra de 65 a 70, otra de 70 a 75… `boundary = 0` hace que los tramos empiecen en números redondos (múltiplos de 5). Por ejemplo, la barra de 75 a 80 mide 35: hay 35 aprendientes con una nota en ese tramo.
+**`binwidth`** (anchura del tramo, en inglés *bin*) indica cuántas unidades de la variable abarca cada barra. Como la variable es `nota_dele` y se mide en puntos de 0 a 100, `binwidth = 5` significa que cada barra agrupa **5 puntos de nota**: una barra para las notas de 60 a 65, otra de 65 a 70, otra de 70 a 75… `boundary = 0` hace que los tramos empiecen en números redondos (múltiplos de 5). Por ejemplo, la barra de 75 a 80 mide 35: hay 35 estudiantes con una nota en ese tramo.
 
 En nuestro caso, la mayoría se concentra entre 60 y 80 puntos, con menos personas en los extremos. Es la típica forma de campana.
 
@@ -845,7 +845,7 @@ En el código:
 ::: explicacion
 La forma de un histograma depende mucho de la **anchura de las barras** (`binwidth`), y no hay un valor correcto universal. Recordemos que la anchura se expresa en las unidades de la variable: con `nota_dele`, en puntos de nota; con `horas`, en horas de clase.
 
-- Con barras **muy estrechas** (`binwidth = 1`, una barra por cada punto de nota), cada barra tiene solo dos o tres aprendientes y el gráfico se llena de picos y huecos que no significan nada: es ruido.
+- Con barras **muy estrechas** (`binwidth = 1`, una barra por cada punto de nota), cada barra tiene solo dos o tres estudiantes y el gráfico se llena de picos y huecos que no significan nada: es ruido.
 - Con barras **muy anchas** (`binwidth = 20`, tramos de 20 puntos), todo se agrupa en cuatro o cinco bloques y se pierde la forma.
 
 El deslizador permite probar distintos valores, también con la variable «horas». La regla práctica es buscar una anchura que muestre la forma general sin detalles caprichosos y, si hay dudas, probar varias. El código de la izquierda se actualiza para copiar la anchura elegida.
@@ -905,14 +905,14 @@ ggplot(ele, aes(x = nivel,
 ::: explicacion
 Las tres pestañas muestran formas distintas de comparar la **nota DELE** entre grupos:
 
-- **Densidad** (`geom_density`): una versión suavizada del histograma. En lugar de barras, dibuja una curva continua que sube donde hay muchas notas y baja donde hay pocas. El área bajo cada curva vale siempre 1, así que se pueden comparar grupos de distinto tamaño (140 aprendientes sin estancia y 100 con estancia): lo que se compara es la **forma**, no el número de personas. Aquí se ve que la curva roja (con estancia) está algo desplazada hacia notas más altas.
+- **Densidad** (`geom_density`): una versión suavizada del histograma. En lugar de barras, dibuja una curva continua que sube donde hay muchas notas y baja donde hay pocas. El área bajo cada curva vale siempre 1, así que se pueden comparar grupos de distinto tamaño (140 estudiantes sin estancia y 100 con estancia): lo que se compara es la **forma**, no el número de personas. Aquí se ve que la curva roja (con estancia) está algo desplazada hacia notas más altas.
 - **Boxplot** (diagrama de caja): resume cada L1 con su mediana (la línea), su mitad central (la caja, del Q1 al Q3) y su recorrido (los bigotes).
-- **Violín con puntos**: el contorno muestra la forma de la distribución en cada nivel y cada punto es un aprendiente.
+- **Violín con puntos**: el contorno muestra la forma de la distribución en cada nivel y cada punto es un estudiante.
 
 Dos argumentos que aparecen en el código:
 
 - **`alpha`** es la **transparencia**, entre 0 (invisible) y 1 (totalmente opaco). Con `alpha = .6`, cada curva es opaca al 60 %, de modo que donde se superponen se ven las dos. Con `alpha = 1`, la curva roja taparía a la azul.
-- **`geom_jitter(width = .1)`** dibuja los puntos con un pequeño desplazamiento horizontal al azar (*jitter*, «temblor»), para que los aprendientes con la misma nota no queden uno encima de otro. `width = .1` limita ese desplazamiento a 0,1 a cada lado (la distancia entre dos niveles del eje es 1), así que los puntos de B1 no se mezclan con los de B2. `alpha = .4` hace los puntos opacos al 40 %: donde se acumulan muchos, el color se oscurece.
+- **`geom_jitter(width = .1)`** dibuja los puntos con un pequeño desplazamiento horizontal al azar (*jitter*, «temblor»), para que los estudiantes con la misma nota no queden uno encima de otro. `width = .1` limita ese desplazamiento a 0,1 a cada lado (la distancia entre dos niveles del eje es 1), así que los puntos de B1 no se mezclan con los de B2. `alpha = .4` hace los puntos opacos al 40 %: donde se acumulan muchos, el color se oscurece.
 
 Cada gráfico destaca algo distinto. Elegir uno u otro depende de lo que queramos que vea el lector.
 :::
@@ -933,8 +933,8 @@ Aquí se pueden activar y desactivar tres formas de dibujar los mismos datos, la
 
 El código de la derecha se reescribe con las capas activas. En la capa de puntos aparece `geom_jitter(width = .1, alpha = .4)`:
 
-- **`width = .1`**: cada punto se desplaza al azar, como mucho, 0,1 unidades a izquierda o derecha de su nivel. Así no se apilan en una sola línea vertical los aprendientes con la misma nota, pero tampoco invaden el nivel vecino (que está a 1 unidad de distancia).
-- **`alpha = .4`**: transparencia. Cada punto es opaco al 40 %; donde coinciden muchos aprendientes, el color se acumula y se ve más oscuro.
+- **`width = .1`**: cada punto se desplaza al azar, como mucho, 0,1 unidades a izquierda o derecha de su nivel. Así no se apilan en una sola línea vertical los estudiantes con la misma nota, pero tampoco invaden el nivel vecino (que está a 1 unidad de distancia).
+- **`alpha = .4`**: transparencia. Cada punto es opaco al 40 %; donde coinciden muchos estudiantes, el color se acumula y se ve más oscuro.
 
 Combinarlos suele ser la mejor opción: la caja para el resumen y los puntos para no ocultar los datos reales.
 :::
@@ -992,8 +992,8 @@ ggplot(ele, aes(horas, nota_dele,
 ::: explicacion
 Tres gráficos más para otras combinaciones de variables:
 
-- **Barras apiladas al 100 %**: para dos variables categóricas. Cada barra es una L1, y los colores muestran qué proporción acierta y falla el subjuntivo. **No es lo que hace `geom_bar()` por defecto**: por defecto cuenta personas (recuentos) y apila los colores, de modo que la barra del inglés (73 aprendientes) sería más alta que la del chino (49). Es `position = "fill"` lo que estira cada barra hasta 1 (el 100 %) y convierte los recuentos en proporciones **dentro de cada L1**. Así se comparan las lenguas aunque tengan distinto número de aprendientes. Si se borra ese argumento, se ven los recuentos.
-- **Diagrama de dispersión**: para dos variables numéricas. Cada punto es un aprendiente, situado según sus horas y su nota. La línea roja resume la tendencia (más horas, más nota): es la recta de un modelo lineal (`method = "lm"`). La **zona gris** que la rodea es su **intervalo de confianza del 95 %**: el margen en el que probablemente estaría la recta si repitiéramos el estudio con otros 240 aprendientes. Es más ancha en los extremos porque allí hay menos datos (pocos aprendientes con menos de 100 o más de 450 horas) y porque un pequeño error en la inclinación de la recta se nota más cuanto más nos alejamos del centro. Con `se = FALSE` desaparece.
+- **Barras apiladas al 100 %**: para dos variables categóricas. Cada barra es una L1, y los colores muestran qué proporción acierta y falla el subjuntivo. **No es lo que hace `geom_bar()` por defecto**: por defecto cuenta personas (recuentos) y apila los colores, de modo que la barra del inglés (73 estudiantes) sería más alta que la del chino (49). Es `position = "fill"` lo que estira cada barra hasta 1 (el 100 %) y convierte los recuentos en proporciones **dentro de cada L1**. Así se comparan las lenguas aunque tengan distinto número de estudiantes. Si se borra ese argumento, se ven los recuentos.
+- **Diagrama de dispersión**: para dos variables numéricas. Cada punto es un estudiante, situado según sus horas y su nota. La línea roja resume la tendencia (más horas, más nota): es la recta de un modelo lineal (`method = "lm"`). La **zona gris** que la rodea es su **intervalo de confianza del 95 %**: el margen en el que probablemente estaría la recta si repitiéramos el estudio con otros 240 estudiantes. Es más ancha en los extremos porque allí hay menos datos (pocos estudiantes con menos de 100 o más de 450 horas) y porque un pequeño error en la inclinación de la recta se nota más cuanto más nos alejamos del centro. Con `se = FALSE` desaparece.
 - **Facetas**: el mismo diagrama de dispersión, repetido en un panel por cada L1. Permite ver si la relación se mantiene en todos los grupos.
 
 `facet_wrap(~ L1)` es la instrucción que divide el gráfico en paneles.
@@ -1005,7 +1005,7 @@ Tres gráficos más para otras combinaciones de variables:
 ```{r}
 #| filename: "Paso 1 · Guarda el gráfico en un objeto"
 p <- ggplot(ele, aes(horas, nota_dele, colour = L1,
-                     text = paste("Aprendiente", id))) +
+                     text = paste("Estudiante", id))) +
   geom_point(alpha = .7) +
   scale_colour_manual(values = c("#1D3557", "#E63946", "#2A9D8F", "#F4A261"))
 ```
@@ -1020,7 +1020,7 @@ ggplotly(p)
 ::: explicacion
 Cualquier gráfico de `ggplot2` se puede convertir en interactivo con una sola función.
 
-1. Primero se guarda el gráfico en un objeto, aquí llamado `p`. El argumento `text` define qué información aparecerá al pasar el ratón por cada punto: el identificador del aprendiente.
+1. Primero se guarda el gráfico en un objeto, aquí llamado `p`. El argumento `text` define qué información aparecerá al pasar el ratón por cada punto: el identificador del estudiante.
 2. Después, `ggplotly(p)` lo transforma en un gráfico web interactivo.
 
 El resultado se puede explorar en el navegador o en el panel de RStudio y se puede incluir en informes HTML o presentaciones como esta. Es muy útil para explorar los datos y localizar casos concretos.
@@ -1041,7 +1041,7 @@ Pasa el ratón por un punto · arrastra para hacer zoom · doble clic para volve
 
 ::: notes
 ::: explicacion
-Este es el gráfico interactivo que genera `ggplotly()`. Cada punto es un aprendiente, situado según sus horas de instrucción (eje horizontal) y su nota (eje vertical), con un color por lengua materna.
+Este es el gráfico interactivo que genera `ggplotly()`. Cada punto es un estudiante, situado según sus horas de instrucción (eje horizontal) y su nota (eje vertical), con un color por lengua materna.
 
 Se puede:
 
@@ -1097,7 +1097,7 @@ Qué hace cada argumento del código:
 
 - **`frame = ~nivel`** (dentro de `plot_ly`): la variable que define los **fotogramas** de la animación. Cada nivel (A2, B1, B2, C1) es un fotograma, como las páginas de un folioscopio.
 - **`ids = ~L1`**: indica que cada burbuja es la misma lengua en todos los fotogramas, para que se desplace en lugar de aparecer y desaparecer.
-- **`size = ~n`** y **`sizes = c(20, 70)`**: el tamaño de la burbuja depende del número de aprendientes del grupo; la más pequeña medirá 20 píxeles y la más grande, 70.
+- **`size = ~n`** y **`sizes = c(20, 70)`**: el tamaño de la burbuja depende del número de estudiantes del grupo; la más pequeña medirá 20 píxeles y la más grande, 70.
 - **`marker = list(sizemode = "diameter")`**: ese tamaño se interpreta como el **diámetro** de la burbuja. La alternativa, `"area"`, haría proporcional el área.
 - **`layout(xaxis = list(range = c(80, 420)))`**: fija los límites de los ejes para que no cambien de un fotograma a otro.
 - **`animation_opts(frame = 1300, transition = 900, redraw = FALSE)`**: controla el ritmo. Aquí `frame` (¡otro sentido de la misma palabra!) es el tiempo que dura cada fotograma en milisegundos: 1300 ms = 1,3 segundos por nivel. `transition` es lo que tarda el movimiento de un fotograma al siguiente: 900 ms. `redraw = FALSE` evita redibujar el gráfico entero en cada paso; como solo se mueven las burbujas, la animación es más fluida.
@@ -1127,7 +1127,7 @@ Al avanzar de nivel, todas las burbujas se mueven hacia arriba y hacia la derech
 ::: {.tarjetas style="--cols:4"}
 <div><span class="t">Cada burbuja</span>Una lengua materna</div>
 <div><span class="t">Posición</span>Horas medias (x) y nota media (y) de ese grupo</div>
-<div><span class="t">Tamaño</span>Cuántos aprendientes hay en ese grupo</div>
+<div><span class="t">Tamaño</span>Cuántos estudiantes hay en ese grupo</div>
 <div><span class="t">Movimiento</span>Qué cambia al pasar de A2 a C1</div>
 :::
 
@@ -1347,15 +1347,15 @@ Una posible solución para cada ejercicio de la práctica 2:
 ## Descriptiva frente a inferencial
 
 ::: {.tarjetas style="--cols:2"}
-<div><span class="t">Descriptiva</span>¿Qué pasa <b>en mi muestra</b>?<p><i>La nota media de mis 240 aprendientes es `r fmt(mean(ele$nota_dele), 1)`.</i></p></div>
-<div><span class="t">Inferencial</span>¿Qué puedo decir <b>de la población</b>?<p><i>La nota media de los aprendientes está, con un 95 % de confianza, entre `r fmt(t.test(ele$nota_dele)$conf.int[1], 1)` y `r fmt(t.test(ele$nota_dele)$conf.int[2], 1)`.</i></p></div>
+<div><span class="t">Descriptiva</span>¿Qué pasa <b>en mi muestra</b>?<p><i>La nota media de mis 240 estudiantes es `r fmt(mean(ele$nota_dele), 1)`.</i></p></div>
+<div><span class="t">Inferencial</span>¿Qué puedo decir <b>de la población</b>?<p><i>La nota media de los estudiantes está, con un 95 % de confianza, entre `r fmt(t.test(ele$nota_dele)$conf.int[1], 1)` y `r fmt(t.test(ele$nota_dele)$conf.int[2], 1)`.</i></p></div>
 :::
 
 ::: notes
 ::: explicacion
-Hasta ahora hemos hecho **estadística descriptiva**: describir lo que ocurre en nuestros 240 aprendientes. La nota media de este grupo concreto es 68,1 y eso es un hecho.
+Hasta ahora hemos hecho **estadística descriptiva**: describir lo que ocurre en nuestros 240 estudiantes. La nota media de este grupo concreto es 68,1 y eso es un hecho.
 
-La **estadística inferencial** da un paso más. Usa la muestra para decir algo sobre la **población**: todos los aprendientes parecidos a los nuestros. Como no los hemos medido a todos, la respuesta no puede ser exacta. Por eso se expresa con un margen de incertidumbre: «la nota media de la población está, con un 95 % de confianza, entre 66,4 y 69,7».
+La **estadística inferencial** da un paso más. Usa la muestra para decir algo sobre la **población**: todos los estudiantes parecidos a los nuestros. Como no los hemos medido a todos, la respuesta no puede ser exacta. Por eso se expresa con un margen de incertidumbre: «la nota media de la población está, con un 95 % de confianza, entre 66,4 y 69,7».
 
 Toda esta sesión trata de cómo calcular y entender ese margen.
 :::
@@ -1433,17 +1433,17 @@ Muchas pruebas estadísticas suponen que los datos siguen una distribución norm
 - **Gráficos**: el histograma debe tener forma de campana. En el **gráfico Q-Q**, si los datos son normales, los puntos se alinean sobre la recta roja.
 - **Prueba de Shapiro-Wilk**: si su valor p es mayor que 0,05, no hay motivos para pensar que los datos no sean normales.
 
-**Cómo se construye y se lee un gráfico Q-Q** («cuantil-cuantil»). Cada punto es un aprendiente:
+**Cómo se construye y se lee un gráfico Q-Q** («cuantil-cuantil»). Cada punto es un estudiante:
 
 1. Se ordenan las 240 notas de menor a mayor. Esos valores son los **cuantiles de la muestra** (*sample quantiles*) y van en el eje vertical: la nota más baja es 32, la central es 68 y la más alta, 100.
-2. Para cada posición se calcula qué valor le correspondería si los datos siguieran una **normal perfecta**. Son los **cuantiles teóricos** (*theoretical quantiles*), en el eje horizontal, y se expresan en desviaciones típicas desde el centro: el aprendiente que ocupa el puesto 1 de 240 debería estar unas 2,9 DE por debajo de la media (−2,9); el del centro, en 0; el último, en +2,9.
-3. Si cada nota real está donde la normal predice, los puntos forman una línea recta (la roja). Así, el punto de abajo a la izquierda es el aprendiente con 32 puntos, situado en x = −2,9.
+2. Para cada posición se calcula qué valor le correspondería si los datos siguieran una **normal perfecta**. Son los **cuantiles teóricos** (*theoretical quantiles*), en el eje horizontal, y se expresan en desviaciones típicas desde el centro: el estudiante que ocupa el puesto 1 de 240 debería estar unas 2,9 DE por debajo de la media (−2,9); el del centro, en 0; el último, en +2,9.
+3. Si cada nota real está donde la normal predice, los puntos forman una línea recta (la roja). Así, el punto de abajo a la izquierda es el estudiante con 32 puntos, situado en x = −2,9.
 
 Cuando los puntos se apartan de la recta, la forma en que lo hacen tiene una lectura concreta: si los extremos se curvan hacia fuera, hay más valores extremos de los que tendría una normal; si los puntos forman escalones, la variable solo toma unos pocos valores enteros.
 
 La pestaña **Q-Q de un recuento** muestra un caso no normal: los errores de *ser/estar* solo toman valores enteros (0, 1, 2…), así que los puntos forman **escalones**, y el histograma está inclinado hacia la izquierda.
 
-En nuestro caso, las notas parecen normales (p = 0,47). Los errores de *ser/estar*, en cambio, no lo son (p < 0,001), algo habitual en los recuentos: muchos aprendientes cometen pocos errores y unos pocos cometen muchos.
+En nuestro caso, las notas parecen normales (p = 0,47). Los errores de *ser/estar*, en cambio, no lo son (p < 0,001), algo habitual en los recuentos: muchos estudiantes cometen pocos errores y unos pocos cometen muchos.
 :::
 :::
 
@@ -1465,7 +1465,7 @@ El panel muestra dos cifras que deberían parecerse:
 - **DE de las medias**: la desviación típica de todas las medias simuladas. Es el error estándar *medido* con la simulación.
 - **Error estándar teórico σ/√n**: el mismo valor, *calculado* con una fórmula sin necesidad de simular. **σ** (sigma) es la desviación típica de la población: aquí, las 240 notas, con σ = 12,9 puntos. **n** es el tamaño de cada muestra.
 
-Ejemplo con n = 30: EE = 12,9 / √30 = 12,9 / 5,48 ≈ **2,35 puntos**. Significa que la media de una muestra de 30 aprendientes suele alejarse unos 2,4 puntos de la media real (68,1), y casi nunca más de unos 4,7 (el doble). Con n = 120: 12,9 / √120 ≈ 1,17 puntos, la mitad.
+Ejemplo con n = 30: EE = 12,9 / √30 = 12,9 / 5,48 ≈ **2,35 puntos**. Significa que la media de una muestra de 30 estudiantes suele alejarse unos 2,4 puntos de la media real (68,1), y casi nunca más de unos 4,7 (el doble). Con n = 120: 12,9 / √120 ≈ 1,17 puntos, la mitad.
 
 Como n está dentro de una raíz cuadrada, para reducir el error a la mitad hay que **cuadruplicar** la muestra (de 30 a 120). En la vida real no conocemos σ y usamos en su lugar la DE de nuestra muestra, como veremos en la diapositiva siguiente.
 :::
@@ -1490,7 +1490,7 @@ t.test(ele$nota_dele)$conf.int      # $conf.int: solo el intervalo
 
 ::: notes
 ::: explicacion
-Un **intervalo de confianza** (IC) es un rango de valores en el que, con cierta seguridad, se encuentra el valor real de la población. Aquí queremos saber la nota media de **todos** los aprendientes parecidos a los nuestros, no solo de estos 240.
+Un **intervalo de confianza** (IC) es un rango de valores en el que, con cierta seguridad, se encuentra el valor real de la población. Aquí queremos saber la nota media de **todos** los estudiantes parecidos a los nuestros, no solo de estos 240.
 
 **Paso 1, a mano**, con nuestras notas:
 
@@ -1512,7 +1512,7 @@ En la práctica se usa esta segunda forma, que es más exacta y más corta.
 ::: explicacion
 Esta simulación responde a la pregunta más difícil del tema: ¿qué quiere decir exactamente «95 % de confianza»?
 
-**Qué se simula.** De nuevo tratamos a los 240 aprendientes como la población, cuya nota media real (68,1) conocemos: es la línea discontinua horizontal. Cada barra vertical es un investigador distinto que toma su propia muestra de 30 aprendientes, calcula su media (el punto) y su intervalo del 95 % (la barra), igual que en la diapositiva anterior. Por ejemplo, un investigador obtiene una media de 66,0 y un intervalo de 61,2 a 70,8: su intervalo **contiene** 68,1 y acierta. Otro obtiene 73,5, con un intervalo de 69,0 a 78,0: deja fuera el 68,1 y **falla** (barra roja).
+**Qué se simula.** De nuevo tratamos a los 240 estudiantes como la población, cuya nota media real (68,1) conocemos: es la línea discontinua horizontal. Cada barra vertical es un investigador distinto que toma su propia muestra de 30 estudiantes, calcula su media (el punto) y su intervalo del 95 % (la barra), igual que en la diapositiva anterior. Por ejemplo, un investigador obtiene una media de 66,0 y un intervalo de 61,2 a 70,8: su intervalo **contiene** 68,1 y acierta. Otro obtiene 73,5, con un intervalo de 69,0 a 78,0: deja fuera el 68,1 y **falla** (barra roja).
 
 **Qué se observa.** La mayoría de los intervalos contienen la media real. Unos pocos, en rojo, la dejan fuera. Si se repite muchas veces, fallan aproximadamente **5 de cada 100**: con 50 muestras, unas 2 o 3.
 
@@ -1555,7 +1555,7 @@ El **valor p** responde a esta pregunta: si H₀ fuera cierta, ¿qué probabilid
 
 En la fórmula, la barra vertical «|» se lee «suponiendo que»: p es la probabilidad de unos datos tan extremos **suponiendo que** H₀ es cierta.
 
-**Un ejemplo con nuestros datos, por simulación.** Quienes han hecho una estancia sacan de media 5,1 puntos más (71,1 frente a 65,9). Para saber si eso puede ser casualidad, podemos fabricar un mundo en el que H₀ es cierta: barajamos al azar las etiquetas «sí» y «no» de la estancia entre los 240 aprendientes (así la estancia ya no puede tener ninguna relación con la nota) y volvemos a calcular la diferencia. Repetido 10 000 veces, una diferencia de 5,1 puntos o más (en cualquier dirección) solo aparece unas **35 veces**: p ≈ 0,0035. Es tan raro que concluimos que la diferencia real no se debe al azar. La prueba t de la sesión llega a la misma conclusión con una fórmula (p = 0,002).
+**Un ejemplo con nuestros datos, por simulación.** Quienes han hecho una estancia sacan de media 5,1 puntos más (71,1 frente a 65,9). Para saber si eso puede ser casualidad, podemos fabricar un mundo en el que H₀ es cierta: barajamos al azar las etiquetas «sí» y «no» de la estancia entre los 240 estudiantes (así la estancia ya no puede tener ninguna relación con la nota) y volvemos a calcular la diferencia. Repetido 10 000 veces, una diferencia de 5,1 puntos o más (en cualquier dirección) solo aparece unas **35 veces**: p ≈ 0,0035. Es tan raro que concluimos que la diferencia real no se debe al azar. La prueba t de la sesión llega a la misma conclusión con una fórmula (p = 0,002).
 
 El valor p **no** es la probabilidad de que H₀ sea cierta, ni indica si la diferencia es grande o importante.
 :::
@@ -1615,7 +1615,7 @@ La **potencia** (1 − β) es la probabilidad de detectar un efecto real. Se sue
 **Dos dudas frecuentes**:
 
 - *¿Por qué β no es el 95 % cuando α es el 5 %?* Porque no son complementarios: α se calcula en el mundo sin efecto (curva azul) y β en el mundo con efecto (curva verde). β depende del tamaño del efecto y de n. Solo cuando el efecto se acerca a 0 las dos curvas se superponen, la potencia baja hasta α (5 %) y β sube hasta el 95 %. Con d = 0,1 y 30 por grupo, por ejemplo, β ≈ 93 %: un efecto tan pequeño casi nunca se detecta.
-- *¿Qué significa «hacen falta unos 7 aprendientes por grupo»?* El deslizador «n por grupo» indica cuántas personas **tienes**; la frase calcula cuántas **necesitarías** como mínimo para alcanzar un 80 % de potencia con ese tamaño del efecto. Con d = 1,5 (unos 20 puntos de diferencia), el efecto es tan grande que bastan 7 aprendientes por grupo para detectarlo 8 de cada 10 veces; con tus 30 por grupo, la potencia es prácticamente del 100 %. Con d = 0,5 harían falta unos 63 por grupo, y con d = 0,2, unos 393.
+- *¿Qué significa «hacen falta unos 7 estudiantes por grupo»?* El deslizador «n por grupo» indica cuántas personas **tienes**; la frase calcula cuántas **necesitarías** como mínimo para alcanzar un 80 % de potencia con ese tamaño del efecto. Con d = 1,5 (unos 20 puntos de diferencia), el efecto es tan grande que bastan 7 estudiantes por grupo para detectarlo 8 de cada 10 veces; con tus 30 por grupo, la potencia es prácticamente del 100 %. Con d = 0,5 harían falta unos 63 por grupo, y con d = 0,2, unos 393.
 
 En el gráfico, al reducir α hay menos falsas alarmas, pero aumenta β. La forma de mejorar ambas a la vez es **aumentar la muestra**: las dos curvas se separan.
 :::
@@ -1647,9 +1647,9 @@ La ***d* de Cohen** expresa la diferencia entre dos medias en desviaciones típi
 
 El panel traduce d a tres cifras más intuitivas (con d = 0,41):
 
-- **Solapamiento del 84 %**: la proporción de área que comparten las dos curvas. La mayor parte de las notas de ambos grupos está en la misma zona: muchos aprendientes sin estancia sacan más nota que muchos con estancia. La diferencia es real, pero no separa a los grupos.
+- **Solapamiento del 84 %**: la proporción de área que comparten las dos curvas. La mayor parte de las notas de ambos grupos está en la misma zona: muchos estudiantes sin estancia sacan más nota que muchos con estancia. La diferencia es real, pero no separa a los grupos.
 - **El 66 % del grupo con estancia supera la media del grupo sin estancia**. Si no hubiera ningún efecto, sería el 50 %.
-- **Probabilidad de superioridad del 61 %**: si elegimos al azar a un aprendiente con estancia y a otro sin estancia, el primero saca más nota 61 de cada 100 veces (50 de cada 100 si no hubiera efecto).
+- **Probabilidad de superioridad del 61 %**: si elegimos al azar a un estudiante con estancia y a otro sin estancia, el primero saca más nota 61 de cada 100 veces (50 de cada 100 si no hubiera efecto).
 
 Con d = 0,2 las dos curvas casi se solapan (92 %); con d = 0,8 la separación ya es evidente (69 % de solapamiento y un 79 % del grupo rojo por encima de la media del azul).
 :::
@@ -1706,7 +1706,7 @@ R usa por defecto la versión de **Welch**, que no exige que los dos grupos teng
 
 ::: notes
 ::: explicacion
-La simulación genera la **nota** de dos grupos de aprendientes, A y B (piensa, por ejemplo, en sin estancia y con estancia). Los deslizadores controlan tres cosas: cuánto difieren de verdad los grupos, cuánto varían las personas dentro de cada grupo y cuántas personas hay.
+La simulación genera la **nota** de dos grupos de estudiantes, A y B (piensa, por ejemplo, en sin estancia y con estancia). Los deslizadores controlan tres cosas: cuánto difieren de verdad los grupos, cuánto varían las personas dentro de cada grupo y cuántas personas hay.
 
 El valor t compara dos cosas: la **señal**, que es la diferencia entre las medias, y el **ruido**, que es la incertidumbre con que medimos esa diferencia (su error estándar, que depende de la variabilidad dentro de los grupos y del número de personas):
 
@@ -1842,7 +1842,7 @@ Dos ideas complementarias:
 ::: explicacion
 La prueba de **Wilcoxon** (también llamada de Mann-Whitney) es la alternativa a la prueba t cuando los datos no son normales, son ordinales o tienen valores extremos. La pregunta que responde es: **¿tienden los valores de un grupo a ser más altos que los del otro?**
 
-**El ejemplo de la animación** (inventado, para que se pueda seguir a mano): el número de errores de *ser/estar* de 8 aprendientes sin estancia (azul: 3, 5, 2, 6, 4, 8, 3, 12) y 8 con estancia (rojo: 1, 2, 0, 3, 1, 4, 2, 1). Hay un valor extremo: un aprendiente con 12 errores, que inflaría la media del grupo azul.
+**El ejemplo de la animación** (inventado, para que se pueda seguir a mano): el número de errores de *ser/estar* de 8 estudiantes sin estancia (azul: 3, 5, 2, 6, 4, 8, 3, 12) y 8 con estancia (rojo: 1, 2, 0, 3, 1, 4, 2, 1). Hay un valor extremo: un estudiante con 12 errores, que inflaría la media del grupo azul.
 
 En lugar de usar los valores, Wilcoxon usa su **posición**:
 
@@ -1850,7 +1850,7 @@ En lugar de usar los valores, Wilcoxon usa su **posición**:
 2. Cada una recibe un **rango** (su puesto): el 0 es el puesto 1; los tres 1 ocupan los puestos 2, 3 y 4, así que comparten el rango medio, 3; los tres 2 comparten el 6; y así hasta el 12, que recibe el rango 16.
 3. Se suman los rangos de cada grupo. Sin estancia: 93,5; con estancia: 42,5. Si no hubiera diferencias, cada grupo sumaría más o menos lo mismo, unos 68.
 
-El estadístico **W** que da R es la suma de rangos del primer grupo menos la mínima posible (1 + 2 + … + 8 = 36): 93,5 − 36 = **57,5**. Tiene una lectura sencilla: de las 8 × 8 = 64 parejas posibles formadas por un aprendiente de cada grupo, en unas 57,5 el aprendiente sin estancia comete más errores (los empates cuentan medio). Si no hubiera diferencias, serían unas 32. Aquí p = 0,008: los aprendientes sin estancia tienden a cometer más errores.
+El estadístico **W** que da R es la suma de rangos del primer grupo menos la mínima posible (1 + 2 + … + 8 = 36): 93,5 − 36 = **57,5**. Tiene una lectura sencilla: de las 8 × 8 = 64 parejas posibles formadas por un estudiante de cada grupo, en unas 57,5 el estudiante sin estancia comete más errores (los empates cuentan medio). Si no hubiera diferencias, serían unas 32. Aquí p = 0,008: los estudiantes sin estancia tienden a cometer más errores.
 
 Así, el valor extremo 12 pesa lo mismo que si fuera 9: solo importa que es el más alto. Por eso la prueba es **robusta** ante valores atípicos.
 :::
@@ -1876,7 +1876,7 @@ Los errores de *ser/estar* son recuentos y, como vimos, no siguen una distribuci
 
 La sintaxis es la misma que la de la prueba t: la variable, la tilde y el grupo.
 
-En nuestros datos, la mediana es de 3 errores en los dos grupos (las medias, 3,3 y 3,0) y el valor p es de 0,34, bastante mayor que 0,05. Por tanto, **no hay evidencia** de que la estancia se asocie con un número distinto de errores de *ser/estar*. W = 7500,5 se lee como en el ejemplo anterior: de las 140 × 100 = 14 000 parejas posibles, en unas 7500 (el 54 %) el aprendiente sin estancia comete más errores; muy cerca del 50 % que esperaríamos sin diferencias.
+En nuestros datos, la mediana es de 3 errores en los dos grupos (las medias, 3,3 y 3,0) y el valor p es de 0,34, bastante mayor que 0,05. Por tanto, **no hay evidencia** de que la estancia se asocie con un número distinto de errores de *ser/estar*. W = 7500,5 se lee como en el ejemplo anterior: de las 140 × 100 = 14 000 parejas posibles, en unas 7500 (el 54 %) el estudiante sin estancia comete más errores; muy cerca del 50 % que esperaríamos sin diferencias.
 
 Que una prueba no sea significativa también es un resultado: no demuestra que no haya ninguna diferencia, pero indica que, con estos datos, no podemos afirmarla.
 :::
@@ -1897,7 +1897,7 @@ La **correlación** mide si dos variables numéricas varían juntas. Su coeficie
 
 **r² (r al cuadrado)** indica qué proporción de la variación de una variable se puede predecir a partir de la otra. Con r = 0,5, r² = 0,25: conocer X permite explicar un 25 % de lo que varía Y; el 75 % restante depende de otras cosas.
 
-**Un ejemplo con nuestros datos**: entre horas de instrucción y nota DELE, r = 0,58, así que r² = 0,34. Si tuviéramos que adivinar la nota de un aprendiente sin saber nada de él, diríamos la media (68) y nos equivocaríamos, de media, unos 12,9 puntos (la DE). Si conocemos sus horas, podemos afinar la predicción y el error típico baja a unos 10,5 puntos. Hemos reducido un 34 % la variación (medida como varianza, es decir, en puntos al cuadrado: de 166 a 110). El 66 % restante depende de la L1, la estancia, la aptitud de cada persona…
+**Un ejemplo con nuestros datos**: entre horas de instrucción y nota DELE, r = 0,58, así que r² = 0,34. Si tuviéramos que adivinar la nota de un estudiante sin saber nada de él, diríamos la media (68) y nos equivocaríamos, de media, unos 12,9 puntos (la DE). Si conocemos sus horas, podemos afinar la predicción y el error típico baja a unos 10,5 puntos. Hemos reducido un 34 % la variación (medida como varianza, es decir, en puntos al cuadrado: de 166 a 110). El 66 % restante depende de la L1, la estancia, la aptitud de cada persona…
 
 Un aviso: r² parece pequeño enseguida. r = 0,3 (una correlación «mediana») solo explica un 9 %.
 
@@ -2209,7 +2209,7 @@ $$F = \frac{\text{variación entre grupos}}{\text{variación dentro de los grupo
 ::: explicacion
 El **ANOVA** (análisis de la varianza) compara las medias de tres o más grupos con un único estadístico, **F**, que tiene la misma lógica que la prueba t: señal frente a ruido.
 
-La simulación genera la **nota** de cuatro grupos de 25 aprendientes, uno por L1. Cada punto es un aprendiente, las rayas negras son las medias de cada grupo y la línea discontinua, la media general.
+La simulación genera la **nota** de cuatro grupos de 25 estudiantes, uno por L1. Cada punto es un estudiante, las rayas negras son las medias de cada grupo y la línea discontinua, la media general.
 
 - **Variación entre grupos** (la señal): cuánto se separan las medias de los grupos de la media general.
 - **Variación dentro de los grupos** (el ruido): cuánto varían las personas alrededor de la media de su propio grupo.
@@ -2224,7 +2224,7 @@ F es el cociente de las dos. Por ejemplo, si la barra roja llega a **120** y la 
 - Al separar las medias, la barra roja crece y F sube.
 - Al aumentar la variabilidad dentro de los grupos, la barra gris crece y F baja.
 
-**η² (eta cuadrado)** responde a otra pregunta: de toda la variación de las notas, ¿qué parte se debe a la diferencia entre grupos? Se calcula con las **sumas de cuadrados** (las de la desviación típica, paso a paso): η² = SC entre / SC total. Un η² de 0,15 significa que el **15 %** de lo que varían las notas de estos 100 aprendientes se explica por el grupo al que pertenecen; el 85 % restante son diferencias entre personas del mismo grupo. Si supiéramos el grupo de cada persona y predijéramos su nota con la media de su grupo, reduciríamos en un 15 % la variación total.
+**η² (eta cuadrado)** responde a otra pregunta: de toda la variación de las notas, ¿qué parte se debe a la diferencia entre grupos? Se calcula con las **sumas de cuadrados** (las de la desviación típica, paso a paso): η² = SC entre / SC total. Un η² de 0,15 significa que el **15 %** de lo que varían las notas de estos 100 estudiantes se explica por el grupo al que pertenecen; el 85 % restante son diferencias entre personas del mismo grupo. Si supiéramos el grupo de cada persona y predijéramos su nota con la media de su grupo, reduciríamos en un 15 % la variación total.
 :::
 
 Separar las medias: la barra roja (entre) crece y F sube. Aumentar el ruido dentro: la barra gris crece y F baja. Es la misma lógica de señal y ruido que la prueba t, para más de dos grupos.
@@ -2245,7 +2245,7 @@ El **ANOVA de un factor** comprueba si la media de una variable numérica difier
 
 - **Hipótesis nula**: todas las medias son iguales.
 - **Hipótesis alternativa**: al menos una es distinta. El ANOVA no dice cuál.
-- **Supuestos**: los residuos son aproximadamente normales, los grupos tienen una dispersión parecida y las observaciones son independientes. Los **residuos** son lo que el modelo no explica: la distancia de cada persona a la media de su grupo. Una aprendiente italohablante con 85 puntos tiene un residuo de 85 − 76,3 = +8,7.
+- **Supuestos**: los residuos son aproximadamente normales, los grupos tienen una dispersión parecida y las observaciones son independientes. Los **residuos** son lo que el modelo no explica: la distancia de cada persona a la media de su grupo. Una estudiante italohablante con 85 puntos tiene un residuo de 85 − 76,3 = +8,7.
 - **Si no se cumplen los supuestos** (por ejemplo, con recuentos como los errores de *ser/estar*, que no son normales), se usa la prueba de **Kruskal-Wallis**, la versión del ANOVA basada en rangos, igual que Wilcoxon lo es de la prueba t. La veremos al final de la sesión.
 
 Si el resultado es significativo, se hace un análisis ***post hoc*** («a posteriori»: Tukey) para saber qué grupos difieren, y se calcula **η²** para medir el tamaño del efecto.
@@ -2304,7 +2304,7 @@ Cada fila es una pareja:
 
 Las diferencias significativas en nuestros datos: el italiano supera a las otras tres lenguas y el inglés supera al chino. Chino y árabe no difieren, e inglés y árabe tampoco (p = 0,06, en el límite).
 
-Un ejemplo de lectura, la fila `italiano-inglés`: diff = 6,66, lwr = 1,09, upr = 12,22, p adj = 0,012. Los aprendientes con L1 italiano sacan de media **6,7 puntos más** en el DELE que los de L1 inglés (76,3 frente a 69,7); la diferencia real está probablemente entre 1,1 y 12,2 puntos, y como el intervalo no incluye el 0 (y p < 0,05), es significativa. El orden de los nombres indica la resta: `italiano-inglés` es italiano menos inglés.
+Un ejemplo de lectura, la fila `italiano-inglés`: diff = 6,66, lwr = 1,09, upr = 12,22, p adj = 0,012. Los estudiantes con L1 italiano sacan de media **6,7 puntos más** en el DELE que los de L1 inglés (76,3 frente a 69,7); la diferencia real está probablemente entre 1,1 y 12,2 puntos, y como el intervalo no incluye el 0 (y p < 0,05), es significativa. El orden de los nombres indica la resta: `italiano-inglés` es italiano menos inglés.
 :::
 :::
 
@@ -2324,7 +2324,7 @@ La clave está en la línea vertical del **cero**:
 
 **Ejemplos concretos**:
 
-- `italiano-inglés`: el punto está en +6,7 y el intervalo va de +1,1 a +12,2. Traducido: **los aprendientes italohablantes sacan, de media, unos 7 puntos más que los anglohablantes** (entre 1 y 12 con un 95 % de confianza). Como todo el intervalo está a la derecha del cero, es una diferencia significativa.
+- `italiano-inglés`: el punto está en +6,7 y el intervalo va de +1,1 a +12,2. Traducido: **los estudiantes italohablantes sacan, de media, unos 7 puntos más que los anglohablantes** (entre 1 y 12 con un 95 % de confianza). Como todo el intervalo está a la derecha del cero, es una diferencia significativa.
 - `italiano-chino`: +14,7 puntos, de +8,6 a +20,8. Es la mayor diferencia: casi 15 puntos de nota a favor de los italohablantes.
 - `chino-árabe`: −3,0 puntos, de −8,8 a +2,7. El intervalo cruza el cero: con estos datos no podemos afirmar que sinohablantes y arabófonos saquen notas distintas.
 
@@ -2354,7 +2354,7 @@ summary(aov(nota_dele ~ L1 * estancia, data = ele))
 ::: explicacion
 **η² (eta cuadrado)** es el tamaño del efecto del ANOVA: la proporción de la variación total de la nota que se explica por la L1. Se calcula con las sumas de cuadrados de la tabla: 6567 / (6567 + 33 181) = 6567 / 39 748 ≈ **0,17**, el 17 %.
 
-**¿Por qué un 17 % es un efecto «grande»?** Porque se compara con lo que suele encontrarse en ciencias humanas, no con el 100 %. La nota de un aprendiente depende de muchísimas cosas a la vez: horas de clase, estancias, motivación, aptitud, el día del examen… Que **una sola** característica, la lengua materna, explique casi una sexta parte de todas las diferencias es mucho. Las referencias de Cohen para η² lo reflejan: 0,01 es pequeño, 0,06 mediano y **0,14 o más, grande**.
+**¿Por qué un 17 % es un efecto «grande»?** Porque se compara con lo que suele encontrarse en ciencias humanas, no con el 100 %. La nota de un estudiante depende de muchísimas cosas a la vez: horas de clase, estancias, motivación, aptitud, el día del examen… Que **una sola** característica, la lengua materna, explique casi una sexta parte de todas las diferencias es mucho. Las referencias de Cohen para η² lo reflejan: 0,01 es pequeño, 0,06 mediano y **0,14 o más, grande**.
 
 **¿Y el 83 % restante? ¿No importa?** Claro que importa: es todo lo que la L1 **no** explica, repartido entre muchas fuentes que este modelo no incluye. Algunas las tenemos en los datos: si añadimos las horas y la estancia al modelo (`lm(nota_dele ~ L1 + horas + estancia)`), la parte explicada sube del 17 % al **53 %**. El resto son diferencias individuales que no hemos medido. η² no dice que lo demás sea irrelevante, sino cuánto pesa la variable que estamos estudiando.
 
@@ -2417,7 +2417,7 @@ pairwise.wilcox.test(ele$err_ser_estar, ele$L1,
 
 ::: notes
 ::: explicacion
-La prueba de **Kruskal-Wallis** es al ANOVA lo que Wilcoxon es a la prueba t: la alternativa cuando los datos no son normales. Junta a todos los aprendientes, los ordena, les asigna rangos y comprueba si algún grupo tiende a tener rangos más altos que los demás.
+La prueba de **Kruskal-Wallis** es al ANOVA lo que Wilcoxon es a la prueba t: la alternativa cuando los datos no son normales. Junta a todos los estudiantes, los ordena, les asigna rangos y comprueba si algún grupo tiende a tener rangos más altos que los demás.
 
 La aplicamos a los errores de *ser/estar* según la L1, que son recuentos y no siguen una distribución normal. El resultado es significativo (χ² = 22,7, gl = 3, p < 0,001): el número de errores **sí** depende de la lengua materna. Las medianas son de 4 errores en chino, 3 en árabe e inglés y 2 en italiano.
 
@@ -2481,7 +2481,7 @@ Una posible solución para cada ejercicio de la práctica 4:
 <h1>Árboles de decisión</h1>
 
 ::: pregunta
-¿Qué perfil de aprendiente usa bien el subjuntivo? Que los datos hagan las preguntas.
+¿Qué perfil de estudiante usa bien el subjuntivo? Que los datos hagan las preguntas.
 :::
 
 ::: chips
@@ -2510,7 +2510,7 @@ Antes elegimos la prueba con un **árbol hecho por nosotros**. Ahora será **R**
 ::: explicacion
 Un **árbol de decisión** funciona como el juego de adivinar un personaje con preguntas de sí o no. Cada pregunta divide a las personas en dos grupos, y dentro de cada grupo se vuelve a preguntar.
 
-En la sesión 3 construimos nosotros un árbol para elegir la prueba estadística. Ahora será R quien lo construya a partir de los datos: buscará automáticamente qué preguntas separan mejor a los aprendientes que usan bien el subjuntivo de los que no.
+En la sesión 3 construimos nosotros un árbol para elegir la prueba estadística. Ahora será R quien lo construya a partir de los datos: buscará automáticamente qué preguntas separan mejor a los estudiantes que usan bien el subjuntivo de los que no.
 
 La gran ventaja es que el resultado se lee como reglas en lenguaje natural: «si tiene más de 243 horas y es C1, acierta el 82 %». Cualquier docente puede entenderlo sin saber estadística.
 :::
@@ -2525,7 +2525,7 @@ La gran ventaja es que el resultado se lee como reglas en lenguaje natural: «si
 ::: explicacion
 Las partes de un árbol de decisión, con un fragmento del árbol real que construiremos:
 
-- **Raíz**: el punto de partida, con todos los aprendientes. Contiene la primera pregunta, la más informativa.
+- **Raíz**: el punto de partida, con todos los estudiantes. Contiene la primera pregunta, la más informativa.
 - **Ramas**: las respuestas a cada pregunta. En los gráficos de `rpart.plot`, la rama izquierda es siempre el «sí».
 - **Nodos internos**: grupos intermedios en los que se hace otra pregunta.
 - **Hojas**: los grupos finales, donde ya no se pregunta más. Cada hoja da una predicción y el porcentaje de casos que la cumplen.
@@ -2608,8 +2608,8 @@ El botón **«Buscar el mejor corte»** prueba todos los valores y se detiene en
 Las cuentas de ese mejor corte, con el índice de Gini:
 
 - **Antes de preguntar**: 124 aciertos de 240 (51,7 %). Gini = 1 − 0,517² − 0,483² = **0,499**, casi la mezcla máxima.
-- **Menos de 243,5 horas**: 79 aprendientes, de los que solo aciertan 15 (19 %). Gini = **0,308**.
-- **243,5 horas o más**: 161 aprendientes, de los que aciertan 109 (68 %). Gini = **0,437**.
+- **Menos de 243,5 horas**: 79 estudiantes, de los que solo aciertan 15 (19 %). Gini = **0,308**.
+- **243,5 horas o más**: 161 estudiantes, de los que aciertan 109 (68 %). Gini = **0,437**.
 - **Impureza media después de preguntar**, ponderada por el tamaño de cada grupo: (79 × 0,308 + 161 × 0,437) / 240 = **0,395**.
 - **Ganancia**: 0,499 − 0,395 = **0,105**. Es el valor máximo de la curva inferior.
 
@@ -2680,8 +2680,8 @@ n= 240\
 [node), split, n, loss, yval, (yprob)]{.an data-exp="<b>La cabecera</b> explica cada columna: número de nodo, condición, n de casos, casos mal clasificados (<b>loss</b>), clase predicha (<b>yval</b>) y proporciones de cada clase."}\
       * denotes terminal node\
 \
-[ 1) root 240 116 correcto (0.5166667 0.4833333)]{.an data-exp="<b>Nodo 1, la raíz</b>: los 240 aprendientes. Si predijéramos siempre «correcto» fallaríamos 116 veces. Hay un 51,7 % de correctos."}\
-[   2) horas>=243.5 161  52 correcto (0.6770186 0.3229814)]{.an data-exp="<b>Primera división</b>: 161 aprendientes con 243,5 horas o más. El 67,7 % acierta. La sangría indica la profundidad."}\
+[ 1) root 240 116 correcto (0.5166667 0.4833333)]{.an data-exp="<b>Nodo 1, la raíz</b>: los 240 estudiantes. Si predijéramos siempre «correcto» fallaríamos 116 veces. Hay un 51,7 % de correctos."}\
+[   2) horas>=243.5 161  52 correcto (0.6770186 0.3229814)]{.an data-exp="<b>Primera división</b>: 161 estudiantes con 243,5 horas o más. El 67,7 % acierta. La sangría indica la profundidad."}\
 [     4) nivel=C1 62  11 correcto (0.8225806 0.1774194) *]{.an data-exp="<b>Una hoja</b> (el asterisco): con muchas horas y nivel C1, el 82 % acierta. Solo 11 de 62 fallan."}\
      5) nivel=A2,B1,B2 99  41 correcto (0.5858586 0.4141414)\
       10) horas>=351.5 19   3 correcto (0.8421053 0.1578947) *\
@@ -2707,7 +2707,7 @@ Cada línea indica: el número de nodo, la condición que lo define, cuántas pe
 
 Las líneas clave:
 
-- **Raíz**: 240 aprendientes, el 51,7 % acierta.
+- **Raíz**: 240 estudiantes, el 51,7 % acierta.
 - Con **243,5 horas o más**: acierta el 67,7 %. Si además es **C1**, el 82 %.
 - Con **menos de 243,5 horas**: falla el 81 %. Es la regla más clara y útil.
 
@@ -2733,7 +2733,7 @@ rpart.plot(arbol, type = 4, extra = 104, box.palette = "RdGn",
 ::: explicacion
 `rpart.plot()` dibuja el árbol. Es mucho más fácil de leer que la versión en texto.
 
-Cada recuadro es un nodo y muestra la predicción (correcto o incorrecto), la proporción de cada categoría y el porcentaje de aprendientes que llegan a él. El color indica la predicción: verde para «correcto» y rojo para «incorrecto». Cuanto más intenso, más puro es el nodo.
+Cada recuadro es un nodo y muestra la predicción (correcto o incorrecto), la proporción de cada categoría y el porcentaje de estudiantes que llegan a él. El color indica la predicción: verde para «correcto» y rojo para «incorrecto». Cuanto más intenso, más puro es el nodo.
 
 Las opciones del código:
 
@@ -2757,10 +2757,10 @@ Esta animación construye el árbol nivel a nivel y muestra su **acierto** en ca
 - **Profundidad 1**, con una sola pregunta (las horas): el acierto sube al 72 %. Es un salto enorme.
 - **Profundidades siguientes**: cada nueva pregunta mejora muy poco.
 
-La pregunta que queda abierta es importante: esas mejoras pequeñas, ¿reflejan algo real o el árbol está aprendiendo las particularidades de estos 240 aprendientes? Si es lo segundo, no servirán con aprendientes nuevos.
+La pregunta que queda abierta es importante: esas mejoras pequeñas, ¿reflejan algo real o el árbol está aprendiendo las particularidades de estos 240 estudiantes? Si es lo segundo, no servirán con estudiantes nuevos.
 :::
 
-Empezar en profundidad 0: sin preguntas, predecir siempre «correcto» da un 51,7 %. Con la primera pregunta (horas) se salta al 72 %. Cada nivel posterior gana muy poco… en estos datos. Dejar la duda en el aire: ¿esas preguntas extra sirven para aprendientes nuevos?
+Empezar en profundidad 0: sin preguntas, predecir siempre «correcto» da un 51,7 %. Con la primera pregunta (horas) se salta al 72 %. Cada nivel posterior gana muy poco… en estos datos. Dejar la duda en el aire: ¿esas preguntas extra sirven para estudiantes nuevos?
 :::
 
 ## Explora las reglas {.explica}
@@ -2780,16 +2780,16 @@ Esta es la mayor ventaja de los árboles: transforman un modelo estadístico en 
 Pasar el ratón por cada hoja: aparece la regla completa en forma SI… Y… ENTONCES. Preguntar al grupo qué hoja les parece más útil para un profesor (la de menos de 243,5 horas: el 81 % falla).
 :::
 
-## Sigue a un aprendiente por el árbol {.explica}
+## Sigue a un estudiante por el árbol {.explica}
 
 ::: {.w data-w="arbol" data-arbol="grande" data-modo="seguir"}
 :::
 
 ::: notes
 ::: explicacion
-Esta herramienta muestra cómo usa el árbol para **predecir**: se define un aprendiente con sus horas, su nivel, su L1 y su estancia, y una ficha recorre el árbol respondiendo a cada pregunta hasta llegar a una hoja, que da la predicción.
+Esta herramienta muestra cómo usa el árbol para **predecir**: se define un estudiante con sus horas, su nivel, su L1 y su estancia, y una ficha recorre el árbol respondiendo a cada pregunta hasta llegar a una hoja, que da la predicción.
 
-Un detalle interesante: al cambiar la **estancia** no ocurre nada, porque el árbol no la usa en ninguna pregunta. Las horas y el nivel ya separan mejor a los aprendientes, y la estancia no aporta información adicional suficiente.
+Un detalle interesante: al cambiar la **estancia** no ocurre nada, porque el árbol no la usa en ninguna pregunta. Las horas y el nivel ya separan mejor a los estudiantes, y la estancia no aporta información adicional suficiente.
 
 Los árboles, por tanto, también **seleccionan variables**: solo usan las que ayudan a separar los grupos.
 :::
@@ -2812,7 +2812,7 @@ Cada fila muestra:
 
 - La **probabilidad** de la categoría predicha en esa hoja.
 - Las **condiciones** que definen la hoja, unidas por «&» (y).
-- Con `cover = TRUE`, el **porcentaje de aprendientes** que cumplen la regla.
+- Con `cover = TRUE`, el **porcentaje de estudiantes** que cumplen la regla.
 
 Es una forma cómoda de pasar el árbol a un informe o a un artículo, o de comprobar qué reglas afectan a más personas. Una regla muy precisa pero que solo cumplen tres personas es mucho menos útil que una que cubre a un tercio de la muestra.
 :::
@@ -2836,7 +2836,7 @@ Pasamos de un `r round(100 * mean(ele$subjuntivo == "correcto"))` % a un `r roun
 ::: explicacion
 Para saber si el árbol es útil comparamos sus predicciones con la realidad.
 
-- `predict()` obtiene la predicción del árbol para cada aprendiente.
+- `predict()` obtiene la predicción del árbol para cada estudiante.
 - `table()` cruza lo real con lo predicho: es la **matriz de confusión**. En la diagonal están los aciertos.
 - `mean(pred == ele$subjuntivo)` calcula la **exactitud**, la proporción de aciertos: un 76 %.
 
@@ -2849,7 +2849,7 @@ Pero hay una trampa: hemos medido el acierto con los mismos datos con los que el
 ## El sobreajuste: la tabla de complejidad {.copia}
 
 ::: pequeno
-**La idea**: dejamos crecer un árbol enorme y comprobamos, tamaño a tamaño, cuánto acierta con los datos que ya conoce y cuánto con aprendientes que **no ha visto**.
+**La idea**: dejamos crecer un árbol enorme y comprobamos, tamaño a tamaño, cuánto acierta con los datos que ya conoce y cuánto con estudiantes que **no ha visto**.
 :::
 
 ::: columns
@@ -2877,26 +2877,26 @@ as.data.frame(arbol_total$cptable) |>
 
 ::: notes
 ::: explicacion
-**Qué buscamos.** Un árbol puede seguir haciendo preguntas hasta acertar casi con todos los aprendientes que conoce. La pregunta es si esas preguntas extra le sirven con **aprendientes nuevos** o si solo está memorizando los 240 que tiene delante. Para averiguarlo construimos un árbol sin freno: `cp = 0` y `minsplit = 6` le permiten dividir hasta tener grupos de muy pocas personas (`minsplit = 6`: no divide un grupo con menos de 6).
+**Qué buscamos.** Un árbol puede seguir haciendo preguntas hasta acertar casi con todos los estudiantes que conoce. La pregunta es si esas preguntas extra le sirven con **estudiantes nuevos** o si solo está memorizando los 240 que tiene delante. Para averiguarlo construimos un árbol sin freno: `cp = 0` y `minsplit = 6` le permiten dividir hasta tener grupos de muy pocas personas (`minsplit = 6`: no divide un grupo con menos de 6).
 
-**La tabla de `printcp()`** tiene una fila por cada tamaño de árbol que R ha probado, del más simple (arriba) al más grande (abajo). Antes de la tabla, R escribe *Root node error: 116/240*: sin hacer ninguna pregunta, prediciendo siempre «correcto», fallaríamos con 116 de los 240 aprendientes (un 48 %). Todos los errores de la tabla se expresan **en relación con ese punto de partida**:
+**La tabla de `printcp()`** tiene una fila por cada tamaño de árbol que R ha probado, del más simple (arriba) al más grande (abajo). Antes de la tabla, R escribe *Root node error: 116/240*: sin hacer ninguna pregunta, prediciendo siempre «correcto», fallaríamos con 116 de los 240 estudiantes (un 48 %). Todos los errores de la tabla se expresan **en relación con ese punto de partida**:
 
 - **nsplit**: el número de preguntas (cortes). El árbol tiene nsplit + 1 hojas.
 - **rel error**: el error con los **datos de entrenamiento** (los 240 que el árbol ya conoce), como fracción de 116. En la segunda fila, nsplit = 1 y rel error = 0,58: con una sola pregunta, el árbol comete el 58 % de los 116 errores iniciales, unos 67 errores, y acierta con el 72 %. Esta columna **siempre baja**: en la última fila (36 cortes) es 0,25, solo 29 errores.
-- **xerror**: el mismo error, pero estimado con **validación cruzada**, es decir, simulando aprendientes nuevos. R reparte a los 240 en 10 grupos de 24; construye el árbol con 9 grupos (216 personas) y lo examina con el décimo, que no ha visto; repite la operación 10 veces, cambiando el grupo examinado, y promedia. Con una pregunta, xerror = 0,59: casi igual que en entrenamiento. Con 36 cortes, xerror = 0,87: ¡mucho peor que con una sola pregunta!
+- **xerror**: el mismo error, pero estimado con **validación cruzada**, es decir, simulando estudiantes nuevos. R reparte a los 240 en 10 grupos de 24; construye el árbol con 9 grupos (216 personas) y lo examina con el décimo, que no ha visto; repite la operación 10 veces, cambiando el grupo examinado, y promedia. Con una pregunta, xerror = 0,59: casi igual que en entrenamiento. Con 36 cortes, xerror = 0,87: ¡mucho peor que con una sola pregunta!
 - **xstd**: el margen de incertidumbre de xerror (su error estándar).
 - **CP**: el parámetro de complejidad de cada fila; lo usaremos para podar.
 
 **El paso 7 traduce la tabla a porcentajes de acierto**, que se entienden mejor: acierto = 1 − error relativo × 116/240. El resultado:
 
-| Hojas | Acierto con los datos conocidos | Acierto estimado con aprendientes nuevos |
+| Hojas | Acierto con los datos conocidos | Acierto estimado con estudiantes nuevos |
 |--:|--:|--:|
 | 1 | 52 % | 52 % |
 | 2 | 72 % | 72 % |
 | 4 | 74 % | 68 % |
 | 37 | 88 % | 58 % |
 
-Esta es la definición de **sobreajuste**: el árbol grande acierta más con lo que ya conoce (88 %) y menos con lo nuevo (58 %), porque sus preguntas extra describen casualidades de estos 240 aprendientes, no patrones que se repitan en otros. Es como un estudiante que se aprende de memoria las respuestas de los exámenes de años anteriores: saca un 10 en ellos y suspende el examen nuevo.
+Esta es la definición de **sobreajuste**: el árbol grande acierta más con lo que ya conoce (88 %) y menos con lo nuevo (58 %), porque sus preguntas extra describen casualidades de estos 240 estudiantes, no patrones que se repitan en otros. Es como un estudiante que se aprende de memoria las respuestas de los exámenes de años anteriores: saca un 10 en ellos y suspende el examen nuevo.
 :::
 :::
 
@@ -2909,8 +2909,8 @@ Esta es la definición de **sobreajuste**: el árbol grande acierta más con lo 
 ::: explicacion
 Este gráfico dibuja las dos últimas columnas del paso 7: el **porcentaje de acierto** según el tamaño del árbol (número de hojas, en el eje horizontal).
 
-- **Línea azul: acierto con los datos de entrenamiento**, los 240 aprendientes con los que se construyó el árbol. Siempre sube: cuantas más hojas, mejor se ajusta a lo que ya conoce, hasta memorizarlo. Pasa del 52 % (1 hoja) al 88 % (37 hojas).
-- **Línea roja: acierto estimado con aprendientes nuevos**, mediante la validación cruzada. Sube mucho con la primera pregunta (del 52 % al 72 %) y después **baja**: con 37 hojas, solo el 58 %.
+- **Línea azul: acierto con los datos de entrenamiento**, los 240 estudiantes con los que se construyó el árbol. Siempre sube: cuantas más hojas, mejor se ajusta a lo que ya conoce, hasta memorizarlo. Pasa del 52 % (1 hoja) al 88 % (37 hojas).
+- **Línea roja: acierto estimado con estudiantes nuevos**, mediante la validación cruzada. Sube mucho con la primera pregunta (del 52 % al 72 %) y después **baja**: con 37 hojas, solo el 58 %.
 - La **franja roja** alrededor de esa línea es su margen de incertidumbre (± 1 error estándar). La validación cruzada es una estimación, no una medida exacta.
 
 La distancia entre las dos líneas es el **sobreajuste**: lo que el árbol «cree» que acierta frente a lo que acertaría de verdad con alumnos nuevos.
@@ -2953,7 +2953,7 @@ El código aplica la regla de 1 error estándar:
 3. Elige la primera fila (el árbol más simple) que queda por debajo del umbral.
 4. `prune()` recorta el árbol con el cp de esa fila.
 
-El resultado es un árbol con una sola pregunta: ¿tiene 243,5 horas o más? Es menos espectacular que el árbol grande, pero más fiable con aprendientes nuevos.
+El resultado es un árbol con una sola pregunta: ¿tiene 243,5 horas o más? Es menos espectacular que el árbol grande, pero más fiable con estudiantes nuevos.
 :::
 :::
 
@@ -2978,7 +2978,7 @@ c(grande_entreno = acierto(arbol_e, entreno), grande_prueba = acierto(arbol_e, p
 ::: explicacion
 La forma más clara de evaluar un modelo es guardar datos que **no ve durante el entrenamiento**.
 
-1. Se reparten los aprendientes al azar: el 70 % para **entrenar** y el 30 % para **probar**.
+1. Se reparten los estudiantes al azar: el 70 % para **entrenar** y el 30 % para **probar**.
 2. Se construye un árbol grande con los datos de entrenamiento y se poda.
 3. La función `acierto()` calcula la exactitud de cada árbol en cada conjunto.
 
@@ -3001,8 +3001,8 @@ El árbol grande había memorizado; el podado generaliza mejor.
 La **matriz de confusión** cruza lo que pasó realmente con lo que predijo el árbol. Tiene cuatro celdas:
 
 - **Verdaderos positivos** y **verdaderos negativos**: los aciertos.
-- **Falsos positivos**: el árbol predice «correcto», pero el aprendiente falló.
-- **Falsos negativos**: el árbol predice «incorrecto», pero el aprendiente acertó.
+- **Falsos positivos**: el árbol predice «correcto», pero el estudiante falló.
+- **Falsos negativos**: el árbol predice «incorrecto», pero el estudiante acertó.
 
 De la matriz salen tres medidas:
 
@@ -3013,7 +3013,7 @@ De la matriz salen tres medidas:
 Los botones permiten comparar el árbol grande y el podado con datos de entrenamiento y de prueba.
 :::
 
-Con el árbol sin podar: casi un 90 % en entrenamiento, pero solo un 64 % con aprendientes que no ha visto. El podado pierde algo en entrenamiento y gana en prueba. Pasar el ratón por las celdas para explicar falsos positivos y falsos negativos. Sensibilidad = correctos detectados; especificidad = incorrectos detectados.
+Con el árbol sin podar: casi un 90 % en entrenamiento, pero solo un 64 % con estudiantes que no ha visto. El podado pierde algo en entrenamiento y gana en prueba. Pasar el ratón por las celdas para explicar falsos positivos y falsos negativos. Sensibilidad = correctos detectados; especificidad = incorrectos detectados.
 :::
 
 ## ¿Qué variables importan? {.copia}
@@ -3059,7 +3059,7 @@ rpart.plot(arbol_nota, type = 4, box.palette = "Blues", tweak = 1.1)
 
 ::: notes
 ::: explicacion
-Ahora la respuesta es numérica: la **nota del DELE**. `rpart()` detecta que la variable es un número y construye un **árbol de regresión**. Cada hoja predice la **nota media** de los aprendientes que llegan a ella.
+Ahora la respuesta es numérica: la **nota del DELE**. `rpart()` detecta que la variable es un número y construye un **árbol de regresión**. Cada hoja predice la **nota media** de los estudiantes que llegan a ella.
 
 En el árbol resultante:
 
@@ -3071,14 +3071,14 @@ El parámetro `cp = 0.03` lo mantiene pequeño y fácil de leer. Los colores azu
 :::
 :::
 
-## Predice la nota de un aprendiente {.explica}
+## Predice la nota de un estudiante {.explica}
 
 ::: {.w data-w="arbol" data-arbol="nota" data-modo="seguir"}
 :::
 
 ::: notes
 ::: explicacion
-Con el árbol de regresión se puede predecir la nota de un aprendiente concreto. Se definen sus horas, su L1 y su estancia, y la ficha recorre el árbol hasta una hoja, que da la nota prevista.
+Con el árbol de regresión se puede predecir la nota de un estudiante concreto. Se definen sus horas, su L1 y su estancia, y la ficha recorre el árbol hasta una hoja, que da la nota prevista.
 
 Algunos ejemplos:
 
@@ -3159,7 +3159,7 @@ El paquete `ranger` lo hace en pocas líneas:
 
 Los bosques suelen predecir mejor y son más estables que un único árbol. El precio es que se pierde la interpretabilidad: ya no hay un árbol que se pueda leer en voz alta, sino quinientos.
 
-Conviene decirlo claramente: **con un bosque perdemos los factores de clasificación interpretables**. Ya no hay reglas del tipo «si tiene menos de 243,5 horas, falla el 81 %», ni un umbral ni una rama que mirar. Lo único que conservamos es la **importancia de las variables** (`bosque$variable.importance`): nos dice **qué** variables pesan más en las predicciones (previsiblemente, las horas y el nivel, como en el árbol), pero no **cómo** influyen: ni a partir de qué valor, ni en qué dirección, ni para qué perfil de aprendiente. Si el objetivo es explicar y comunicar perfiles, el árbol único sigue siendo la herramienta; si el objetivo es predecir con la mayor precisión posible, el bosque.
+Conviene decirlo claramente: **con un bosque perdemos los factores de clasificación interpretables**. Ya no hay reglas del tipo «si tiene menos de 243,5 horas, falla el 81 %», ni un umbral ni una rama que mirar. Lo único que conservamos es la **importancia de las variables** (`bosque$variable.importance`): nos dice **qué** variables pesan más en las predicciones (previsiblemente, las horas y el nivel, como en el árbol), pero no **cómo** influyen: ni a partir de qué valor, ni en qué dirección, ni para qué perfil de estudiante. Si el objetivo es explicar y comunicar perfiles, el árbol único sigue siendo la herramienta; si el objetivo es predecir con la mayor precisión posible, el bosque.
 :::
 :::
 
@@ -3172,7 +3172,7 @@ nodo_alto <- arbol$frame[rownames(arbol$frame) == "2", ]
 nodo_bajo <- arbol$frame[rownames(arbol$frame) == "3", ]
 ```
 
-> Se ajustó un árbol de clasificación (paquete *rpart*, índice de Gini) para predecir el uso correcto del subjuntivo a partir de las horas de instrucción, la estancia, la L1 y el nivel. La primera división, y la más informativa, fue la de las **horas de instrucción**: con 243,5 horas o más, el `r fmt(100 * nodo_alto$yval2[, 4], 1)` % de los aprendientes usó correctamente el subjuntivo, frente al `r fmt(100 * nodo_bajo$yval2[, 4], 1)` % con menos horas. El árbol se podó mediante validación cruzada (10 particiones). En una muestra de prueba independiente (30 %), el árbol podado acertó el `r fmt(100 * a_p, 1)` % de los casos, frente al `r fmt(100 * a_e, 1)` % del árbol sin podar.
+> Se ajustó un árbol de clasificación (paquete *rpart*, índice de Gini) para predecir el uso correcto del subjuntivo a partir de las horas de instrucción, la estancia, la L1 y el nivel. La primera división, y la más informativa, fue la de las **horas de instrucción**: con 243,5 horas o más, el `r fmt(100 * nodo_alto$yval2[, 4], 1)` % de los estudiantes usó correctamente el subjuntivo, frente al `r fmt(100 * nodo_bajo$yval2[, 4], 1)` % con menos horas. El árbol se podó mediante validación cruzada (10 particiones). En una muestra de prueba independiente (30 %), el árbol podado acertó el `r fmt(100 * a_p, 1)` % de los casos, frente al `r fmt(100 * a_e, 1)` % del árbol sin podar.
 
 ::: pequeno
 Siempre: variables candidatas, criterio de división, cómo se podó, **exactitud con datos de prueba** y comparación con la clase mayoritaria.
@@ -3244,7 +3244,7 @@ Cabe preguntarse si tiene sentido predecir la estancia a partir de la nota: la r
 <h1>Estadística de corpus y modelos</h1>
 
 ::: pregunta
-¿Qué palabras delatan a un aprendiente? ¿Cuánto sube la nota con cada hora de clase? ¿Qué predice que use bien el subjuntivo?
+¿Qué palabras delatan a un estudiante? ¿Cuánto sube la nota con cada hora de clase? ¿Qué predice que use bien el subjuntivo?
 :::
 
 ::: chips
@@ -3256,7 +3256,7 @@ Cabe preguntarse si tiene sentido predecir la estancia a partir de la nota: la r
 Bloque opcional para quien quiera ir más allá: dos herramientas que no hemos visto en las sesiones (la estadística de corpus y los modelos de regresión). Si no hay tiempo, el chip «Saltar al cierre» lleva directamente a la última parte.
 :::
 
-## Aprendientes frente a nativos {.copia}
+## Estudiantes frente a nativos {.copia}
 
 ```{r}
 #| filename: "Paso 1 · Tamaños de los corpus y frecuencias normalizadas"
@@ -3273,7 +3273,7 @@ Corpus de distinto tamaño → comparar frecuencias **por millón** de palabras 
 
 ::: notes
 ::: explicacion
-En la lingüística de corpus comparamos con frecuencia dos corpus: aquí, textos de aprendientes y textos de nativos. El problema es que los corpus rara vez tienen el mismo tamaño: el de aprendientes tiene 150 000 palabras y el de nativos, 200 000.
+En la lingüística de corpus comparamos con frecuencia dos corpus: aquí, textos de estudiantes y textos de nativos. El problema es que los corpus rara vez tienen el mismo tamaño: el de estudiantes tiene 150 000 palabras y el de nativos, 200 000.
 
 Comparar frecuencias brutas sería injusto: una palabra aparecería más en el corpus grande solo porque es más grande. La solución es la **frecuencia normalizada**, normalmente **por millón de palabras** (pmw): cuántas veces aparecería la palabra si el corpus tuviera un millón de palabras.
 
@@ -3283,7 +3283,7 @@ Se calcula dividiendo la frecuencia entre el tamaño del corpus y multiplicando 
 
 ## Log-likelihood (G²): el caso de *pues*
 
-| | Aprendientes | Nativos | Total |
+| | Estudiantes | Nativos | Total |
 |:--|--:|--:|--:|
 | **Observadas** | 90 | 380 | 470 |
 | Tamaño del corpus | 150 000 | 200 000 | 350 000 |
@@ -3299,9 +3299,9 @@ G² > 3,84 → p < 0,05 · G² > 15,13 → p < 0,0001. Con frecuencias bajas es 
 ::: explicacion
 La frecuencia normalizada nos dice si una palabra aparece más en un corpus que en otro, pero no si esa diferencia es fiable. Para eso se usa el **log-likelihood** (G²), la prueba estándar en lingüística de corpus.
 
-El razonamiento es como el del chi cuadrado. *Pues* aparece 470 veces en total. Si los dos corpus la usaran igual, se repartiría según su tamaño: unas 201 veces en el de aprendientes y 269 en el de nativos. Pero los aprendientes solo la usan 90 veces.
+El razonamiento es como el del chi cuadrado. *Pues* aparece 470 veces en total. Si los dos corpus la usaran igual, se repartiría según su tamaño: unas 201 veces en el de estudiantes y 269 en el de nativos. Pero los estudiantes solo la usan 90 veces.
 
-G² mide la distancia entre lo observado y lo esperado: aquí, 118. Cualquier valor mayor que 3,84 es significativo (p < 0,05), y mayor que 15,13, muy significativo. Los aprendientes **infrautilizan** *pues*.
+G² mide la distancia entre lo observado y lo esperado: aquí, 118. Cualquier valor mayor que 3,84 es significativo (p < 0,05), y mayor que 15,13, muy significativo. Los estudiantes **infrautilizan** *pues*.
 :::
 :::
 
@@ -3325,7 +3325,7 @@ frec |> arrange(desc(abs(LR))) |>
 Este código calcula dos medidas para cada palabra:
 
 - **LL (log-likelihood)**: si la diferencia entre los corpus es **fiable**. La función `ll()` aplica la fórmula de la diapositiva anterior.
-- **LR (log-ratio)**: lo **grande** que es la diferencia. Es el logaritmo en base 2 del cociente de frecuencias normalizadas. LR = 1 significa que la palabra es el doble de frecuente en los aprendientes; LR = −1, la mitad; LR = 0, igual de frecuente.
+- **LR (log-ratio)**: lo **grande** que es la diferencia. Es el logaritmo en base 2 del cociente de frecuencias normalizadas. LR = 1 significa que la palabra es el doble de frecuente en los estudiantes; LR = −1, la mitad; LR = 0, igual de frecuente.
 
 La tabla final ordena las palabras por la magnitud de la diferencia y añade asteriscos según su significación. Se necesitan las dos medidas: LL indica si podemos fiarnos y LR, cuánto difieren.
 :::
@@ -3341,11 +3341,11 @@ La tabla final ordena las palabras por la magnitud de la diferencia y añade ast
 Este gráfico sitúa cada palabra según las dos medidas a la vez:
 
 - **Eje vertical** (LL): cuanto más arriba, más fiable es la diferencia.
-- **Eje horizontal** (log-ratio): a la derecha, palabras que los aprendientes **sobreutilizan**; a la izquierda, palabras que **infrautilizan**.
+- **Eje horizontal** (log-ratio): a la derecha, palabras que los estudiantes **sobreutilizan**; a la izquierda, palabras que **infrautilizan**.
 
 Las **palabras clave** de verdad están arriba y hacia los lados: diferencias a la vez fiables y grandes. Una palabra muy frecuente puede tener un LL alto con una diferencia pequeña, y una palabra rara puede tener un log-ratio llamativo sin ser fiable.
 
-Los controles permiten cambiar los umbrales y ver cómo cambia la lista. *Pues* y *o sea* son ejemplos claros de marcadores que los aprendientes usan poco.
+Los controles permiten cambiar los umbrales y ver cómo cambia la lista. *Pues* y *o sea* son ejemplos claros de marcadores que los estudiantes usan poco.
 :::
 
 Eje vertical: ¿es fiable la diferencia? (LL). Eje horizontal: ¿es grande? (log-ratio; 1 = el doble, −1 = la mitad). Palabras clave de verdad: arriba y a los lados. Bajar el umbral a p < 0,05 o el |LR| a 0,5 y ver cómo cambia la lista. Pasar el ratón por «pues» y por «o sea».
@@ -3371,12 +3371,12 @@ frec |> mutate(SM_1 = sm(pmw_aprend, pmw_nativo),
 
 Ese *n* resuelve un problema: sin él, una palabra que aparece una vez en un corpus y ninguna en el otro daría un cociente infinito (algo dividido entre 0). Al sumar *n*, las palabras raras dejan de dominar el ranking.
 
-**Un ejemplo con *pues***: aparece 600 veces por millón en el corpus de aprendientes (90 / 150 000 × 1 000 000) y 1900 veces por millón en el de nativos (380 / 200 000 × 1 000 000).
+**Un ejemplo con *pues***: aparece 600 veces por millón en el corpus de estudiantes (90 / 150 000 × 1 000 000) y 1900 veces por millón en el de nativos (380 / 200 000 × 1 000 000).
 
-- Con n = 1: SM = (600 + 1) / (1900 + 1) = **0,32**. Los aprendientes usan *pues* aproximadamente un tercio de lo que lo usan los nativos.
+- Con n = 1: SM = (600 + 1) / (1900 + 1) = **0,32**. Los estudiantes usan *pues* aproximadamente un tercio de lo que lo usan los nativos.
 - Con n = 1000: SM = (600 + 1000) / (1900 + 1000) = **0,55**. El valor se acerca a 1, porque el *n* grande «diluye» la diferencia.
 
-Cómo leer el valor: **SM > 1**, la palabra es más frecuente en los aprendientes (sobreuso); **SM < 1**, menos frecuente (infrauso); **SM = 1**, igual de frecuente.
+Cómo leer el valor: **SM > 1**, la palabra es más frecuente en los estudiantes (sobreuso); **SM < 1**, menos frecuente (infrauso); **SM = 1**, igual de frecuente.
 
 El código calcula la medida con dos valores:
 
@@ -3394,9 +3394,9 @@ El código calcula la medida con dos valores:
 ::: explicacion
 Esta visualización muestra cómo el ranking de palabras clave depende del valor de *n* en Simple Maths, la constante de suavizado de la diapositiva anterior (el mismo *n*).
 
-**Qué son los valores.** Cada barra es una palabra y el número de su extremo es su Simple Maths: (pmw en aprendientes + n) / (pmw en nativos + n). La línea vertical marca el **1** (igual de frecuente en los dos corpus). Las barras azules, a la derecha, son palabras que los aprendientes **sobreusan**; las rojas, a la izquierda, las que **infrautilizan**. El eje está en escala logarítmica para que «el doble» (2) y «la mitad» (0,5) queden a la misma distancia del 1.
+**Qué son los valores.** Cada barra es una palabra y el número de su extremo es su Simple Maths: (pmw en estudiantes + n) / (pmw en nativos + n). La línea vertical marca el **1** (igual de frecuente en los dos corpus). Las barras azules, a la derecha, son palabras que los estudiantes **sobreusan**; las rojas, a la izquierda, las que **infrautilizan**. El eje está en escala logarítmica para que «el doble» (2) y «la mitad» (0,5) queden a la misma distancia del 1.
 
-Por ejemplo, con n = 1, *muy* tiene SM = (4133 + 1) / (2050 + 1) ≈ **2,0**: los aprendientes la usan el doble que los nativos. *O sea* tiene SM = (167 + 1) / (950 + 1) ≈ **0,18**: la usan unas cinco veces menos. El panel muestra el cálculo de la palabra más sobreusada para el *n* elegido.
+Por ejemplo, con n = 1, *muy* tiene SM = (4133 + 1) / (2050 + 1) ≈ **2,0**: los estudiantes la usan el doble que los nativos. *O sea* tiene SM = (167 + 1) / (950 + 1) ≈ **0,18**: la usan unas cinco veces menos. El panel muestra el cálculo de la palabra más sobreusada para el *n* elegido.
 
 Al mover el deslizador:
 
@@ -3419,14 +3419,14 @@ Mover n de 0,1 a 10 000. Con n bajo destacan las palabras raras; con n alto todo
 library(quanteda); library(quanteda.textstats)
 corp <- corpus(readtext::readtext("corpus/*.txt", docvarsfrom = "filenames"))
 dfm_g <- tokens(corp, remove_punct = TRUE) |> dfm() |>
-  dfm_group(groups = docvar1)                  # aprendientes / nativos
-kw <- textstat_keyness(dfm_g, target = "aprendientes", measure = "lr")
+  dfm_group(groups = docvar1)                  # estudiantes / nativos
+kw <- textstat_keyness(dfm_g, target = "estudiantes", measure = "lr")
 head(kw, 20)                                   # G² y valor p
 quanteda.textplots::textplot_keyness(kw)
 ```
 
 ::: idea
-Cómo informar: *pues* aparece significativamente menos en el corpus de aprendientes (LL = `r fmt(frec$LL[frec$palabra == "pues"], 1)`, p < 0,0001; log-ratio = `r fmt(frec$LR[frec$palabra == "pues"], 2)`): lo usan unas `r fmt(2^-frec$LR[frec$palabra == "pues"], 1)` veces menos.
+Cómo informar: *pues* aparece significativamente menos en el corpus de estudiantes (LL = `r fmt(frec$LL[frec$palabra == "pues"], 1)`, p < 0,0001; log-ratio = `r fmt(frec$LR[frec$palabra == "pues"], 2)`): lo usan unas `r fmt(2^-frec$LR[frec$palabra == "pues"], 1)` veces menos.
 :::
 
 ::: notes
@@ -3436,10 +3436,10 @@ En nuestro ejemplo, las frecuencias ya estaban contadas. Con textos propios, el 
 1. `readtext()` lee una carpeta de archivos de texto.
 2. `corpus()` los convierte en un corpus.
 3. `tokens()` divide los textos en palabras, y `dfm()` cuenta cuántas veces aparece cada palabra en cada texto.
-4. `dfm_group()` agrupa los textos en dos conjuntos: aprendientes y nativos.
+4. `dfm_group()` agrupa los textos en dos conjuntos: estudiantes y nativos.
 5. `textstat_keyness()` calcula las palabras clave y `textplot_keyness()` las dibuja.
 
-El recuadro inferior muestra cómo redactar el resultado: *pues* aparece unas tres veces menos en el corpus de aprendientes (LL = 118, p < 0,0001).
+El recuadro inferior muestra cómo redactar el resultado: *pues* aparece unas tres veces menos en el corpus de estudiantes (LL = 118, p < 0,0001).
 :::
 :::
 
@@ -3456,11 +3456,11 @@ Sin modelo, la mejor apuesta para Lin es la media de todos: **68 puntos**, con u
 
 ::: notes
 ::: explicacion
-Esta diapositiva marca el cambio de tema dentro del Plus: dejamos los corpus y volvemos a los datos de los 240 aprendientes.
+Esta diapositiva marca el cambio de tema dentro del Plus: dejamos los corpus y volvemos a los datos de los 240 estudiantes.
 
 Hasta ahora hemos **comparado**: ¿difiere la nota entre grupos?, ¿se relacionan dos variables? La correlación nos dijo que horas y nota van juntas (r = 0,58), pero no **cuánto** sube la nota con cada hora ni qué nota esperar de una persona concreta.
 
-Un **modelo de regresión** da un paso más: convierte la relación en una **fórmula para predecir**. Pensemos en Lin, una aprendiente inventada con 300 horas de clase y sin estancia. Si no supiéramos nada de ella, lo más sensato sería apostar por la media de todo el grupo, 68 puntos, y nos equivocaríamos, de media, unos 13 puntos. Pero sabemos que quienes tienen más horas tienden a sacar más nota, así que podemos afinar.
+Un **modelo de regresión** da un paso más: convierte la relación en una **fórmula para predecir**. Pensemos en Lin, una estudiante inventada con 300 horas de clase y sin estancia. Si no supiéramos nada de ella, lo más sensato sería apostar por la media de todo el grupo, 68 puntos, y nos equivocaríamos, de media, unos 13 puntos. Pero sabemos que quienes tienen más horas tienden a sacar más nota, así que podemos afinar.
 
 La regresión lineal busca la **recta** que mejor resume esa relación y la usa para predecir. En las diapositivas siguientes veremos cómo se encuentra esa recta y qué nota predice para Lin. La regresión **logística** hará lo mismo cuando lo que queremos predecir es un sí o un no (acertar o fallar el subjuntivo).
 :::
@@ -3473,7 +3473,7 @@ La regresión lineal busca la **recta** que mejor resume esa relación y la usa 
 
 ::: notes
 ::: explicacion
-La **regresión lineal** busca la recta que mejor resume la relación entre dos variables numéricas, para poder **predecir** una a partir de la otra: la nota a partir de las horas. El gráfico usa 40 aprendientes elegidos al azar, para que los puntos se vean bien.
+La **regresión lineal** busca la recta que mejor resume la relación entre dos variables numéricas, para poder **predecir** una a partir de la otra: la nota a partir de las horas. El gráfico usa 40 estudiantes elegidos al azar, para que los puntos se vean bien.
 
 Una recta queda definida por dos números:
 
@@ -3482,7 +3482,7 @@ Una recta queda definida por dos números:
 
 La fórmula es: nota prevista = b₀ + b₁ × horas. Por ejemplo, con b₀ = 45 y b₁ = 0,08, alguien con 300 horas tendría una nota prevista de 45 + 0,08 × 300 = **69 puntos**. El panel calcula la predicción para 300 horas con la recta que hayas elegido.
 
-¿Cuál es la «mejor» recta? La que hace más pequeños los errores de predicción. Cada línea roja vertical es el error de un aprendiente: la distancia entre su nota real y la que predice la recta (su **residuo**). Si una aprendiente con 300 horas sacó 75 y la recta predice 69, su residuo es +6. En el gráfico, esos errores se dibujan también como **cuadrados rojos**: el error elevado al cuadrado. La mejor recta es la que minimiza la suma de sus áreas. Se llama método de **mínimos cuadrados**, y es exactamente lo que hace la función `lm()` (de *linear model*, modelo lineal).
+¿Cuál es la «mejor» recta? La que hace más pequeños los errores de predicción. Cada línea roja vertical es el error de un estudiante: la distancia entre su nota real y la que predice la recta (su **residuo**). Si una estudiante con 300 horas sacó 75 y la recta predice 69, su residuo es +6. En el gráfico, esos errores se dibujan también como **cuadrados rojos**: el error elevado al cuadrado. La mejor recta es la que minimiza la suma de sus áreas. Se llama método de **mínimos cuadrados**, y es exactamente lo que hace la función `lm()` (de *linear model*, modelo lineal).
 :::
 
 Pedir a alguien que mueva los deslizadores hasta minimizar la suma de los cuadrados rojos. Después pulsar «Ajuste de lm()»: la recta salta a la solución de mínimos cuadrados. Eso es exactamente lo que hace lm().
@@ -3501,7 +3501,7 @@ summary(modelo_lm)$r.squared
 :::
 ::: {.column width="45%"}
 ```{r}
-#| filename: "Paso 5 · Predecir la nota de tres aprendientes"
+#| filename: "Paso 5 · Predecir la nota de tres estudiantes"
 lin <- tibble(horas = c(200, 300, 300),
               estancia = c("no", "no", "sí"))
 predict(modelo_lm, lin) |> round(1)
@@ -3525,13 +3525,13 @@ La tabla de coeficientes (columna *Estimate*) se interpreta así:
 
 **Aterrizado en casos concretos** (paso 5), con la fórmula nota = 43,96 + 0,078 × horas + 4,49 × (estancia sí):
 
-- Un aprendiente con **200 horas y sin estancia**: 43,96 + 0,078 × 200 = **59,6 puntos**.
+- Un estudiante con **200 horas y sin estancia**: 43,96 + 0,078 × 200 = **59,6 puntos**.
 - **Lin**, con **300 horas y sin estancia**: 43,96 + 0,078 × 300 = **67,5 puntos**. Las 100 horas de diferencia con el anterior suponen esos 7,8 puntos más.
 - Alguien con **300 horas y con estancia**: 67,5 + 4,5 = **72,0 puntos**.
 
 Las columnas *Std. Error*, *t value* y *Pr(>|t|)* contrastan si cada coeficiente es distinto de 0: aquí, los dos predictores son claramente significativos.
 
-**¿Un R² del 37 % es mucho o poco?** El R² indica qué parte de la variación de la nota explica el modelo. Un 37 % significa que, conociendo las horas y la estancia, el error típico al predecir la nota baja de unos 12,9 puntos (sin modelo) a unos 10,2. Para un fenómeno humano tan complejo como el aprendizaje de una lengua, que depende de muchísimos factores, es una proporción **considerable**: equivale a una correlación de 0,61, «grande» según las referencias de Cohen y de los estudios de L2 (Plonsky y Oswald, 2014). Al mismo tiempo, recuerda que el 63 % de las diferencias entre aprendientes se debe a factores que el modelo no incluye. Las horas solas explicaban un 34 % (r² de la correlación); la estancia añade 3 puntos más.
+**¿Un R² del 37 % es mucho o poco?** El R² indica qué parte de la variación de la nota explica el modelo. Un 37 % significa que, conociendo las horas y la estancia, el error típico al predecir la nota baja de unos 12,9 puntos (sin modelo) a unos 10,2. Para un fenómeno humano tan complejo como el aprendizaje de una lengua, que depende de muchísimos factores, es una proporción **considerable**: equivale a una correlación de 0,61, «grande» según las referencias de Cohen y de los estudios de L2 (Plonsky y Oswald, 2014). Al mismo tiempo, recuerda que el 63 % de las diferencias entre estudiantes se debe a factores que el modelo no incluye. Las horas solas explicaban un 34 % (r² de la correlación); la estancia añade 3 puntos más.
 
 La ventaja de la regresión frente a la correlación es que separa el efecto de cada variable **controlando las demás** y permite predecir casos concretos.
 :::
@@ -3560,7 +3560,7 @@ En el gráfico, los puntos están en dos franjas: arriba los aciertos, abajo los
 
 La **curva en S roja** es la de la **regresión logística**: siempre se mantiene entre 0 y 1. Con pocas horas, la probabilidad de acierto es baja; aumenta en la zona media y se estabiliza cerca de 1 con muchas horas.
 
-Qué significa aquí «probabilidad»: la proporción de aprendientes que aciertan entre quienes tienen esas horas. Por ejemplo, de los 31 aprendientes que tienen entre 200 y 250 horas, aciertan 10 (un 32 %); de los 36 que tienen entre 350 y 400, aciertan 27 (un 75 %). La curva roja resume esas proporciones para cualquier cantidad de horas. La diapositiva siguiente explica cómo se construye.
+Qué significa aquí «probabilidad»: la proporción de estudiantes que aciertan entre quienes tienen esas horas. Por ejemplo, de los 31 estudiantes que tienen entre 200 y 250 horas, aciertan 10 (un 32 %); de los 36 que tienen entre 350 y 400, aciertan 27 (un 75 %). La curva roja resume esas proporciones para cualquier cantidad de horas. La diapositiva siguiente explica cómo se construye.
 :::
 :::
 
@@ -3577,9 +3577,9 @@ La curva en S de la diapositiva anterior, con controles. Con 14 aciertos y 6 fal
 ::: explicacion
 **Qué muestra esta diapositiva.** Es la curva roja de la diapositiva anterior, ahora con controles. No es una alternativa a la regresión lineal de la nota, sino su equivalente para una respuesta de **sí o no**: si la variable que queremos predecir es un número (la nota), usamos la recta de `lm()`; si es acertar o fallar (el subjuntivo), usamos esta curva en S de `glm()`. Para simplificar, el modelo tiene un solo predictor: las horas.
 
-**Qué hay en el gráfico.** Cada punto es un aprendiente: arriba (1), los que usan bien el subjuntivo; abajo (0), los que fallan. Los rombos naranjas son la proporción real de aciertos en cada tramo de 50 horas. La curva azul es la **probabilidad** de acierto que predice el modelo para cada cantidad de horas, y debería pasar cerca de los rombos.
+**Qué hay en el gráfico.** Cada punto es un estudiante: arriba (1), los que usan bien el subjuntivo; abajo (0), los que fallan. Los rombos naranjas son la proporción real de aciertos en cada tramo de 50 horas. La curva azul es la **probabilidad** de acierto que predice el modelo para cada cantidad de horas, y debería pasar cerca de los rombos.
 
-**Las tres escalas**, con un ejemplo. Imaginemos un grupo de 20 aprendientes con unas 350 horas, de los que aciertan 14 y fallan 6:
+**Las tres escalas**, con un ejemplo. Imaginemos un grupo de 20 estudiantes con unas 350 horas, de los que aciertan 14 y fallan 6:
 
 - **Probabilidad**: aciertos / total = 14 / 20 = **0,70** (un 70 %). Va de 0 a 1.
 - ***Odds*** (en español, a veces «momios» o «razón de posibilidades»): aciertos / fallos = 14 / 6 ≈ **2,3**. Se lee «2,3 aciertos por cada fallo». Si acertara la mitad, las *odds* serían 1 (uno a uno); si acertaran menos de la mitad, serían menores que 1. Son las «apuestas» de las casas de apuestas: 3 a 1.
@@ -3607,7 +3607,7 @@ exp(coef(modelo_glm)) |> round(2)      # odds ratios
 ```
 
 ```{r}
-#| filename: "Paso 7 · ¿Para qué sirven? Dos aprendientes ficticios"
+#| filename: "Paso 7 · ¿Para qué sirven? Dos estudiantes ficticios"
 fichas <- tibble(nombre = c("Emma", "Wang"), horas = c(300, 300),
                  estancia = c("sí", "no"), L1 = c("inglés", "chino"))
 predict(modelo_glm, fichas, type = "response") |> round(2)
@@ -3629,12 +3629,12 @@ Los coeficientes están en la escala de los log-odds, difícil de interpretar. P
 
 La estancia multiplica las *odds* de acierto por 2,3. Cada hora las multiplica por 1,013, lo que, acumulado en 100 horas, equivale a multiplicarlas por unas 3,7 (1,013¹⁰⁰). La L1 no tiene un efecto significativo (sus valores p están por encima de 0,05), aunque su OR sea mayor que 1.
 
-**¿Para qué sirven los coeficientes? Un ejemplo con dos aprendientes ficticios** (paso 7). Emma y Wang tienen las mismas horas de clase, 300. Emma, de L1 inglés, ha vivido en Salamanca; Wang, de L1 chino, no ha hecho ninguna estancia. El modelo combina sus características:
+**¿Para qué sirven los coeficientes? Un ejemplo con dos estudiantes ficticios** (paso 7). Emma y Wang tienen las mismas horas de clase, 300. Emma, de L1 inglés, ha vivido en Salamanca; Wang, de L1 chino, no ha hecho ninguna estancia. El modelo combina sus características:
 
 - Wang: log-odds = −4,32 + 0,013 × 300 + 0,30 (chino) = −0,12 → probabilidad de acierto del **47 %**.
 - Emma: log-odds = −4,32 + 0,013 × 300 + 0,84 (estancia) + 0,39 (inglés) = +0,81 → probabilidad del **69 %**.
 
-Los coeficientes permiten, por tanto, **predecir** la probabilidad de acierto de cualquier perfil y **comparar** el peso de cada factor. La estancia es el factor que más separa a Emma de Wang: sola, multiplica sus *odds* por 2,3. En términos de un aula: si un grupo de aprendientes sin estancia acertara la mitad de las veces (odds = 1, uno a uno), un grupo igual pero con estancia tendría unas odds de 2,3, es decir, acertaría aproximadamente 7 de cada 10 veces (2,3 / 3,3 ≈ 0,70).
+Los coeficientes permiten, por tanto, **predecir** la probabilidad de acierto de cualquier perfil y **comparar** el peso de cada factor. La estancia es el factor que más separa a Emma de Wang: sola, multiplica sus *odds* por 2,3. En términos de un aula: si un grupo de estudiantes sin estancia acertara la mitad de las veces (odds = 1, uno a uno), un grupo igual pero con estancia tendría unas odds de 2,3, es decir, acertaría aproximadamente 7 de cada 10 veces (2,3 / 3,3 ≈ 0,70).
 
 `predict(..., type = "response")` devuelve directamente la probabilidad; sin `type = "response"`, devolvería los log-odds.
 :::
@@ -3663,7 +3663,7 @@ ggplot(ele, aes(horas, subj_ok,
 ::: explicacion
 La mejor forma de comunicar una regresión logística es dibujar las **probabilidades predichas**.
 
-El gráfico muestra dos curvas en S, una para quienes han hecho estancia (rojo) y otra para quienes no (azul). Cada curva indica la probabilidad de usar bien el subjuntivo según las horas de instrucción. Los puntos, arriba y abajo, son los aprendientes reales.
+El gráfico muestra dos curvas en S, una para quienes han hecho estancia (rojo) y otra para quienes no (azul). Cada curva indica la probabilidad de usar bien el subjuntivo según las horas de instrucción. Los puntos, arriba y abajo, son los estudiantes reales.
 
 Se observan dos cosas:
 
@@ -3764,7 +3764,7 @@ desc <- ele |> group_by(estancia) |> summarise(m = mean(nota_dele), s = sd(nota_
 d_est <- with(ele, d_cohen(nota_dele[estancia == "sí"], nota_dele[estancia == "no"]))
 ```
 
-> Los aprendientes que habían realizado una estancia en un país hispanohablante obtuvieron una nota media más alta (*M* = `r fmt(desc$m[2], 1)`; *DE* = `r fmt(desc$s[2], 1)`) que quienes no la habían realizado (*M* = `r fmt(desc$m[1], 1)`; *DE* = `r fmt(desc$s[1], 1)`), *t*(`r fmt(tt$parameter, 1)`) = `r fmt(abs(tt$statistic), 2)`, *p* = `r fmt(tt$p.value, 3)`, *d* = `r fmt(d_est, 2)`.
+> Los estudiantes que habían realizado una estancia en un país hispanohablante obtuvieron una nota media más alta (*M* = `r fmt(desc$m[2], 1)`; *DE* = `r fmt(desc$s[2], 1)`) que quienes no la habían realizado (*M* = `r fmt(desc$m[1], 1)`; *DE* = `r fmt(desc$s[1], 1)`), *t*(`r fmt(tt$parameter, 1)`) = `r fmt(abs(tt$statistic), 2)`, *p* = `r fmt(tt$p.value, 3)`, *d* = `r fmt(d_est, 2)`.
 
 ::: {.tarjetas style="--cols:4"}
 <div><span class="t">Descriptivos</span>M y DE de cada grupo</div>
@@ -3793,7 +3793,7 @@ Con estos elementos, cualquier lector puede valorar no solo si el efecto existe,
 ::: giro
 <div><div class="in"><div class="fr">«Es significativo, así que es importante»</div><div class="re">Con muestras grandes todo es significativo. Informa siempre del <b>tamaño del efecto</b>.</div></div></div>
 <div><div class="in"><div class="fr">«He probado veinte pruebas y una ha salido»</div><div class="re">Eso es <b>p-hacking</b>: corrige por comparaciones múltiples o preregistra.</div></div></div>
-<div><div class="in"><div class="fr">«Tengo varios textos por aprendiente y los trato como independientes»</div><div class="re">No lo son: usa <b>modelos mixtos</b> (<code>lme4</code>).</div></div></div>
+<div><div class="in"><div class="fr">«Tengo varios textos por estudiante y los trato como independientes»</div><div class="re">No lo son: usa <b>modelos mixtos</b> (<code>lme4</code>).</div></div></div>
 <div><div class="in"><div class="fr">«Mi árbol acierta un 90 %»</div><div class="re">¿Con qué datos? Mide el acierto con <b>datos de prueba</b> o validación cruzada.</div></div></div>
 :::
 

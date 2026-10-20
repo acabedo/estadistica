@@ -43,11 +43,11 @@ Cada bloque de código tiene un botón para copiarlo, también los que aparecen 
 
 ## Datos
 
-Los datos de `datos/` son **simulados** (no corresponden a aprendientes reales) y se generan con `datos/crear_datos.R` (semilla 2026):
+Los datos de `datos/` son **simulados** (no corresponden a estudiantes reales) y se generan con `datos/crear_datos.R` (semilla 2026):
 
-- `ele.csv`: 240 aprendientes de ELE con L1, nivel (A2–C1), estancia en España, horas de estudio, nota DELE, errores de *ser/estar* y uso del subjuntivo.
-- `errores.csv`: recuentos de tipos de error por L1 en un corpus de aprendices.
-- `frecuencias.csv`: frecuencias de palabras en un corpus de aprendientes y en uno de nativos.
+- `ele.csv`: 240 estudiantes de ELE con L1, nivel (A2–C1), estancia en España, horas de estudio, nota DELE, errores de *ser/estar* y uso del subjuntivo.
+- `errores.csv`: recuentos de tipos de error por L1 en un corpus de estudiantes.
+- `frecuencias.csv`: frecuencias de palabras en un corpus de estudiantes y en uno de nativos.
 
 ## Seguir el taller en tu ordenador
 
