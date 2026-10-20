@@ -213,6 +213,9 @@
 .reveal .explicacion-slide .exp-cuerpo ul, .reveal .explicacion-slide .exp-cuerpo ol { margin: 0 0 .65em 1.1em; }
 .reveal .explicacion-slide .exp-cuerpo li { margin: .18em 0; }
 .reveal .explicacion-slide .exp-cuerpo code { font-size: .9em; background: #eef2f6; padding: 0 .25em; border-radius: 5px; }
+/* El pie de página y el número de diapositiva ocupan una franja que, según la proporción de la ventana,
+   se superpone al botón y le roba el ratón: no necesitan recibir clics */
+.reveal .footer, .reveal .footer *, .reveal .slide-number, .reveal .slide-number * { pointer-events: none !important; }
 /* El botón queda por encima del número de diapositiva y del pie: así el ratón siempre lo alcanza */
 .reveal .ir-explicacion { position: absolute; right: 0; bottom: 52px; z-index: 40; pointer-events: auto; font-family: 'Outfit'; font-weight: 700; font-size: .42em; letter-spacing: .04em;
   padding: .4em 1em; border-radius: 999px; border: 2px solid var(--celeste); background: #fff; color: var(--celeste); cursor: pointer;
