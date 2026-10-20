@@ -101,10 +101,10 @@ Pulsa una tarjeta para saltar a la sección. Tecla **M**: menú · **Esc**: vist
 ## ¿Por qué estadística en un máster de ELE?
 
 ::: giro
-<div><div class="in"><div class="fr">¿Funciona mejor este método didáctico que aquel?</div><div class="re">Prueba <b>t</b> (2 grupos) o <b>ANOVA</b> (3 o más) · Sesiones 3 y 4</div></div></div>
-<div><div class="in"><div class="fr">¿Los estudiantes sinohablantes cometen más errores de <i>ser/estar</i>?</div><div class="re">Recuentos → <b>Wilcoxon</b> o <b>Kruskal-Wallis</b> · Sesiones 3 y 4</div></div></div>
-<div><div class="in"><div class="fr">¿Influye una estancia en España en el uso del subjuntivo?</div><div class="re">Dos categóricas → <b>χ²</b>; muchos predictores → <b>árbol</b> o <b>logística</b> · Sesiones 4, 5 y Plus</div></div></div>
-<div><div class="in"><div class="fr">¿Qué palabras sobreusan los estudiantes frente a los nativos?</div><div class="re">Dos corpus → <b>log-likelihood</b> + <b>log-ratio</b> · Plus</div></div></div>
+<div><div class="in"><div class="fr"><span>¿Funciona mejor este método didáctico que aquel?</span></div><div class="re"><span>Prueba <b>t</b> (2 grupos) o <b>ANOVA</b> (3 o más) · Sesiones 3 y 4</span></div></div></div>
+<div><div class="in"><div class="fr"><span>¿Los estudiantes sinohablantes cometen más errores de <i>ser/estar</i>?</span></div><div class="re"><span>Recuentos → <b>Wilcoxon</b> o <b>Kruskal-Wallis</b> · Sesiones 3 y 4</span></div></div></div>
+<div><div class="in"><div class="fr"><span>¿Influye una estancia en España en el uso del subjuntivo?</span></div><div class="re"><span>Dos categóricas → <b>χ²</b>; muchos predictores → <b>árbol</b> o <b>logística</b> · Sesiones 4, 5 y Plus</span></div></div></div>
+<div><div class="in"><div class="fr"><span>¿Qué palabras sobreusan los estudiantes frente a los nativos?</span></div><div class="re"><span>Dos corpus → <b>log-likelihood</b> + <b>log-ratio</b> · Plus</span></div></div></div>
 :::
 
 ::: idea
@@ -3791,10 +3791,10 @@ Con estos elementos, cualquier lector puede valorar no solo si el efecto existe,
 ## Errores frecuentes
 
 ::: giro
-<div><div class="in"><div class="fr">«Es significativo, así que es importante»</div><div class="re">Con muestras grandes todo es significativo. Informa siempre del <b>tamaño del efecto</b>.</div></div></div>
-<div><div class="in"><div class="fr">«He probado veinte pruebas y una ha salido»</div><div class="re">Eso es <b>p-hacking</b>: corrige por comparaciones múltiples o preregistra.</div></div></div>
-<div><div class="in"><div class="fr">«Tengo varios textos por estudiante y los trato como independientes»</div><div class="re">No lo son: usa <b>modelos mixtos</b> (<code>lme4</code>).</div></div></div>
-<div><div class="in"><div class="fr">«Mi árbol acierta un 90 %»</div><div class="re">¿Con qué datos? Mide el acierto con <b>datos de prueba</b> o validación cruzada.</div></div></div>
+<div><div class="in"><div class="fr"><span>«Es significativo, así que es importante»</span></div><div class="re"><span>Con muestras grandes todo es significativo. Informa siempre del <b>tamaño del efecto</b>.</span></div></div></div>
+<div><div class="in"><div class="fr"><span>«He probado veinte pruebas y una ha salido»</span></div><div class="re"><span>Eso es <b>p-hacking</b>: corrige por comparaciones múltiples o preregistra.</span></div></div></div>
+<div><div class="in"><div class="fr"><span>«Tengo varios textos por estudiante y los trato como independientes»</span></div><div class="re"><span>No lo son: usa <b>modelos mixtos</b> (<code>lme4</code>).</span></div></div></div>
+<div><div class="in"><div class="fr"><span>«Mi árbol acierta un 90 %»</span></div><div class="re"><span>¿Con qué datos? Mide el acierto con <b>datos de prueba</b> o validación cruzada.</span></div></div></div>
 :::
 
 ::: notes

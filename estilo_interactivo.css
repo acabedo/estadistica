@@ -237,3 +237,6 @@
 .w-copiar:hover { background: var(--arena); color: var(--azul); }
 .w-copiar.ok { background: var(--verde); border-color: var(--verde); }
 .w-code { user-select: text; -webkit-user-select: text; }
+
+/* Código dentro del reverso azul de las tarjetas giratorias */
+.reveal .giro .re code { color: var(--arena); background: rgba(255,255,255,.12); padding: 0 .25em; border-radius: 5px; }
