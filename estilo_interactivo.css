@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800;900&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800;900&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap');
 
 :root {
   --azul: #1D3557; --rojo: #E63946; --verde: #2A9D8F; --arena: #F4A261; --celeste: #457B9D;
@@ -26,7 +26,7 @@
 .reveal table tr:nth-child(even) td { background: #f5f8fb; }
 
 /* ---------- Cinta del método: copia → resultado → explica ---------- */
-.reveal section.copia::before, .reveal section.resultado::before, .reveal section.explica::before, .reveal section.reto-s::before {
+.reveal section.copia::before, .reveal section.resultado::before, .reveal section.explica::before, .reveal section.reto-s::before, .reveal section.redaccion::before {
   position: absolute; top: 4px; right: 0; font-family: 'Outfit'; font-weight: 800; font-size: .46em; letter-spacing: .08em; line-height: 1.25;
   padding: .35em .9em; border-radius: 999px; color: #fff; text-transform: uppercase; z-index: 5; }
 .reveal section.copia::before { content: "① Copia y ejecuta"; background: var(--azul); }
@@ -240,3 +240,21 @@
 
 /* Código dentro del reverso azul de las tarjetas giratorias */
 .reveal .giro .re code { color: var(--arena); background: rgba(255,255,255,.12); padding: 0 .25em; border-radius: 5px; }
+
+/* ---------- «Cómo redactarlo»: párrafo modelo para publicaciones (estilo APA) ---------- */
+.reveal section.redaccion::before { content: "✍ Cómo redactarlo"; background: #6b4f8a; }
+.reveal section.redaccion h2 { border-left-color: #6b4f8a; }
+.redaccion-caja { font-family: 'Source Serif 4', Georgia, serif; font-size: .86em; line-height: 1.55; background: #fffdf7; color: #1f2328;
+  border: 1px solid #e4dccb; border-left: 8px solid #6b4f8a; border-radius: 0 14px 14px 0; padding: .7em 1em; box-shadow: var(--sombra); text-align: justify; hyphens: auto; }
+.redaccion-caja p { margin: 0 0 .55em; } .redaccion-caja p:last-child { margin-bottom: 0; }
+.redaccion-caja strong { color: #6b4f8a; } .redaccion-caja em { color: inherit; }
+.apa-figura { font-family: 'Source Serif 4', Georgia, serif; font-size: .68em; line-height: 1.3; margin-bottom: .2em; }
+.apa-figura p { margin: 0 0 .1em; } .apa-figura strong { color: #1f2328; }
+.apa-nota { font-family: 'Source Serif 4', Georgia, serif; font-size: .6em; color: #444; margin-top: -.2em; }
+.reveal section.redaccion table { font-family: 'Source Serif 4', Georgia, serif; }
+.reveal section.redaccion table th { background: #fff; color: #1f2328; border-top: 2px solid #1f2328; border-bottom: 1px solid #1f2328; }
+.reveal section.redaccion table tr:nth-child(even) td { background: #fff; }
+.reveal section.redaccion table tr:last-child td { border-bottom: 2px solid #1f2328; }
+.reveal section.redaccion table { font-size: .9em; }
+/* Los símbolos estadísticos en cursiva se ven siempre como cursiva (serif, con su variante itálica cargada) */
+.reveal section.redaccion .tarjetas i, .redaccion-caja em { font-family: 'Source Serif 4', Georgia, serif; font-style: italic; }

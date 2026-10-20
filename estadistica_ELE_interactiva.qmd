@@ -55,7 +55,8 @@ ele <- read_csv("datos/ele.csv") |>
 errores <- read_csv("datos/errores.csv")
 frec <- read_csv("datos/frecuencias.csv")
 source("interactivo/preparar_datos.R")   # datos para los componentes interactivos
-fmt <- function(x, d = 2) format(round(x, d), nsmall = d, decimal.mark = ",", big.mark = ".")
+fmt <- function(x, d = 2) sub("^-", "−", format(round(x, d), nsmall = d, decimal.mark = ",", big.mark = ".", scientific = FALSE))
+fp <- function(p) if (p < .001) "< 0,001" else paste("=", fmt(p, 3))   # valor p al estilo APA
 ```
 
 ## {#inicio .hero background-image="img/portada.jpg" background-size="cover" background-color="#0d1b2a" data-menu-title="Portada"}
@@ -562,6 +563,54 @@ Si quisiéramos la **varianza**, la función sería `var(ele$nota_dele)`: 166,3,
 :::
 :::
 
+## Cómo redactarlo: las convenciones (APA 7) {.redaccion}
+
+::: {.tarjetas style="--cols:3"}
+<div><span class="t">Símbolos en cursiva</span><i>M</i> (media), <i>DE</i>, <i>Mdn</i> (mediana), <i>n</i>, <i>t</i>, <i>F</i>, <i>r</i>, <i>p</i>, <i>d</i>. Las letras griegas (χ², η²) van en redonda.</div>
+<div><span class="t">Decimales</span>En un texto en español, coma decimal (68,1); en inglés, punto (68.1). Manda siempre la norma de la revista o de la universidad.</div>
+<div><span class="t">Valor p exacto</span>Con tres decimales: <i>p</i> = 0,002. Si es muy pequeño, <i>p</i> &lt; 0,001. Nunca «<i>p</i> = 0,000».</div>
+<div><span class="t">Grados de libertad</span>Entre paréntesis tras el estadístico: <i>t</i>(207,3), <i>F</i>(3, 236), χ²(1, <i>N</i> = 240).</div>
+<div><span class="t">Tamaño del efecto</span>Siempre junto al valor p y, si es posible, con su intervalo de confianza: <i>d</i> = 0,41.</div>
+<div><span class="t">Primero, describir</span>Medias y DE (o medianas) antes de la prueba. Figuras y tablas numeradas y citadas en el texto.</div>
+:::
+
+::: pequeno
+A partir de aquí, después de cada análisis hay una diapositiva como esta con un **párrafo modelo** para un artículo, una tesis o un TFM. Los números salen de nuestros datos (simulados).
+:::
+
+::: notes
+::: explicacion
+Estas son las convenciones básicas del estilo APA (7.ª edición), el más extendido en lingüística aplicada y en investigación educativa, para escribir resultados estadísticos.
+
+- Los **símbolos estadísticos** latinos van en cursiva (*M*, *DE*, *t*, *p*…); los griegos, no (χ², η²).
+- En un texto en **español**, los decimales llevan **coma**; si el artículo es en inglés, punto. En inglés, APA omite además el cero inicial en los valores que no pueden superar 1 (*p* = .002, *r* = .58). Lo decisivo es la norma de la revista.
+- El **valor p** se da exacto y con tres decimales, salvo que sea menor que 0,001.
+- Los **grados de libertad** van entre paréntesis justo después del símbolo del estadístico.
+- Junto a cada prueba, el **tamaño del efecto**.
+- Antes de cualquier prueba, los **descriptivos**: el lector necesita saber qué medias se están comparando.
+
+En las diapositivas siguientes de este tipo, la cinta «Cómo redactarlo» señala un párrafo listo para adaptar.
+:::
+:::
+
+## Cómo redactarlo: los descriptivos {.redaccion}
+
+::: redaccion-caja
+La nota media en la prueba tipo DELE fue de `r fmt(mean(ele$nota_dele), 1)` puntos (*DE* = `r fmt(sd(ele$nota_dele), 1)`; rango: `r min(ele$nota_dele)`–`r max(ele$nota_dele)`). La mediana (*Mdn* = `r median(ele$nota_dele)`) fue prácticamente igual a la media, lo que indica una distribución aproximadamente simétrica. La mitad central de los estudiantes obtuvo entre `r quantile(ele$nota_dele, .25)` y `r quantile(ele$nota_dele, .75)` puntos (RIC = `r IQR(ele$nota_dele)`).
+:::
+
+::: notes
+::: explicacion
+El párrafo describe una variable numérica con los elementos habituales:
+
+- **Centro**: la media (*M*) y, si interesa, la mediana (*Mdn*).
+- **Dispersión**: la desviación típica (*DE*), el rango y, con la mediana, el rango intercuartílico (RIC).
+- **Interpretación**: una frase que diga qué significan los números (aquí, que la distribución es simétrica).
+
+Si la variable fuera asimétrica, como los errores de *ser/estar*, se daría primero la mediana y el RIC.
+:::
+:::
+
 ## La desviación típica, paso a paso {.explica}
 
 ::: {.w data-w="de-pasos"}
@@ -639,6 +688,30 @@ Para las variables categóricas, el resumen adecuado es una **tabla de frecuenci
 :::
 :::
 
+## Cómo redactarlo: la descripción de la muestra {.redaccion}
+
+```{r}
+#| include: false
+cuenta <- function(v) { t <- table(v)
+  paste0(names(t), " (*n* = ", t, "; ", sapply(100 * prop.table(t), fmt, 0), " %)", collapse = ", ") }
+```
+
+::: redaccion-caja
+Participaron `r nrow(ele)` estudiantes de español como lengua extranjera con cuatro lenguas maternas: `r cuenta(ele$L1)`. Por nivel del MCER, la muestra se distribuyó así: `r cuenta(ele$nivel)`. El `r fmt(100 * mean(ele$estancia == "sí"), 0)` % había realizado una estancia en un país hispanohablante.
+:::
+
+::: pequeno
+En un artículo, este párrafo va en el apartado de **Método**, subapartado *Participantes*. Nuestros datos son simulados.
+:::
+
+::: notes
+::: explicacion
+La descripción de la muestra va en el apartado de Método. Para cada variable categórica se dan el número de personas (*n*) y su porcentaje sobre el total (*N* = 240). Es exactamente lo que devuelven `table()` y `prop.table()`.
+
+En el código oculto de esta diapositiva, la función `cuenta()` escribe automáticamente «árabe (*n* = 66; 28 %)» para cada categoría. Con datos propios conviene redactarlo a mano y comprobar que los porcentajes suman 100.
+:::
+:::
+
 ## Resumir por grupos con `dplyr` {.copia}
 
 ```{r}
@@ -662,6 +735,47 @@ El paquete `dplyr` lo hace con dos órdenes encadenadas:
 - `summarise()` calcula, dentro de cada grupo, lo que le pidamos: cuántos hay (`n()`), la media y la desviación típica.
 
 El símbolo `|>` se llama **tubería** y se lee «y después». Permite escribir los pasos en el orden en que se piensan: toma los datos, agrúpalos y después resúmelos. El resultado muestra que los italohablantes tienen la media más alta (76) y los sinohablantes, la más baja (62).
+:::
+:::
+
+## Cómo redactarlo: descriptivos por grupos (con tabla) {.redaccion}
+
+```{r}
+#| include: false
+g <- ele |> group_by(L1) |>
+  summarise(n = n(), m = mean(nota_dele), s = sd(nota_dele)) |> arrange(desc(m))
+grupo <- function(i) paste0("L1 ", g$L1[i], " (*M* = ", fmt(g$m[i], 1), "; *DE* = ", fmt(g$s[i], 1), ")")
+```
+
+::: columns
+::: {.column width="48%"}
+::: apa-figura
+**Tabla 1**
+
+*Nota en la prueba tipo DELE según la lengua materna*
+:::
+
+
+```{r}
+#| echo: false
+g |> transmute(L1, n, M = sapply(m, fmt, 1), DE = sapply(s, fmt, 1)) |>
+  knitr::kable(align = "lrrr")
+```
+:::
+::: {.column width="52%"}
+::: redaccion-caja
+Las notas variaron según la lengua materna de los estudiantes (Tabla 1). Los de `r grupo(1)` obtuvieron la media más alta, seguidos de los de `r grupo(2)`, `r grupo(3)` y `r grupo(4)`. La dispersión fue parecida en los cuatro grupos.
+:::
+:::
+:::
+
+::: notes
+::: explicacion
+Cuando se comparan varios grupos, lo habitual es combinar una **tabla** con un párrafo que destaque lo importante, sin repetir todos los números de la tabla.
+
+Formato APA de las tablas: el **número** en negrita («Tabla 1»), en la línea siguiente el **título** en cursiva, y solo líneas horizontales. En el texto se cita la tabla («Tabla 1») y se comentan las diferencias principales.
+
+Los descriptivos por grupo son siempre el paso previo a una prueba (aquí, el ANOVA de la sesión 4).
 :::
 :::
 
@@ -854,6 +968,48 @@ El deslizador permite probar distintos valores, también con la variable «horas
 Bajar binwidth a 1: ruido. Subirlo a 20: se pierde la forma. Cambiar a «horas» y probar de nuevo. El código se actualiza: pueden copiar el valor que prefieran.
 :::
 
+## Cómo redactarlo: un histograma {.redaccion}
+
+::: columns
+::: {.column width="48%"}
+::: apa-figura
+**Figura 1**
+
+*Distribución de las notas en la prueba tipo DELE (N = 240)*
+:::
+
+```{r}
+#| echo: false
+#| fig-width: 6.2
+#| fig-height: 3.4
+ggplot(ele, aes(nota_dele)) +
+  geom_histogram(binwidth = 5, boundary = 0, fill = "grey55", colour = "white") +
+  labs(x = "Nota DELE", y = "Número de estudiantes") + theme_classic(base_size = 15)
+```
+
+::: apa-nota
+*Nota.* Cada barra agrupa 5 puntos de nota.
+:::
+:::
+::: {.column width="52%"}
+::: redaccion-caja
+Como muestra la Figura 1, las notas se distribuyeron de forma aproximadamente simétrica y unimodal en torno a los `r fmt(mean(ele$nota_dele), 0)` puntos. La mayoría de los estudiantes (`r fmt(100 * mean(ele$nota_dele >= 60 & ele$nota_dele <= 80), 0)` %) obtuvo entre 60 y 80 puntos, y solo `r sum(ele$nota_dele < 45)` obtuvieron menos de 45.
+:::
+:::
+:::
+
+::: notes
+::: explicacion
+Cómo se presenta una figura en estilo APA:
+
+- Encima, el **número** en negrita («Figura 1») y, en la línea siguiente, un **título** breve en cursiva que diga qué se muestra y con cuántos datos.
+- Debajo, si hace falta, una ***Nota.*** que aclare cómo leerla (aquí, la anchura de las barras).
+- En publicaciones, mejor en escala de grises o con colores que se distingan al imprimir (`theme_classic()` da un aspecto sobrio).
+
+En el texto, la figura se cita («Como muestra la Figura 1…») y se describe lo esencial con palabras y algún número concreto. No hace falta describir cada barra.
+:::
+:::
+
 ## Distribuciones por grupos {.copia}
 
 ::: {.panel-tabset}
@@ -942,6 +1098,50 @@ Combinarlos suele ser la mejor opción: la caja para el resumen y los puntos par
 Activar y desactivar capas. La caja resume (mediana, Q1, Q3, bigotes hasta 1,5 × RIC); el violín muestra la forma; los puntos, a cada persona. Con pocos datos, mostrar siempre los puntos.
 :::
 
+## Cómo redactarlo: un diagrama de caja {.redaccion}
+
+```{r}
+#| include: false
+mdn <- ele |> group_by(L1) |> summarise(md = median(nota_dele), ric = IQR(nota_dele)) |> arrange(desc(md))
+```
+
+::: columns
+::: {.column width="48%"}
+::: apa-figura
+**Figura 2**
+
+*Nota en la prueba tipo DELE según la lengua materna*
+:::
+
+```{r}
+#| echo: false
+#| fig-width: 6.2
+#| fig-height: 3.4
+ggplot(ele, aes(L1, nota_dele)) +
+  geom_boxplot(fill = "grey85", outlier.shape = NA) +
+  geom_jitter(width = .1, alpha = .3, size = 1) +
+  labs(x = "Lengua materna", y = "Nota DELE") + theme_classic(base_size = 15)
+```
+
+::: apa-nota
+*Nota.* La línea central de cada caja es la mediana; la caja abarca del primer al tercer cuartil y cada punto es un estudiante.
+:::
+:::
+::: {.column width="52%"}
+::: redaccion-caja
+La Figura 2 muestra la distribución de las notas según la lengua materna. Los estudiantes con L1 `r mdn$L1[1]` presentaron la mediana más alta (*Mdn* = `r mdn$md[1]`) y los de L1 `r mdn$L1[4]`, la más baja (*Mdn* = `r mdn$md[4]`). La dispersión fue similar en los cuatro grupos (RIC entre `r format(min(mdn$ric), decimal.mark = ",")` y `r format(max(mdn$ric), decimal.mark = ",")` puntos).
+:::
+:::
+:::
+
+::: notes
+::: explicacion
+En un diagrama de caja, la nota de la figura debe explicar qué representa cada elemento, porque no todos los lectores lo saben: mediana, cuartiles y puntos.
+
+El párrafo compara los grupos con la **mediana** y el **RIC**, las medidas que dibuja la caja. Si después se aplica una prueba (ANOVA o Kruskal-Wallis), el párrafo de la prueba remite a esta figura.
+:::
+:::
+
 ## Barras, dispersión y facetas {.copia}
 
 ::: {.panel-tabset}
@@ -997,6 +1197,85 @@ Tres gráficos más para otras combinaciones de variables:
 - **Facetas**: el mismo diagrama de dispersión, repetido en un panel por cada L1. Permite ver si la relación se mantiene en todos los grupos.
 
 `facet_wrap(~ L1)` es la instrucción que divide el gráfico en paneles.
+:::
+:::
+
+## Cómo redactarlo: un diagrama de dispersión {.redaccion}
+
+::: columns
+::: {.column width="48%"}
+::: apa-figura
+**Figura 3**
+
+*Relación entre las horas de instrucción y la nota DELE*
+:::
+
+```{r}
+#| echo: false
+#| fig-width: 6.2
+#| fig-height: 3.4
+ggplot(ele, aes(horas, nota_dele)) +
+  geom_point(alpha = .45, size = 1.4) +
+  geom_smooth(method = "lm", colour = "black", linewidth = .8) +
+  labs(x = "Horas de instrucción", y = "Nota DELE") + theme_classic(base_size = 15)
+```
+
+::: apa-nota
+*Nota.* La recta es el ajuste lineal; la banda gris, su intervalo de confianza del 95 %.
+:::
+:::
+::: {.column width="52%"}
+::: redaccion-caja
+La Figura 3 sugiere una relación positiva entre las horas de instrucción y la nota: los estudiantes con más horas tendieron a obtener notas más altas, aunque con una dispersión considerable para un mismo número de horas. Los estudiantes con menos de 150 horas obtuvieron de media `r fmt(mean(ele$nota_dele[ele$horas < 150]), 1)` puntos, frente a `r fmt(mean(ele$nota_dele[ele$horas >= 400]), 1)` los que superaban las 400 horas.
+:::
+:::
+:::
+
+::: notes
+::: explicacion
+Un diagrama de dispersión se describe con palabras: **dirección** (positiva o negativa), **forma** (lineal o no) y **dispersión** (lo cerca o lejos que están los puntos de la recta). Un par de números concretos ayudan a dimensionar la relación.
+
+La fuerza de la relación no se mide «a ojo»: se cuantifica con una correlación (sesión 3), y el párrafo de la correlación puede remitir a esta figura.
+:::
+:::
+
+## Cómo redactarlo: un gráfico de barras {.redaccion}
+
+```{r}
+#| include: false
+subj <- ele |> group_by(L1) |> summarise(p = 100 * mean(subjuntivo == "correcto")) |> arrange(p)
+```
+
+::: columns
+::: {.column width="48%"}
+::: apa-figura
+**Figura 4**
+
+*Porcentaje de uso correcto del subjuntivo según la lengua materna*
+:::
+
+```{r}
+#| echo: false
+#| fig-width: 6.2
+#| fig-height: 3.4
+ggplot(ele, aes(L1, fill = subjuntivo)) + geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = c("grey35", "grey80"), name = "Subjuntivo") +
+  labs(x = "Lengua materna", y = "Porcentaje") + theme_classic(base_size = 15)
+```
+:::
+::: {.column width="52%"}
+::: redaccion-caja
+El porcentaje de uso correcto del subjuntivo en contextos obligatorios osciló entre el `r fmt(subj$p[1], 0)` % de los estudiantes con L1 `r subj$L1[1]` y el `r fmt(subj$p[4], 0)` % de los de L1 `r subj$L1[4]` (Figura 4). Las otras dos lenguas se situaron en posiciones intermedias (`r subj$L1[2]`: `r fmt(subj$p[2], 0)` %; `r subj$L1[3]`: `r fmt(subj$p[3], 0)` %).
+:::
+:::
+:::
+
+::: notes
+::: explicacion
+Con barras apiladas al 100 %, lo que se compara son **porcentajes dentro de cada grupo**, y así hay que decirlo en el texto («el x % de los estudiantes con L1…»). Si los grupos tienen tamaños muy distintos, conviene indicar también los *n*, en la figura o en el texto.
+
+Que los porcentajes difieran no significa que la diferencia sea significativa: eso lo dirá la prueba de χ² (sesión 4).
 :::
 :::
 
@@ -1153,6 +1432,46 @@ Las conclusiones principales son tres:
 Volver a la diapositiva anterior y pulsar Play. Pausar en B1 y en C1. Pedir que describan con palabras el movimiento de la burbuja del chino frente a la del italiano.
 :::
 
+## Cómo redactarlo: un motion chart en papel {.redaccion}
+
+```{r}
+#| include: false
+c1 <- ele |> filter(nivel == "C1") |> group_by(L1) |> summarise(m = mean(nota_dele)) |> arrange(desc(m))
+```
+
+::: columns
+::: {.column width="48%"}
+::: apa-figura
+**Figura 5**
+
+*Nota media según el nivel del MCER y la lengua materna*
+:::
+
+```{r}
+#| echo: false
+#| fig-width: 6.2
+#| fig-height: 3.4
+ele |> group_by(nivel, L1) |> summarise(m = mean(nota_dele), .groups = "drop") |>
+  ggplot(aes(nivel, m, group = L1, linetype = L1, shape = L1)) +
+  geom_line() + geom_point(size = 2.5) +
+  labs(x = "Nivel MCER", y = "Nota media", linetype = "L1", shape = "L1") + theme_classic(base_size = 15)
+```
+:::
+::: {.column width="52%"}
+::: redaccion-caja
+La nota media aumentó con el nivel en las cuatro lenguas maternas (Figura 5). En todos los niveles, los estudiantes con L1 inglés e italiano superaron a los de L1 árabe y chino; en C1, por ejemplo, la media osciló entre `r fmt(c1$m[4], 1)` puntos (L1 `r c1$L1[4]`) y `r fmt(c1$m[1], 1)` (L1 `r c1$L1[1]`).
+:::
+:::
+:::
+
+::: notes
+::: explicacion
+Un *motion chart* no se puede imprimir. En un artículo o una tesis se sustituye por un gráfico estático que muestre la misma evolución: aquí, una línea por L1 a lo largo de los niveles. En blanco y negro, las líneas se distinguen por el tipo de trazo y la forma de los puntos.
+
+Si la versión animada aporta algo, se puede ofrecer como **material suplementario** en línea y citarlo en el texto («véase la versión interactiva en el material suplementario»).
+:::
+:::
+
 ## ¿Qué gráfico elijo? {.explica}
 
 ::: {.w data-w="elige-grafico"}
@@ -1258,6 +1577,51 @@ Lo más llamativo es la acumulación de errores de **artículos** en los sinohab
 :::
 
 Recuentos: el chino parece tener más de todo porque hay más textos. Porcentaje por fila: perfiles. Residuos: dónde hay más (verde) o menos (rojo) de lo esperado si la L1 no influyera en el tipo de error. Lo más llamativo: artículos en chino (lenguas sin artículos). Pasar el ratón por las celdas.
+:::
+
+## Cómo redactarlo: un mapa de calor {.redaccion}
+
+```{r}
+#| include: false
+perf <- errores |> group_by(L1) |> mutate(pct = 100 * n / sum(n)) |> ungroup()
+art <- perf |> filter(tipo == "artículos") |> arrange(desc(pct))
+```
+
+::: columns
+::: {.column width="48%"}
+::: apa-figura
+**Figura 6**
+
+*Distribución de los tipos de error según la lengua materna (porcentaje por fila)*
+:::
+
+```{r}
+#| echo: false
+#| fig-width: 6.4
+#| fig-height: 3.2
+ggplot(perf, aes(tipo, L1, fill = pct)) + geom_tile(colour = "white") +
+  geom_text(aes(label = round(pct)), size = 4.5) +
+  scale_fill_gradient(low = "white", high = "grey45", name = "%") +
+  labs(x = NULL, y = NULL) + theme_minimal(base_size = 15)
+```
+
+::: apa-nota
+*Nota.* Cada celda indica el porcentaje que representa ese tipo de error sobre el total de errores de cada lengua.
+:::
+:::
+::: {.column width="52%"}
+::: redaccion-caja
+Los perfiles de error difirieron según la lengua materna (Figura 6). En los estudiantes sinohablantes, los errores de artículos supusieron el `r fmt(art$pct[art$L1 == "chino"], 0)` % del total, frente a entre el `r fmt(min(art$pct[art$L1 != "chino"]), 0)` % y el `r fmt(max(art$pct[art$L1 != "chino"]), 0)` % en las demás lenguas, un resultado coherente con la ausencia de artículos en chino.
+:::
+:::
+:::
+
+::: notes
+::: explicacion
+En un mapa de calor conviene **escribir el número en cada celda**: el color orienta, pero el lector necesita los valores. La nota de la figura debe aclarar qué representa cada número (aquí, porcentajes por fila, no recuentos).
+
+El párrafo destaca el patrón principal y, si es posible, lo **interpreta lingüísticamente** (la transferencia desde una L1 sin artículos). Si se quiere afirmar que los perfiles difieren de forma significativa, se añade una prueba de χ² con sus residuos (sesión 4).
+:::
 :::
 
 ## Buenas prácticas visuales
@@ -1447,6 +1811,23 @@ En nuestro caso, las notas parecen normales (p = 0,47). Los errores de *ser/esta
 :::
 :::
 
+## Cómo redactarlo: la comprobación de la normalidad {.redaccion}
+
+```{r}
+#| include: false
+sw1 <- shapiro.test(ele$nota_dele); sw2 <- shapiro.test(ele$err_ser_estar)
+```
+
+::: redaccion-caja
+Se comprobó la normalidad de las variables numéricas mediante la prueba de Shapiro-Wilk y la inspección de los gráficos Q-Q. Las notas no se apartaron de la normalidad (*W* = `r fmt(sw1$statistic, 2)`, *p* `r fp(sw1$p.value)`), pero los errores de *ser/estar* sí lo hicieron (*W* = `r fmt(sw2$statistic, 2)`, *p* `r fp(sw2$p.value)`), como es habitual en los recuentos. Por ello, los análisis de los errores se realizaron con pruebas no paramétricas.
+:::
+
+::: notes
+::: explicacion
+La comprobación de supuestos suele ir en el apartado de **análisis de datos** (dentro de Método) o al principio de los resultados. Se indica qué se comprobó, con qué prueba, el resultado (*W* y *p*) y, sobre todo, **qué decisión se tomó** en consecuencia (usar una prueba paramétrica o una no paramétrica).
+:::
+:::
+
 ## De la muestra a la población {.explica}
 
 ::: {.w data-w="muestral"}
@@ -1525,6 +1906,24 @@ Esta simulación responde a la pregunta más difícil del tema: ¿qué quiere de
 :::
 
 Cada barra es el intervalo de una muestra distinta. Las rojas no contienen la media real. Pulsar «Nuevas 50 muestras» varias veces: suelen fallar 2 o 3 (el 5 %). Bajar la confianza al 80 %: los intervalos son más estrechos pero fallan más. Subir n: más estrechos sin fallar más. El 95 % se refiere al método, no a un intervalo concreto.
+:::
+
+## Cómo redactarlo: un intervalo de confianza {.redaccion}
+
+::: redaccion-caja
+La nota media en la prueba tipo DELE fue de `r fmt(mean(ele$nota_dele), 1)` puntos, IC 95 % [`r fmt(t.test(ele$nota_dele)$conf.int[1], 1)`; `r fmt(t.test(ele$nota_dele)$conf.int[2], 1)`].
+:::
+
+::: pequeno
+Otras formas habituales: «… 68,1 puntos (IC 95 %: 66,4–69,7)». El IC se escribe siempre junto a la estimación a la que acompaña (una media, una diferencia, una correlación…).
+:::
+
+::: notes
+::: explicacion
+El intervalo de confianza se escribe entre corchetes, detrás del valor estimado, indicando el nivel de confianza: «IC 95 % [límite inferior; límite superior]». En textos en español se separan los límites con punto y coma para no confundirlos con la coma decimal.
+
+APA recomienda dar intervalos de confianza siempre que sea posible, porque informan a la vez de la estimación y de su precisión: un intervalo estrecho indica una estimación precisa.
+:::
 :::
 
 ## La lógica del contraste de hipótesis
@@ -1833,6 +2232,34 @@ Dos ideas complementarias:
 :::
 :::
 
+## Cómo redactarlo: la prueba t {.redaccion}
+
+```{r}
+#| include: false
+dsc <- ele |> group_by(estancia) |> summarise(m = mean(nota_dele), s = sd(nota_dele), n = n())
+d_est <- with(ele, d_cohen(nota_dele[estancia == "sí"], nota_dele[estancia == "no"]))
+tp <- t.test(post, pre, paired = TRUE); dif <- post - pre
+```
+
+::: redaccion-caja
+**Grupos independientes.** Los estudiantes que habían realizado una estancia en un país hispanohablante (*n* = `r dsc$n[2]`) obtuvieron una nota media más alta (*M* = `r fmt(dsc$m[2], 1)`; *DE* = `r fmt(dsc$s[2], 1)`) que quienes no la habían realizado (*n* = `r dsc$n[1]`; *M* = `r fmt(dsc$m[1], 1)`; *DE* = `r fmt(dsc$s[1], 1)`). La diferencia, de `r fmt(diff(tt$estimate), 1)` puntos (IC 95 % [`r fmt(-tt$conf.int[2], 1)`; `r fmt(-tt$conf.int[1], 1)`]), fue estadísticamente significativa según la prueba *t* de Welch, *t*(`r fmt(tt$parameter, 1)`) = `r fmt(abs(tt$statistic), 2)`, *p* `r fp(tt$p.value)`, con un tamaño del efecto pequeño-moderado, *d* = `r fmt(d_est, 2)`.
+
+**Muestras relacionadas** (ejemplo simulado). La puntuación aumentó del pretest (*M* = `r fmt(mean(pre), 1)`; *DE* = `r fmt(sd(pre), 1)`) al postest (*M* = `r fmt(mean(post), 1)`; *DE* = `r fmt(sd(post), 1)`), *t*(`r tp$parameter`) = `r fmt(tp$statistic, 2)`, *p* `r fp(tp$p.value)`, *d* = `r fmt(mean(dif) / sd(dif), 2)`.
+:::
+
+::: notes
+::: explicacion
+El párrafo de una prueba *t* sigue siempre el mismo orden:
+
+1. **Descriptivos** de cada grupo: *n*, *M* y *DE*.
+2. La **diferencia** y, si es posible, su intervalo de confianza.
+3. El **estadístico** con sus grados de libertad, *t*(gl), y el **valor p**. Con Welch, los gl llevan decimales. El signo de *t* se puede omitir si el texto ya dice qué grupo es mayor.
+4. El **tamaño del efecto** (*d*) y una palabra que lo califique.
+
+En el caso de muestras relacionadas, la *d* se calcula sobre las diferencias (media de las diferencias / DE de las diferencias). Conviene decir siempre qué versión de *d* se ha usado.
+:::
+:::
+
 ## Wilcoxon: comparar rangos {.explica}
 
 ::: {.w data-w="wilcoxon"}
@@ -1879,6 +2306,29 @@ La sintaxis es la misma que la de la prueba t: la variable, la tilde y el grupo.
 En nuestros datos, la mediana es de 3 errores en los dos grupos (las medias, 3,3 y 3,0) y el valor p es de 0,34, bastante mayor que 0,05. Por tanto, **no hay evidencia** de que la estancia se asocie con un número distinto de errores de *ser/estar*. W = 7500,5 se lee como en el ejemplo anterior: de las 140 × 100 = 14 000 parejas posibles, en unas 7500 (el 54 %) el estudiante sin estancia comete más errores; muy cerca del 50 % que esperaríamos sin diferencias.
 
 Que una prueba no sea significativa también es un resultado: no demuestra que no haya ninguna diferencia, pero indica que, con estos datos, no podemos afirmarla.
+:::
+:::
+
+## Cómo redactarlo: la prueba de Wilcoxon {.redaccion}
+
+```{r}
+#| include: false
+wx <- wilcox.test(err_ser_estar ~ estancia, data = ele, exact = FALSE)
+md_e <- tapply(ele$err_ser_estar, ele$estancia, median)
+r_wx <- abs(qnorm(wx$p.value / 2)) / sqrt(nrow(ele))
+```
+
+::: redaccion-caja
+Dado que los errores de *ser/estar* no seguían una distribución normal, se compararon los grupos con la prueba de Wilcoxon-Mann-Whitney. No se hallaron diferencias significativas entre los estudiantes con estancia (*Mdn* = `r md_e[["sí"]]`) y sin estancia (*Mdn* = `r md_e[["no"]]`), *W* = `r format(unname(wx$statistic), nsmall = 1, decimal.mark = ",")`, *p* `r fp(wx$p.value)`, *r* = `r fmt(r_wx, 2)`.
+:::
+
+::: notes
+::: explicacion
+Con una prueba no paramétrica se describen los grupos con la **mediana** (*Mdn*), no con la media, porque la prueba compara rangos.
+
+Se indica el estadístico (*W* en R; en otros programas, *U*), el valor p y un tamaño del efecto. El más habitual es *r* = *Z* / √*N*, que se interpreta con las mismas referencias que una correlación (0,1 pequeño, 0,3 mediano, 0,5 grande). En el código oculto, *Z* se obtiene a partir del valor p.
+
+Un resultado no significativo también se informa: «no se hallaron diferencias significativas», nunca «se demostró que no hay diferencias».
 :::
 :::
 
@@ -1929,6 +2379,26 @@ En nuestros datos, r = 0,58: una relación positiva y moderadamente fuerte. A m�
 Con r = 0,58, las horas comparten aproximadamente un tercio de la variación de la nota (0,58² ≈ 0,34). El resto depende de otros factores. El signo no influye en la fuerza: r = −0,58 sería igual de fuerte, pero en sentido contrario.
 
 Si los datos no son normales o son ordinales, basta con añadir `method = "spearman"`.
+:::
+:::
+
+## Cómo redactarlo: una correlación {.redaccion}
+
+```{r}
+#| include: false
+ct <- cor.test(ele$horas, ele$nota_dele)
+sp <- cor.test(ele$horas, ele$err_ser_estar, method = "spearman", exact = FALSE)
+```
+
+::: redaccion-caja
+Las horas de instrucción se correlacionaron positivamente con la nota en la prueba tipo DELE, *r*(`r ct$parameter`) = `r fmt(ct$estimate, 2)`, IC 95 % [`r fmt(ct$conf.int[1], 2)`; `r fmt(ct$conf.int[2], 2)`], *p* `r fp(ct$p.value)`. Se trata de una relación fuerte: las horas comparten aproximadamente un `r fmt(100 * ct$estimate^2, 0)` % de la variación de la nota. Por su parte, las horas se asociaron negativamente con los errores de *ser/estar* (correlación de Spearman, ρ = `r fmt(sp$estimate, 2)`, *p* `r fp(sp$p.value)`).
+:::
+
+::: notes
+::: explicacion
+Elementos de una correlación en APA: el coeficiente con sus **grados de libertad** entre paréntesis (*N* − 2 = 238), su **intervalo de confianza**, el **valor p** y una **interpretación** de la fuerza y la dirección. Con Spearman se usa el símbolo ρ (rho) o *r*ₛ y se suele omitir los grados de libertad.
+
+Recuerda que una correlación describe una asociación: en el texto, mejor «se asociaron» o «se correlacionaron» que «influyeron».
 :::
 :::
 
@@ -2111,6 +2581,30 @@ La **prueba exacta de Fisher** es la alternativa al chi cuadrado cuando hay poca
 :::
 :::
 
+## Cómo redactarlo: el chi cuadrado {.redaccion}
+
+```{r}
+#| include: false
+pc <- 100 * prop.table(tab, 1)
+```
+
+::: redaccion-caja
+Se analizó la relación entre la estancia en un país hispanohablante y el uso correcto del subjuntivo mediante la prueba de χ² de independencia. El `r fmt(pc["sí", "correcto"], 0)` % de los estudiantes con estancia usó correctamente el subjuntivo, frente al `r fmt(pc["no", "correcto"], 0)` % de quienes no la habían realizado. La asociación fue significativa, χ²(`r prueba$parameter`, *N* = `r sum(tab)`) = `r fmt(prueba$statistic, 2)`, *p* `r fp(prueba$p.value)`, aunque de magnitud pequeña, *V* de Cramér = `r fmt(v_cramer(tab), 2)`. Los residuos estandarizados indicaron más aciertos de los esperados entre quienes habían hecho una estancia (+`r fmt(prueba$stdres["sí", "correcto"], 2)`) y más errores entre quienes no (+`r fmt(prueba$stdres["no", "incorrecto"], 2)`).
+:::
+
+::: notes
+::: explicacion
+El párrafo del χ² incluye:
+
+- Los **porcentajes** que se comparan (dentro de cada grupo), para que el lector vea la dirección de la asociación.
+- El estadístico con sus **grados de libertad y el tamaño de la muestra**: χ²(gl, *N* = …). Conviene indicar si se aplicó la corrección de Yates (R la aplica por defecto en tablas de 2 × 2).
+- El **valor p** y el **tamaño del efecto** (*V* de Cramér).
+- Si la tabla es mayor que 2 × 2 o se quiere localizar la asociación, los **residuos estandarizados** de las celdas más destacadas.
+
+Si alguna frecuencia esperada fuera menor que 5, se informaría de la prueba exacta de Fisher en su lugar.
+:::
+:::
+
 ## Más categorías: residuos como mapa de calor {.copia}
 
 [Paso 5 · L1 × subjuntivo]{.paso-et}
@@ -2150,6 +2644,20 @@ Cómo se leen los colores:
 - **Blanco**: lo esperado.
 
 En nuestros datos, el valor p de la prueba (`prueba2$p.value`, en el título del gráfico) es 0,23: **no hay asociación significativa** entre la L1 y el uso del subjuntivo. Los colores son suaves y ningún residuo supera ±1,96: el más extremo es el del árabe (−1,8 en «correcto»: algo menos de aciertos de los esperados), y el del italiano va en sentido contrario (+1,6). Esta es otra forma de ver que un resultado no es significativo.
+:::
+:::
+
+## Cómo redactarlo: un resultado no significativo {.redaccion}
+
+::: redaccion-caja
+En cambio, el uso correcto del subjuntivo no se asoció significativamente con la lengua materna, χ²(`r prueba2$parameter`, *N* = `r sum(tab2)`) = `r fmt(prueba2$statistic, 2)`, *p* `r fp(prueba2$p.value)`. Ningún residuo estandarizado superó el valor de ±1,96.
+:::
+
+::: notes
+::: explicacion
+Los resultados no significativos se informan con el mismo detalle que los significativos (estadístico, gl, *N* y *p*). Así el lector puede valorarlos e incluirlos, por ejemplo, en un metaanálisis.
+
+La redacción correcta es «no se asoció significativamente» o «no se hallaron diferencias significativas». Es incorrecto concluir que «la L1 no influye»: con más datos, o con un efecto pequeño, podría haber una asociación que esta muestra no detecta.
 :::
 :::
 
@@ -2366,6 +2874,53 @@ El segundo bloque introduce el **ANOVA de dos factores**: analiza a la vez la L1
 :::
 :::
 
+## Cómo redactarlo: el ANOVA y las comparaciones de Tukey {.redaccion}
+
+```{r}
+#| include: false
+av <- summary(modelo_aov)[[1]]
+tk <- as.data.frame(TukeyHSD(modelo_aov)$L1) |> rownames_to_column("par") |> filter(`p adj` < .05)
+frase_tk <- function(i) { a <- strsplit(tk$par[i], "-")[[1]]
+  paste0(a[1], " frente a ", a[2], " (diferencia = ", fmt(tk$diff[i], 1), " puntos, IC 95 % [", fmt(tk$lwr[i], 1), "; ", fmt(tk$upr[i], 1), "], *p* ", fp(tk$`p adj`[i]), ")") }
+```
+
+::: redaccion-caja
+Se realizó un ANOVA de un factor para comparar la nota de los cuatro grupos de lengua materna (los descriptivos figuran en la Tabla 1). Se cumplieron los supuestos de normalidad de los residuos (Shapiro-Wilk, *p* `r fp(shapiro.test(residuals(modelo_aov))$p.value)`) y de homogeneidad de varianzas (Bartlett, *p* `r fp(bartlett.test(nota_dele ~ L1, data = ele)$p.value)`). La nota difirió significativamente según la L1, *F*(`r av$Df[1]`, `r av$Df[2]`) = `r fmt(av[1, "F value"], 2)`, *p* `r fp(av[1, "Pr(>F)"])`, η² = `r fmt(eta2, 2)`, un efecto grande. Las comparaciones *post hoc* de Tukey mostraron diferencias significativas entre `r paste(sapply(seq_len(nrow(tk)), frase_tk), collapse = "; ")`. Las demás comparaciones no fueron significativas.
+:::
+
+::: notes
+::: explicacion
+Estructura del párrafo de un ANOVA:
+
+1. Qué se comparó y dónde están los **descriptivos** (una tabla, normalmente).
+2. La **comprobación de los supuestos** (normalidad de los residuos, homogeneidad de varianzas).
+3. El resultado global: *F*(gl entre, gl dentro), *p* y η².
+4. Las **comparaciones post hoc** significativas, con la diferencia, su IC y el *p* ajustado. Si son muchas, se pueden llevar a una tabla.
+
+Los nombres de las parejas siguen el orden de R («italiano frente a árabe» = italiano menos árabe): una diferencia positiva indica que el primer grupo obtuvo más nota.
+:::
+:::
+
+## Cómo redactarlo: el ANOVA de dos factores {.redaccion}
+
+```{r}
+#| include: false
+av2 <- summary(aov(nota_dele ~ L1 * estancia, data = ele))[[1]]
+f_av2 <- function(i) paste0("*F*(", av2$Df[i], ", ", av2$Df[4], ") = ", fmt(av2[i, "F value"], 2), ", *p* ", fp(av2[i, "Pr(>F)"]))
+```
+
+::: redaccion-caja
+Un ANOVA de dos factores (L1 × estancia) mostró efectos principales significativos de la lengua materna, `r f_av2(1)`, y de la estancia, `r f_av2(2)`. La interacción no fue significativa, `r f_av2(3)`, lo que indica que el efecto de la estancia fue similar en las cuatro lenguas maternas.
+:::
+
+::: notes
+::: explicacion
+En un ANOVA factorial se informa de cada **efecto principal** y de la **interacción**, cada uno con su *F*, sus dos grados de libertad y su *p*. Los gl del denominador (los de los residuos) son los mismos para los tres efectos.
+
+Si la interacción fuera significativa, el párrafo debería describir **cómo** cambia el efecto de un factor según el otro (normalmente con un gráfico de líneas como el de la diapositiva siguiente), y la interpretación de los efectos principales pasaría a segundo plano.
+:::
+:::
+
 ## ¿Qué es una interacción? {.explica}
 
 ::: {.w data-w="interaccion"}
@@ -2434,6 +2989,27 @@ La tabla resume la sesión:
 - **Dos variables categóricas**: chi cuadrado o Fisher; los residuos indican dónde está la asociación.
 - **Una numérica y tres o más grupos**: ANOVA y, después, Tukey.
 - **Lo mismo, sin normalidad**: Kruskal-Wallis y, después, Wilcoxon por parejas con corrección.
+:::
+:::
+
+## Cómo redactarlo: Kruskal-Wallis y sus comparaciones {.redaccion}
+
+```{r}
+#| include: false
+kw <- kruskal.test(err_ser_estar ~ L1, data = ele)
+md_l1 <- tapply(ele$err_ser_estar, ele$L1, median)
+pw <- pairwise.wilcox.test(ele$err_ser_estar, ele$L1, p.adjust.method = "holm", exact = FALSE)$p.value
+```
+
+::: redaccion-caja
+Los errores de *ser/estar* difirieron significativamente según la lengua materna, *H*(`r kw$parameter`) = `r fmt(kw$statistic, 2)`, *p* `r fp(kw$p.value)`. Las comparaciones por pares (pruebas de Wilcoxon con corrección de Holm) indicaron que los estudiantes con L1 italiano (*Mdn* = `r md_l1[["italiano"]]`) cometieron menos errores que los de L1 árabe (*Mdn* = `r md_l1[["árabe"]]`; *p* `r fp(pw["italiano", "árabe"])`), chino (*Mdn* = `r md_l1[["chino"]]`; *p* `r fp(pw["italiano", "chino"])`) e inglés (*Mdn* = `r md_l1[["inglés"]]`; *p* `r fp(pw["italiano", "inglés"])`). Las diferencias entre las demás lenguas no fueron significativas.
+:::
+
+::: notes
+::: explicacion
+Kruskal-Wallis se informa con el estadístico *H* (R lo llama *chi-squared*), sus grados de libertad (número de grupos − 1) y el valor p. Los grupos se describen con medianas.
+
+Para las comparaciones por pares hay que indicar **qué prueba** se usó y **qué corrección** (Holm, Bonferroni…), porque los valores p cambian según el método. Los *p* del párrafo ya están corregidos.
 :::
 :::
 
@@ -3016,6 +3592,33 @@ Los botones permiten comparar el árbol grande y el podado con datos de entrenam
 Con el árbol sin podar: casi un 90 % en entrenamiento, pero solo un 64 % con estudiantes que no ha visto. El podado pierde algo en entrenamiento y gana en prueba. Pasar el ratón por las celdas para explicar falsos positivos y falsos negativos. Sensibilidad = correctos detectados; especificidad = incorrectos detectados.
 :::
 
+## Cómo redactarlo: la evaluación de un clasificador {.redaccion}
+
+```{r}
+#| include: false
+mc <- table(real = prueba$subjuntivo, pred = predict(arbol_p, prueba, type = "class"))
+exac <- sum(diag(mc)) / sum(mc)
+sens <- mc["correcto", "correcto"] / sum(mc["correcto", ])
+espe <- mc["incorrecto", "incorrecto"] / sum(mc["incorrecto", ])
+base <- max(prop.table(table(prueba$subjuntivo)))
+```
+
+::: redaccion-caja
+El rendimiento del árbol podado se evaluó con una muestra de prueba independiente (*n* = `r nrow(prueba)`; 30 % de los datos), no utilizada en su construcción. El árbol clasificó correctamente al `r fmt(100 * exac, 1)` % de los estudiantes, frente al `r fmt(100 * base, 1)` % que se obtendría prediciendo siempre la categoría mayoritaria. Su sensibilidad (proporción de usos correctos del subjuntivo identificados) fue del `r fmt(100 * sens, 1)` %, y su especificidad (usos incorrectos identificados), del `r fmt(100 * espe, 1)` %.
+:::
+
+::: notes
+::: explicacion
+Un modelo predictivo se evalúa **con datos que no ha visto** (una muestra de prueba o validación cruzada), y así hay que decirlo explícitamente.
+
+Elementos imprescindibles:
+
+- La **exactitud** (porcentaje de aciertos) y, al lado, la **referencia** de la clase mayoritaria: sin ella, el lector no puede saber si el modelo aporta algo.
+- La **sensibilidad** y la **especificidad**, definidas la primera vez que aparecen, porque los lectores de lingüística no siempre las conocen.
+- Si interesa, la **matriz de confusión** completa en una tabla.
+:::
+:::
+
 ## ¿Qué variables importan? {.copia}
 
 [Paso 10 · Importancia de las variables]{.paso-et}
@@ -3068,6 +3671,27 @@ En el árbol resultante:
 - La nota prevista va de unos 49 puntos (pocas horas, sinohablantes) a unos 77 (muchas horas, angloparlantes o italohablantes).
 
 El parámetro `cp = 0.03` lo mantiene pequeño y fácil de leer. Los colores azules más intensos indican notas más altas.
+:::
+:::
+
+## Cómo redactarlo: un árbol de regresión {.redaccion}
+
+```{r}
+#| include: false
+hojas_n <- arbol_nota$frame[arbol_nota$frame$var == "<leaf>", ]
+r2_arbol <- 1 - sum(residuals(arbol_nota)^2) / sum((ele$nota_dele - mean(ele$nota_dele))^2)
+corte_n <- arbol_nota$splits[1, "index"]
+```
+
+::: redaccion-caja
+Para predecir la nota se ajustó un árbol de regresión (paquete *rpart*) con las horas de instrucción, la estancia y la L1 como predictores. La primera división correspondió a las horas de instrucción (`r fmt(corte_n, 0)` horas); en ambas ramas, la segunda división se basó en la lengua materna. Las notas medias previstas oscilaron entre `r fmt(min(hojas_n$yval), 1)` puntos (menos de `r fmt(corte_n, 0)` horas y L1 chino; *n* = `r hojas_n$n[which.min(hojas_n$yval)]`) y `r fmt(max(hojas_n$yval), 1)` puntos (`r fmt(corte_n, 0)` horas o más y L1 inglés o italiano; *n* = `r hojas_n$n[which.max(hojas_n$yval)]`). El árbol explicó el `r fmt(100 * r2_arbol, 0)` % de la variación de la nota en los datos de entrenamiento. La estancia no intervino en ninguna división.
+:::
+
+::: notes
+::: explicacion
+En un árbol de regresión se describe la **estructura** (qué variable divide primero y con qué umbral), el **rango de predicciones** de las hojas (con su *n*) y el **ajuste** (R²).
+
+Conviene incluir también la figura del árbol y decir qué variables candidatas **no** aparecen en él. Es información relevante: la estancia no mejora la predicción una vez conocidas las horas y la L1.
 :::
 :::
 
@@ -3163,7 +3787,7 @@ Conviene decirlo claramente: **con un bosque perdemos los factores de clasificac
 :::
 :::
 
-## Cómo informar de un árbol
+## Cómo redactarlo: un árbol de clasificación {.redaccion}
 
 ```{r}
 #| include: false
@@ -3172,7 +3796,9 @@ nodo_alto <- arbol$frame[rownames(arbol$frame) == "2", ]
 nodo_bajo <- arbol$frame[rownames(arbol$frame) == "3", ]
 ```
 
-> Se ajustó un árbol de clasificación (paquete *rpart*, índice de Gini) para predecir el uso correcto del subjuntivo a partir de las horas de instrucción, la estancia, la L1 y el nivel. La primera división, y la más informativa, fue la de las **horas de instrucción**: con 243,5 horas o más, el `r fmt(100 * nodo_alto$yval2[, 4], 1)` % de los estudiantes usó correctamente el subjuntivo, frente al `r fmt(100 * nodo_bajo$yval2[, 4], 1)` % con menos horas. El árbol se podó mediante validación cruzada (10 particiones). En una muestra de prueba independiente (30 %), el árbol podado acertó el `r fmt(100 * a_p, 1)` % de los casos, frente al `r fmt(100 * a_e, 1)` % del árbol sin podar.
+::: redaccion-caja
+Se ajustó un árbol de clasificación (paquete *rpart*, índice de Gini) para predecir el uso correcto del subjuntivo a partir de las horas de instrucción, la estancia, la L1 y el nivel. La primera división, y la más informativa, fue la de las **horas de instrucción**: con 243,5 horas o más, el `r fmt(100 * nodo_alto$yval2[, 4], 1)` % de los estudiantes usó correctamente el subjuntivo, frente al `r fmt(100 * nodo_bajo$yval2[, 4], 1)` % con menos horas. El árbol se podó mediante validación cruzada (10 particiones). En una muestra de prueba independiente (30 %), el árbol podado acertó el `r fmt(100 * a_p, 1)` % de los casos, frente al `r fmt(100 * a_e, 1)` % del árbol sin podar.
+:::
 
 ::: pequeno
 Siempre: variables candidatas, criterio de división, cómo se podó, **exactitud con datos de prueba** y comparación con la clase mayoritaria.
@@ -3351,6 +3977,31 @@ Los controles permiten cambiar los umbrales y ver cómo cambia la lista. *Pues* 
 Eje vertical: ¿es fiable la diferencia? (LL). Eje horizontal: ¿es grande? (log-ratio; 1 = el doble, −1 = la mitad). Palabras clave de verdad: arriba y a los lados. Bajar el umbral a p < 0,05 o el |LR| a 0,5 y ver cómo cambia la lista. Pasar el ratón por «pues» y por «o sea».
 :::
 
+## Cómo redactarlo: un análisis de palabras clave {.redaccion}
+
+```{r}
+#| include: false
+kws <- frec |> filter(LL > 15.13, abs(LR) >= 1) |> arrange(LR)
+kw_txt <- function(d) paste0("*", d$palabra, "* (LL = ", sapply(d$LL, fmt, 1), "; LR = ", sapply(d$LR, fmt, 2), ")", collapse = ", ")
+```
+
+::: redaccion-caja
+Se compararon las frecuencias de `r nrow(frec)` palabras en un corpus de estudiantes (`r fmt(N_aprend, 0)` palabras) y en un corpus de referencia de hablantes nativos (`r fmt(N_nativo, 0)` palabras) mediante el log-likelihood (G²) como medida de significación y el log-ratio (LR; Hardie, 2014) como medida del tamaño del efecto. Se consideraron palabras clave las que superaron un umbral de LL > 15,13 (*p* < 0,0001) y una diferencia de al menos el doble (|LR| ≥ 1). Con estos criterios, los estudiantes infrautilizaron `r nrow(filter(kws, LR < 0))` palabras, todas ellas marcadores discursivos: `r kw_txt(filter(kws, LR < 0))`.
+:::
+
+::: notes
+::: explicacion
+En lingüística de corpus, el párrafo de palabras clave debe permitir **repetir el análisis**:
+
+- El **tamaño de los dos corpus**.
+- La **medida de significación** (LL) y la de **tamaño del efecto** (log-ratio, Simple Maths…), con su referencia bibliográfica.
+- Los **umbrales** que se usaron para decidir qué es una palabra clave.
+- La lista de palabras clave con sus valores, o una tabla si son muchas.
+
+Si los resultados se obtienen con un programa (AntConc, Sketch Engine), también hay que citarlo con su versión.
+:::
+:::
+
 ## Simple Maths: la fórmula de Sketch Engine {.copia}
 
 $$SM = \frac{pmw_{aprend} + n}{pmw_{nativo} + n} \qquad (n = 1 \text{ por defecto})$$
@@ -3409,6 +4060,23 @@ No hay un *n* correcto: depende de si nos interesa el vocabulario poco frecuente
 :::
 
 Mover n de 0,1 a 10 000. Con n bajo destacan las palabras raras; con n alto todo se acerca a 1 y destacan las frecuentes. Observar cómo «muy» adelanta a «cosa» y cómo «sin embargo» cae. Kilgarriff (2009).
+:::
+
+## Cómo redactarlo: Simple Maths {.redaccion}
+
+```{r}
+#| include: false
+sm_t <- frec |> mutate(SM = sm(pmw_aprend, pmw_nativo, 1)) |> arrange(desc(SM))
+```
+
+::: redaccion-caja
+Las palabras más características del corpus de estudiantes se identificaron mediante la medida Simple Maths de Kilgarriff (2009), con el parámetro de suavizado *n* = 1 (el valor por defecto de Sketch Engine). Las palabras con un valor más alto fueron *`r sm_t$palabra[1]`* (SM = `r fmt(sm_t$SM[1], 2)`), *`r sm_t$palabra[2]`* (SM = `r fmt(sm_t$SM[2], 2)`) y *`r sm_t$palabra[3]`* (SM = `r fmt(sm_t$SM[3], 2)`); es decir, los estudiantes las usaron aproximadamente el doble que los hablantes nativos. Con *n* = 1000, el orden cambió ligeramente, lo que indica que el ranking depende en parte de la frecuencia de las palabras.
+:::
+
+::: notes
+::: explicacion
+Con Simple Maths es imprescindible **declarar el valor de *n***, porque el ranking cambia con él. Lo ideal es justificar la elección (por ejemplo, *n* bajo si interesan las palabras raras y características; *n* alto si interesan las frecuentes) o mostrar que los resultados se mantienen con varios valores.
+:::
 :::
 
 ## Con textos reales: `quanteda` {.copia}
@@ -3534,6 +4202,32 @@ Las columnas *Std. Error*, *t value* y *Pr(>|t|)* contrastan si cada coeficiente
 **¿Un R² del 37 % es mucho o poco?** El R² indica qué parte de la variación de la nota explica el modelo. Un 37 % significa que, conociendo las horas y la estancia, el error típico al predecir la nota baja de unos 12,9 puntos (sin modelo) a unos 10,2. Para un fenómeno humano tan complejo como el aprendizaje de una lengua, que depende de muchísimos factores, es una proporción **considerable**: equivale a una correlación de 0,61, «grande» según las referencias de Cohen y de los estudios de L2 (Plonsky y Oswald, 2014). Al mismo tiempo, recuerda que el 63 % de las diferencias entre estudiantes se debe a factores que el modelo no incluye. Las horas solas explicaban un 34 % (r² de la correlación); la estancia añade 3 puntos más.
 
 La ventaja de la regresión frente a la correlación es que separa el efecto de cada variable **controlando las demás** y permite predecir casos concretos.
+:::
+:::
+
+## Cómo redactarlo: una regresión lineal {.redaccion}
+
+```{r}
+#| include: false
+sl <- summary(modelo_lm); cf <- sl$coefficients; fs <- sl$fstatistic
+ic <- confint(modelo_lm)
+b_txt <- function(v) paste0("*b* = ", fmt(cf[v, 1], 3), ", IC 95 % [", fmt(ic[v, 1], 3), "; ", fmt(ic[v, 2], 3), "], *t* = ", fmt(cf[v, 3], 2), ", *p* ", fp(cf[v, 4]))
+```
+
+::: redaccion-caja
+Se ajustó un modelo de regresión lineal múltiple para predecir la nota en la prueba tipo DELE a partir de las horas de instrucción y la estancia en un país hispanohablante. El modelo resultó significativo, *F*(`r fs[2]`, `r fs[3]`) = `r fmt(fs[1], 2)`, *p* `r fp(pf(fs[1], fs[2], fs[3], lower.tail = FALSE))`, y explicó el `r fmt(100 * sl$r.squared, 0)` % de la varianza de la nota (*R*² = `r fmt(sl$r.squared, 2)`; *R*² ajustado = `r fmt(sl$adj.r.squared, 2)`). Las horas de instrucción se asociaron positivamente con la nota (`r b_txt("horas")`): cada 100 horas adicionales supusieron de media unos `r fmt(100 * cf["horas", 1], 1)` puntos más. A igualdad de horas, haber realizado una estancia se asoció con una nota `r fmt(cf["estanciasí", 1], 1)` puntos más alta (`r b_txt("estanciasí")`).
+:::
+
+::: notes
+::: explicacion
+Elementos del párrafo de una regresión lineal:
+
+- Qué se predice y con qué **predictores**.
+- El **ajuste global** del modelo: *F*, sus grados de libertad, *p* y *R*² (y el *R*² ajustado, que corrige por el número de predictores).
+- Para cada predictor: el **coeficiente** (*b*), su **IC 95 %**, *t* y *p*, y una **traducción a la escala de la variable** («cada 100 horas, unos 8 puntos»).
+- La expresión «**a igualdad de**…» (o «controlando…») recuerda que cada coeficiente se interpreta manteniendo constantes los demás predictores.
+
+Con muchos predictores, los coeficientes se presentan en una tabla (*b*, EE, IC, *t*, *p*).
 :::
 :::
 
@@ -3671,6 +4365,32 @@ Se observan dos cosas:
 - La curva de la estancia está siempre por encima: con las mismas horas, quienes han vivido en un país hispanohablante aciertan más.
 
 Es la misma información que las *odds ratios*, pero mucho más fácil de entender.
+:::
+:::
+
+## Cómo redactarlo: una regresión logística {.redaccion}
+
+```{r}
+#| include: false
+cg <- summary(modelo_glm)$coefficients
+or <- exp(coef(modelo_glm)); oric <- exp(confint.default(modelo_glm))
+or_txt <- function(v) paste0("*OR* = ", fmt(or[v], 2), ", IC 95 % [", fmt(oric[v, 1], 2), "; ", fmt(oric[v, 2], 2), "], *p* ", fp(cg[v, 4]))
+p_l1 <- anova(glm(subj_ok ~ horas + estancia, data = ele, family = binomial), modelo_glm, test = "Chisq")
+```
+
+::: redaccion-caja
+Se ajustó un modelo de regresión logística binaria para predecir el uso correcto del subjuntivo a partir de las horas de instrucción, la estancia y la lengua materna. Las horas se asociaron con una mayor probabilidad de acierto (`r or_txt("horas")` por cada hora adicional; `r fmt(or["horas"]^100, 2)` por cada 100 horas), al igual que haber realizado una estancia (`r or_txt("estanciasí")`): a igualdad de horas y de L1, la estancia multiplicó por `r fmt(or["estanciasí"], 1)` las *odds* de usar correctamente el subjuntivo. La lengua materna no mejoró significativamente el modelo, χ²(`r p_l1$Df[2]`) = `r fmt(p_l1$Deviance[2], 2)`, *p* `r fp(p_l1[2, "Pr(>Chi)"])`. Por ejemplo, con 300 horas de instrucción, la probabilidad predicha de acierto fue del `r fmt(100 * predict(modelo_glm, tibble(horas = 300, estancia = "sí", L1 = "inglés"), type = "response"), 0)` % para un estudiante con L1 inglés y estancia, y del `r fmt(100 * predict(modelo_glm, tibble(horas = 300, estancia = "no", L1 = "chino"), type = "response"), 0)` % para uno con L1 chino sin estancia.
+:::
+
+::: notes
+::: explicacion
+En una regresión logística, los coeficientes se informan como ***odds ratios*** (*OR*) con su IC 95 % y su *p*, porque son más fáciles de interpretar que los log-odds.
+
+Recomendaciones:
+
+- Explicar qué significa cada *OR* en palabras («multiplicó por 2,3 las *odds* de…») y aclarar que *odds* no es lo mismo que probabilidad.
+- Para un predictor con varias categorías, como la L1, informar de una **prueba global** (comparación de modelos con y sin la variable) en lugar de cada categoría por separado.
+- Añadir una o dos **probabilidades predichas** para perfiles concretos, o un gráfico como el de la diapositiva anterior: es lo que mejor entiende un lector no especialista.
 :::
 :::
 

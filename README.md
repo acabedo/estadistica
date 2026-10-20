@@ -28,6 +28,8 @@ La presentación está hecha con [Quarto](https://quarto.org) y reveal.js. Cada 
 
 Cada sesión (y el bloque Plus) termina con una práctica de 20 minutos y sus soluciones.
 
+Después de cada gráfico o análisis hay una diapositiva **✍ Cómo redactarlo** con un párrafo modelo en estilo APA 7 (con los resultados reales de los datos), listo para adaptar en un artículo, una tesis o un TFM. Los mismos párrafos están en los apuntes en PDF.
+
 ## Uso de la presentación
 
 Ábrela en el navegador. Atajos útiles:

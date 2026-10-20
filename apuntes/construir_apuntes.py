@@ -284,6 +284,11 @@ def render(nodo, est, notas):
             out.append(hub(h))
         elif c == "anatomia":
             out.append(anatomia(h, est.anatomias)); est.anatomias += 1
+        elif c == "redaccion-caja":
+            cuerpo = render(h, est, notas).strip()
+            out.append(f'::: {{.callout-tip title="Cómo redactarlo (estilo APA)" icon=false}}\n{cuerpo}\n:::\n')
+        elif c in ("apa-figura", "apa-nota"):
+            out.append(render(h, est, notas).strip() + "\n")
         elif c in ("idea", "clave", "recuadro"):
             titulo = {"idea": "Idea clave", "clave": "Para recordar", "recuadro": "En una frase"}[c]
             tipo = {"idea": "important", "clave": "tip", "recuadro": "warning"}[c]
@@ -350,7 +355,8 @@ ele <- read_csv("datos/ele.csv") |>
   mutate(nivel = factor(nivel, levels = c("A2", "B1", "B2", "C1")))
 errores <- read_csv("datos/errores.csv")
 frec <- read_csv("datos/frecuencias.csv")
-fmt <- function(x, d = 2) format(round(x, d), nsmall = d, decimal.mark = ",", big.mark = ".")
+fmt <- function(x, d = 2) sub("^-", "−", format(round(x, d), nsmall = d, decimal.mark = ",", big.mark = ".", scientific = FALSE))
+fp <- function(p) if (p < .001) "< 0,001" else paste("=", fmt(p, 3))
 options(width = 88)
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 source("apuntes/figuras_apuntes.R")
@@ -384,6 +390,7 @@ Estos apuntes recogen todo el contenido de la presentación del curso, ordenado 
 - **El código**, con el mismo número de paso que en clase (*Paso 1*, *Paso 2*…) y, debajo, la salida que devuelve R. El código es **acumulativo**: cada paso usa los objetos creados en los anteriores, así que conviene ejecutarlo en orden en un mismo script.
 - **Las figuras y tablas**. Las que en clase eran interactivas aparecen aquí en una versión estática que resume lo que se veía al manipularlas.
 - **En pocas palabras**: la explicación de qué significa el resultado y por qué importa.
+- **Cómo redactarlo**: después de cada análisis, un párrafo modelo en estilo APA para adaptar en un artículo, una tesis o un TFM, con los números reales de nuestros datos.
 
 Para reproducir los análisis necesitas R (o posit.cloud), los paquetes `tidyverse`, `rpart`, `rpart.plot`, `pheatmap` y `plotly`, y la carpeta `datos/` con `ele.csv`, `errores.csv` y `frecuencias.csv`. Los datos son **simulados** con fines docentes, aunque se comportan como podrían hacerlo unos datos reales de estudiantes de ELE. Si una salida tuya no coincide con la de estos apuntes, revisa el paso anterior.
 
