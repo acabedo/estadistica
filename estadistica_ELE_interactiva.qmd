@@ -1984,6 +1984,42 @@ El botón «Nuestro t» muestra el valor que obtendremos al comparar la nota seg
 Mover t: cuanto más lejos del centro, menor el área roja (p). Las líneas naranjas son los valores críticos: si t los supera, p < 0,05. Pulsar «Nuestro t (estancia)»: es el que obtendremos dentro de unos minutos con t.test. Cambiar a unilateral: p se divide entre dos.
 :::
 
+## Cómo redactarlo: el contraste de hipótesis y el valor p {.redaccion}
+
+```{r}
+#| include: false
+tt_h <- t.test(nota_dele ~ estancia, data = ele)
+ca <- filter(ele, L1 %in% c("chino", "árabe"))
+tt_ca <- t.test(nota_dele ~ L1, data = ca)
+m_ca <- tapply(ca$nota_dele, ca$L1, mean)
+```
+
+::: redaccion-caja
+**Hipótesis (introducción o método).** Se esperaba que la estancia en un país hispanohablante se asociara con un mejor rendimiento en la prueba tipo DELE. La hipótesis nula (H₀) establecía que la nota media no difería entre quienes habían realizado una estancia y quienes no. Para contrastarla se aplicó una prueba *t* de Welch bilateral, con un nivel de significación de α = 0,05.
+
+**Resultado significativo: se rechaza H₀.** Los estudiantes con estancia obtuvieron una nota media `r fmt(diff(tt_h$estimate), 1)` puntos superior (*M* = `r fmt(tt_h$estimate[2], 1)`) a la de quienes no la habían realizado (*M* = `r fmt(tt_h$estimate[1], 1)`). La diferencia fue estadísticamente significativa, *t*(`r fmt(tt_h$parameter, 1)`) = `r fmt(abs(tt_h$statistic), 2)`, *p* `r fp(tt_h$p.value)`, por lo que se rechazó la hipótesis nula: es poco probable que una diferencia de esta magnitud se deba únicamente al azar del muestreo.
+
+**Resultado no significativo: no se rechaza H₀.** En cambio, los estudiantes con L1 árabe (*M* = `r fmt(m_ca["árabe"], 1)`) y con L1 china (*M* = `r fmt(m_ca["chino"], 1)`) no difirieron significativamente en la nota, *t*(`r fmt(tt_ca$parameter, 1)`) = `r fmt(abs(tt_ca$statistic), 2)`, *p* `r fp(tt_ca$p.value)`. Con estos datos no puede rechazarse la hipótesis nula, lo que no equivale a demostrar que ambos grupos tengan el mismo nivel.
+:::
+
+::: pequeno
+Fórmulas útiles: «se rechazó la hipótesis nula», «la diferencia fue estadísticamente significativa», «no se halló una diferencia significativa», «no pudo rechazarse H₀». Fórmulas que conviene evitar: «se aceptó H₀», «se demostró que…», «altamente significativo», «*p* = 0,000».
+:::
+
+::: notes
+::: explicacion
+Este ejemplo traduce a un texto académico la lógica de las dos diapositivas anteriores.
+
+**Dónde va cada parte.** La hipótesis y la prueba elegida (con su α y si es bilateral o unilateral) se anuncian en el **método**, *antes* de ver los resultados. La decisión sobre H₀ va en los **resultados**, siempre acompañada de los datos que la justifican: las medias, el estadístico con sus grados de libertad y el valor p.
+
+**Qué dice exactamente el párrafo significativo.** *p* = 0,002 significa que, si la estancia no influyera en absoluto, una diferencia de 5,1 puntos o mayor aparecería por azar solo unas 2 veces de cada 1000. Como 0,002 es menor que el α fijado (0,05), se rechaza H₀. **No** significa que haya un 0,2 % de probabilidad de que H₀ sea cierta, ni que la estancia *cause* la mejora: el estudio es observacional (no hemos asignado la estancia al azar).
+
+**Qué dice el párrafo no significativo.** *p* = 0,22: si chinos y árabes tuvieran la misma nota media en la población, una diferencia como la observada aparecería por azar 22 veces de cada 100, algo bastante habitual. No hay pruebas suficientes para rechazar H₀. Pero «no rechazar» no es «aceptar»: como en un juicio, «no culpable» no significa «inocente», sino que las pruebas no bastan. Puede que no haya diferencia o que exista una pequeña que nuestra muestra no detecta (un posible **error tipo II**, que veremos en la diapositiva siguiente).
+
+**Cómo escribir el valor p.** Con su valor exacto y tres decimales (*p* = 0,002; *p* = 0,217) y, si es muy pequeño, *p* < 0,001. Sin cero inicial en inglés (*p* = .002); en español se suele mantener el cero y la coma decimal. Si se usa una prueba unilateral, debe decirse y justificarse en el método.
+:::
+:::
+
 ## Errores tipo I y II, y potencia {.explica}
 
 |  | H₀ es verdadera | H₀ es falsa |
@@ -2011,6 +2047,16 @@ La **potencia** (1 − β) es la probabilidad de detectar un efecto real. Se sue
 - **Naranja (β)**: la parte de la curva verde que no llega al valor crítico: efectos reales que se nos escapan.
 - **Verde (potencia)**: la parte de la curva verde que sí lo supera.
 
+**De dónde sale β, paso a paso** (con los valores iniciales del gráfico: d = 0,5 y 30 estudiantes por grupo):
+
+1. **Suponemos que el efecto existe.** β solo tiene sentido en el mundo en el que H₀ es falsa: imaginamos que la diferencia real es d = 0,5 (unos 6,5 puntos de nota).
+2. **Imaginamos que repetimos el estudio muchas veces.** Cada repetición, con 30 estudiantes nuevos por grupo, daría un estadístico de contraste algo distinto por puro azar. Todos esos resultados forman la **curva verde**. Su centro, llamado **δ** (delta), es el valor que obtendríamos por término medio: δ = d × √(n/2) = 0,5 × √15 ≈ **1,94**. (Sale de dividir la diferencia entre su error estándar: la diferencia es d desviaciones típicas y el error estándar de una diferencia entre dos grupos de n personas es √(2/n) desviaciones típicas.)
+3. **Fijamos la regla de decisión en la curva azul.** Con α = 0,05 bilateral, rechazamos H₀ solo si el estadístico supera **1,96** (la línea discontinua). Esa regla se decide antes de ver los datos y es la misma en los dos mundos.
+4. **β es el área de la curva verde que no llega a la línea.** Es la proporción de repeticiones en las que, aun existiendo el efecto, el resultado no supera 1,96 y no rechazamos H₀. Aquí el centro de la curva verde (1,94) cae casi encima de la línea (1,96), así que la mitad de la curva queda a cada lado: **β ≈ 51 %** y la potencia ≈ 49 %. Detectar el efecto sería como lanzar una moneda al aire.
+5. **Con más estudiantes, la curva verde se desplaza a la derecha.** Con 100 por grupo, δ = 0,5 × √50 ≈ 3,54: ahora casi toda la curva supera 1,96, β ≈ 6 % y la potencia ≈ 94 %.
+
+En R, el cálculo exacto (con la distribución t en vez de la normal) da casi lo mismo: `power.t.test(n = 30, delta = 0.5)` devuelve una potencia de 0,48, es decir, β = 0,52.
+
 **Dos dudas frecuentes**:
 
 - *¿Por qué β no es el 95 % cuando α es el 5 %?* Porque no son complementarios: α se calcula en el mundo sin efecto (curva azul) y β en el mundo con efecto (curva verde). β depende del tamaño del efecto y de n. Solo cuando el efecto se acerca a 0 las dos curvas se superponen, la potencia baja hasta α (5 %) y β sube hasta el 95 %. Con d = 0,1 y 30 por grupo, por ejemplo, β ≈ 93 %: un efecto tan pequeño casi nunca se detecta.
@@ -2020,6 +2066,48 @@ En el gráfico, al reducir α hay menos falsas alarmas, pero aumenta β. La form
 :::
 
 La curva azul es el mundo en el que H₀ es cierta; la verde, el mundo con un efecto real. Bajar α a 0,01: menos falsas alarmas, pero más β. Subir n: las curvas se separan y la potencia aumenta. Con d = 0,5 hacen falta unos 63 por grupo para un 80 % (64 con la prueba t exacta).
+:::
+
+## Cómo redactarlo: errores tipo I y II y potencia {.redaccion}
+
+```{r}
+#| include: false
+n_req <- ceiling(power.t.test(delta = 0.4, power = 0.8)$n)
+ng <- table(ele$estancia)
+pot_g <- function(d, n1, n2) {   # potencia de la prueba t bilateral con dos grupos de distinto tamaño
+  gl <- n1 + n2 - 2; q <- qt(.975, gl); ncp <- d * sqrt(n1 * n2 / (n1 + n2))
+  1 - pt(q, gl, ncp) + pt(-q, gl, ncp)
+}
+d_min <- uniroot(function(d) pot_g(d, ng[["no"]], ng[["sí"]]) - 0.8, c(0.05, 2))$root
+piloto <- withr::with_seed(1, ele |> group_by(estancia) |> slice_sample(n = 30) |> ungroup())   # 30 al azar por grupo
+tt_pil <- t.test(nota_dele ~ estancia, data = piloto)
+pot_pil <- power.t.test(n = 30, delta = 0.41)$power
+```
+
+::: redaccion-caja
+**Método: el tamaño de la muestra (análisis de potencia *a priori*).** El tamaño muestral se determinó antes de recoger los datos mediante un análisis de potencia para la prueba *t* de muestras independientes. Se tomó como referencia un efecto pequeño en la investigación en L2 (*d* = 0,40; Plonsky y Oswald, 2014), un nivel de significación de α = 0,05 (bilateral) y una potencia de 0,80, es decir, un riesgo de error tipo II de β = 0,20. Con estos parámetros se necesitaban al menos `r n_req` participantes por grupo. La muestra final (`r ng[["sí"]]` estudiantes con estancia y `r ng[["no"]]` sin ella) cumplió ese requisito: con ella, la potencia alcanza el 80 % para efectos de *d* = `r fmt(d_min, 2)` o mayores.
+
+**Discusión: el riesgo de error tipo I.** La diferencia a favor de los estudiantes con estancia fue estadísticamente significativa (*p* `r fp(tt_h$p.value)`). Al fijar α = 0,05 se asumió un riesgo máximo del 5 % de cometer un error tipo I, es decir, de detectar una diferencia que no existe en la población. Dado que el valor p obtenido está muy por debajo de ese umbral y que el resultado coincide con estudios previos, es poco probable que se trate de una falsa alarma, aunque solo la replicación con otras muestras permitiría descartarlo.
+
+**Limitaciones: el riesgo de error tipo II** (ejemplo simulado con una submuestra de 30 estudiantes por grupo). En el estudio piloto, la diferencia entre los grupos (`r fmt(diff(tt_pil$estimate), 1)` puntos) no alcanzó la significación estadística, *t*(`r fmt(tt_pil$parameter, 1)`) = `r fmt(abs(tt_pil$statistic), 2)`, *p* `r fp(tt_pil$p.value)`. Con 30 participantes por grupo, la potencia para detectar un efecto como el observado en el estudio completo (*d* = 0,41) era solo de `r fmt(pot_pil, 2)`. Por tanto, el resultado no significativo podría deberse a un error tipo II: no puede descartarse que exista un efecto que la muestra del piloto no tenía capacidad para detectar.
+:::
+
+::: pequeno
+Fórmulas útiles: «se realizó un análisis de potencia *a priori*», «con una potencia de 0,80 (β = 0,20)», «la potencia era insuficiente para detectar efectos de esta magnitud», «el resultado podría constituir un error tipo II».
+:::
+
+::: notes
+::: explicacion
+Estos tres párrafos muestran **dónde aparece cada concepto** de la tabla en un TFM o en un artículo.
+
+**1. Método: la potencia se decide antes.** El análisis de potencia *a priori* responde a la pregunta: ¿cuántos participantes necesito? Requiere fijar tres cosas: el **efecto mínimo** que nos interesa detectar (aquí, d = 0,40, un efecto pequeño en L2), **α** (el riesgo de falsa alarma que aceptamos, 5 %) y la **potencia** deseada (80 %, es decir, aceptamos que se nos escape un efecto real 20 de cada 100 veces: β = 0,20). En R: `power.t.test(delta = 0.4, power = 0.8)` devuelve n ≈ 99,1, que se redondea siempre hacia arriba: 100 por grupo. La última frase del párrafo es un **análisis de sensibilidad**: con la muestra que de verdad tenemos (140 y 100), ¿qué efecto mínimo podríamos detectar con un 80 % de potencia? Respuesta: d ≈ 0,37.
+
+**2. Discusión: el error tipo I.** Cuando el resultado es significativo, el error posible es una **falsa alarma** (rechazar H₀ siendo cierta: casilla superior izquierda de la tabla). Su riesgo está controlado por α. Ojo con la redacción: α = 0,05 no significa que haya un 5 % de probabilidad de que *este* resultado sea un error, sino que el procedimiento, aplicado a muchos estudios en los que H₀ fuera cierta, daría falsas alarmas en un 5 % de ellos.
+
+**3. Limitaciones: el error tipo II.** Cuando el resultado **no** es significativo, el error posible es que se nos haya **escapado** un efecto real (no rechazar H₀ siendo falsa: casilla inferior derecha). Para ilustrarlo hemos tomado al azar solo 30 estudiantes de cada grupo de nuestros datos. En los datos completos sabemos que la diferencia existe (unos 5 puntos, p = 0,002), pero en el piloto, con una diferencia casi igual (5,3 puntos), p = 0,08: no significativo. ¿Por qué? Porque con 30 por grupo la potencia es solo del 35 %: β = 65 %, y casi dos de cada tres estudios así no detectarían el efecto. Por eso un resultado no significativo con una muestra pequeña **no** demuestra que no haya efecto.
+
+**Un aviso.** No conviene calcular la «potencia observada» a partir del efecto obtenido en el propio estudio para justificar un resultado: no aporta información nueva más allá del valor p. Lo recomendable es el análisis *a priori* (antes) o el de sensibilidad (con la muestra disponible).
+:::
 :::
 
 ## Tamaño del efecto: la nota DELE con y sin estancia {.explica}
@@ -2051,6 +2139,45 @@ El panel traduce d a tres cifras más intuitivas (con d = 0,41):
 - **Probabilidad de superioridad del 61 %**: si elegimos al azar a un estudiante con estancia y a otro sin estancia, el primero saca más nota 61 de cada 100 veces (50 de cada 100 si no hubiera efecto).
 
 Con d = 0,2 las dos curvas casi se solapan (92 %); con d = 0,8 la separación ya es evidente (69 % de solapamiento y un 79 % del grupo rojo por encima de la media del azul).
+:::
+:::
+
+## Cómo redactarlo: el tamaño del efecto {.redaccion}
+
+```{r}
+#| include: false
+de <- ele |> group_by(estancia) |> summarise(m = mean(nota_dele), s = sd(nota_dele), n = n())
+s_comb <- sqrt(sum((de$n - 1) * de$s^2) / (sum(de$n) - 2))   # DE combinada de los dos grupos
+d_e <- diff(de$m) / s_comb
+ee_d <- sqrt(sum(de$n) / prod(de$n) + d_e^2 / (2 * sum(de$n)))   # error estándar aproximado de d
+```
+
+::: redaccion-caja
+**Resultados.** Los estudiantes con estancia obtuvieron una nota media `r fmt(diff(de$m), 1)` puntos superior a la de quienes no la habían realizado, *t*(`r fmt(tt_h$parameter, 1)`) = `r fmt(abs(tt_h$statistic), 2)`, *p* `r fp(tt_h$p.value)`. El tamaño del efecto, calculado como la *d* de Cohen con la desviación típica combinada de ambos grupos, fue de *d* = `r fmt(d_e, 2)`, IC 95 % [`r fmt(d_e - 1.96 * ee_d, 2)`; `r fmt(d_e + 1.96 * ee_d, 2)`], un efecto pequeño según las referencias propuestas para la investigación en L2 (Plonsky y Oswald, 2014) y entre pequeño y mediano según los criterios generales de Cohen (1988). Las distribuciones de ambos grupos se solapaban en un `r round(100 * 2 * pnorm(-d_e / 2))` %, y la probabilidad de que un estudiante con estancia elegido al azar superara a uno sin estancia era del `r round(100 * pnorm(d_e / sqrt(2)))` %.
+
+**Discusión.** Aunque la estancia en un país hispanohablante se asocia con una nota más alta, la magnitud de la diferencia, de unos 5 puntos sobre 100, es modesta: la estancia, por sí sola, no separa a los estudiantes en dos grupos claramente diferenciados, y muchos estudiantes sin estancia superan a otros que sí la han realizado. Además, al tratarse de un diseño observacional, la diferencia podría explicarse en parte por otras variables, como las horas de instrucción o el nivel, que convendría controlar en futuros análisis.
+:::
+
+::: pequeno
+Fórmulas útiles: «con un tamaño del efecto pequeño (*d* = 0,41)», «la diferencia, aunque significativa, fue de magnitud modesta», «un efecto de tamaño mediano según los criterios de Cohen (1988)». Indica siempre qué medida usas y con qué referencias la calificas.
+:::
+
+::: notes
+::: explicacion
+El tamaño del efecto completa lo que el valor p no dice. El **valor p** responde a «¿hay diferencia?»; el **tamaño del efecto**, a «¿cuánto?».
+
+**Por qué hace falta.** Imagina dos estudios. En el primero, con 10 000 estudiantes, la estancia mejora la nota en 1 punto (d ≈ 0,08): con tantos datos, p < 0,001, pero la diferencia es irrelevante en el aula. En el segundo, con 20 estudiantes, la mejora es de 10 puntos (d ≈ 0,8), pero p = 0,09. Quien solo mire el valor p sacará conclusiones equivocadas en los dos casos.
+
+**Qué contiene el párrafo de resultados**, en este orden:
+
+1. La **diferencia en las unidades originales** (5,1 puntos de nota), que es lo más fácil de entender para cualquier lector.
+2. El **contraste** (*t*, gl y *p*), que ya habíamos redactado antes.
+3. La **medida estandarizada** (*d* = 0,41), diciendo **cómo se ha calculado** (con la DE combinada de los dos grupos, 12,7), su **intervalo de confianza** y la **etiqueta** con la referencia que se sigue. El intervalo [0,15; 0,67] indica que el efecto real podría ir desde muy pequeño hasta mediano: es una forma honesta de mostrar la incertidumbre.
+4. Opcionalmente, una **traducción intuitiva**: el solapamiento (84 %) o la probabilidad de superioridad (61 %), que vimos en el gráfico.
+
+**Qué hace la discusión.** Interpreta el tamaño del efecto en el contexto de la enseñanza: ¿es mucho o poco 5 puntos sobre 100? ¿Compensa una estancia por esa mejora? Y recuerda que asociación no es causa: quienes viajan pueden ser también quienes más horas estudian.
+
+En R, el intervalo de confianza de d puede calcularse con el paquete **effectsize**: `effectsize::cohens_d(nota_dele ~ estancia, data = ele)`. Aquí lo hemos calculado con su fórmula aproximada para no instalar más paquetes.
 :::
 :::
 
