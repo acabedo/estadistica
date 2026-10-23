@@ -701,6 +701,7 @@
       rd.innerHTML = `<div><span class="cuadro" style="background:${COL.rojo}"></span>α (falsa alarma) <b>${pct(st.a)}</b></div>
         <div><span class="cuadro" style="background:${COL.arena}"></span>β (se me escapa) <b>${pct(1 - pot)}</b></div>
         <div><span class="cuadro" style="background:${COL.verde}"></span>Potencia 1 − β <b>${pct(pot)}</b></div>
+        <div class="peq">De dónde sale β: la curva verde está centrada en δ = d × √(n/2) = ${f(st.d, 2)} × √${f(st.n / 2, st.n % 2 ? 1 : 0)} = <b>${f(delta, 2)}</b>; β es su área a la izquierda del valor crítico (${f(zc, 2)}).</div>
         <div class="peq">d = ${f(st.d, 2)} equivale a una diferencia real de unos <b>${f(st.d * 13, 0)} puntos</b> de nota DELE (DE ≈ 13).</div>
         <div class="peq">Con <b>${st.n}</b> por grupo, la potencia es del ${pct(pot)}. Para llegar al 80 % harían falta, como mínimo, unos <b>${st.d > 0.05 ? n80 : "∞"}</b> estudiantes por grupo.</div>`;
     }
